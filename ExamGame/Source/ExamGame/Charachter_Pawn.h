@@ -56,10 +56,7 @@ public:
 		class UInputMappingContext* IMC;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inputsystem")
-		class UInputAction* Forward_Backward_AI;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inputsystem")
-		class UInputAction* Left_Right_AI;
+		class UInputAction* Movement_AI;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inputsystem")
 		class UInputAction* Look_AI;

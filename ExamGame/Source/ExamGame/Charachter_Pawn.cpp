@@ -85,8 +85,7 @@ void ACharachter_Pawn::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	// ------------- Input components for Spaceship actions --------------
 	if (UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent))
 	{
-		EnhancedInputComponent->BindAction(Forward_Backward_AI, ETriggerEvent::Triggered, this, &ACharachter_Pawn::Movement);
-		EnhancedInputComponent->BindAction(Left_Right_AI, ETriggerEvent::Triggered, this, &ACharachter_Pawn::Movement);
+		EnhancedInputComponent->BindAction(Movement_AI, ETriggerEvent::Triggered, this, &ACharachter_Pawn::Movement);
 		EnhancedInputComponent->BindAction(Look_AI, ETriggerEvent::Triggered, this, &ACharachter_Pawn::Look);
 	}
 
