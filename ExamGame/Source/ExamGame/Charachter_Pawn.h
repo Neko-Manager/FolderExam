@@ -4,11 +4,12 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
-//#include "InputActionValue.h"
+#include "InputActionValue.h"
 #include "Components/AudioComponent.h"
 #include "Charachter_Pawn.generated.h"
+
 //Auto Include for advanced imput actions to work?
-#include "../../../../../../../Program Files/Epic Games/UE_5.1/Engine/Plugins/EnhancedInput/Source/EnhancedInput/Public/InputActionValue.h"
+
 
 UCLASS()
 class EXAMGAME_API ACharachter_Pawn : public APawn
@@ -56,10 +57,10 @@ public:
 		class UInputMappingContext* IMC;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inputsystem")
-		class UInputAction* Movement_AI;
+		class UInputAction* IA_Movement;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inputsystem")
-		class UInputAction* Look_AI;
+		class UInputAction* IA_Look;
 
 	//Audio Components
 
