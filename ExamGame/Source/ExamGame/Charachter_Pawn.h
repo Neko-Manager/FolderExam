@@ -4,10 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
+//#include "InputActionValue.h"
+#include "Components/AudioComponent.h"
 #include "Charachter_Pawn.generated.h"
-
-//Forward Declare classes
-
+//Auto Include for advanced imput actions to work?
+#include "../../../../../../../Program Files/Epic Games/UE_5.1/Engine/Plugins/EnhancedInput/Source/EnhancedInput/Public/InputActionValue.h"
 
 UCLASS()
 class EXAMGAME_API ACharachter_Pawn : public APawn
@@ -50,12 +51,29 @@ public:
 	class USpringArmComponent* SpringArm;
 
 	//Input Components
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inputsystem")
+		class UInputMappingContext* IMC;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inputsystem")
+		class UInputAction* Forward_Backward_AI;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inputsystem")
+		class UInputAction* Left_Right_AI;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inputsystem")
+		class UInputAction* Look_AI;
 
 	//Audio Components
 
 
 	// ------------------------ Functions ----------------------------
 
+	UFUNCTION(BlueprintCallable)
+		void Movement(const FInputActionValue& Value);
+
+	UFUNCTION(BlueprintCallable)
+		void Look(const FInputActionValue& Value);
 
 
 };
