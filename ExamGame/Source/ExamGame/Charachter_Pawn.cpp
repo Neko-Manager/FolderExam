@@ -1,7 +1,29 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
+
+//Our classes
 #include "Charachter_Pawn.h"
+
+//Components
+#include "Components/StaticMeshComponent.h"
+#include "Camera/CameraComponent.h"
+#include "GameFramework/SpringArmComponent.h"
+#include "Components/AudioComponent.h"
+
+//Other
+#include "Kismet/GameplayStatics.h"
+#include "Components/BoxComponent.h"
+#include "Engine/World.h"
+#include "Blueprint/UserWidget.h"
+#include "Sound/SoundCue.h"
+
+//Inputs
+#include "EnhancedInputComponent.h"
+#include "EnhancedInputSubSystems.h"
+
+
+
 
 // Sets default values
 ACharachter_Pawn::ACharachter_Pawn()
