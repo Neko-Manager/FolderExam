@@ -37,11 +37,13 @@ ACharachter_Pawn::ACharachter_Pawn()
 	//Initializing the spring arm.
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
 	SpringArm->SetupAttachment(PlayerMesh);
-	SpringArm->TargetArmLength = 1000.f;
-	SpringArm->SetRelativeLocation(FVector3d(0.f, 0.f, 50.f));
-	SpringArm->SetRelativeRotation(FRotator(-45.f, 0.f, 0.f));
+	SpringArm->TargetArmLength = 1.f;
+	SpringArm->SetRelativeLocation(FVector3d(20.f, 0.f, 60.f));
+	SpringArm->SetRelativeRotation(FRotator(0.f, 0.f, 0.f));
 	SpringArm->bEnableCameraLag = true;
 	SpringArm->CameraLagSpeed = 1.f;
+	SpringArm->CameraLagMaxDistance = 1.f;
+	SpringArm->CameraLagMaxTimeStep = 0.01;
 
 	//Initializing the camera.
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
@@ -85,8 +87,8 @@ void ACharachter_Pawn::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	// ------------- Input components for Spaceship actions --------------
 	if (UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent))
 	{
-		EnhancedInputComponent->BindAction(Movement_AI, ETriggerEvent::Triggered, this, &ACharachter_Pawn::Movement);
-		EnhancedInputComponent->BindAction(Look_AI, ETriggerEvent::Triggered, this, &ACharachter_Pawn::Look);
+		EnhancedInputComponent->BindAction(IA_Movement, ETriggerEvent::Triggered, this, &ACharachter_Pawn::Movement);
+		EnhancedInputComponent->BindAction(IA_Look, ETriggerEvent::Triggered, this, &ACharachter_Pawn::Look);
 	}
 
 }
@@ -100,12 +102,10 @@ void ACharachter_Pawn::Movement(const FInputActionValue& Value)
 		const FVector3d VectorMove = Value.Get<FVector3d>();
 
 		//creating a new variable for each of the directions we want the movement to have access to. 
-		const FVector3d Up_Down = GetActorUpVector();
 		const FVector3d Forward_Backward = GetActorForwardVector();
 		const FVector3d Right_Left = GetActorRightVector();
 
 		//Adding the movement by defining what to update the received input, and where  to update it. (New vector, Old vector)
-		AddMovementInput(Up_Down, VectorMove.Z);
 		AddMovementInput(Forward_Backward, VectorMove.Y);
 		AddMovementInput(Right_Left, VectorMove.X);
 	}
