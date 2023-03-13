@@ -1,0 +1,18 @@
+0-Sjekk om du må pulle for at progarmmet skal være opdatert.
+
+1-Gjør det du skal.
+
+2-Putt arbeid i korrekt mappe.
+
+3-Gå i gitkraken og "stage all changes" om alt stemmer.
+
+4-Dermed skriv en kommentar; informativ update om hva du har gjort.
+
+5-Du er nå klar til å pushe. OM det oppstår feil, så kontakt Simen(Head progarmmer).
+
+6-Etter push, så høyre klikk og "Start pull request"-->Fra din branch til Main Branch. Dermed trykker du "Create Pull Request".
+
+Evt gi beskjed til Daniel. Om det ikke fungerer, så gi beskjed.
+
+7-Om du skal pulle. Trykk pull og refresh mappen for å se at update er gjennomført. Dette vil Daniel mest sannsynlig sjekke når noe blir pushet. Se Daniel sin Git-Online for å se sist endring i tid (Bruk dette for å se om updaten din faktisk gikk gjennom.) 
+
