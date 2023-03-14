@@ -29,19 +29,13 @@ APlayer_Character::APlayer_Character()
 	PrimaryActorTick.bCanEverTick = true;
 
 	// ------------- Initialization --------------
-	//Initializing the Player
-	PlayerMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("PlayerMesh"));
-	PlayerMesh->SetupAttachment(PlayerMesh);
-
-
 	//Initializing the spring arm.
+
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
-	SpringArm->SetupAttachment(PlayerMesh);
-	SpringArm->TargetArmLength = 1.f;
-	/*SpringArm->SetRelativeLocation(FVector3d(20.f, 0.f, 60.f));
-	SpringArm->SetRelativeRotation(FRotator(0.f, 0.f, 0.f));*/
-	SpringArm->SetRelativeLocation(FVector3d(200.f, 0.f, 60.f));
-	SpringArm->SetRelativeRotation(FRotator(0.f, 0.f, 0.f));
+	SpringArm->SetupAttachment(GetMesh());
+	SpringArm->TargetArmLength = 500.f;
+	SpringArm->SetRelativeLocation(FVector3d(0.f, 0.f, 50.f));
+	SpringArm->SetRelativeRotation(FRotator(-20.f, 0.f, 0.f));
 	SpringArm->bEnableCameraLag = true;
 	SpringArm->CameraLagSpeed = 1.f;
 	SpringArm->CameraLagMaxDistance = 1.f;
@@ -92,15 +86,14 @@ void APlayer_Character::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 	{
 		EnhancedInputComponent->BindAction(IA_GroundMovement, ETriggerEvent::Triggered, this, &APlayer_Character::GroundedMovement);
 		EnhancedInputComponent->BindAction(IA_Look, ETriggerEvent::Triggered, this, &APlayer_Character::Look);
-		EnhancedInputComponent->BindAction(IA_Jump, ETriggerEvent::Triggered, this, &APlayer_Character::JumpTriggered);
+		EnhancedInputComponent->BindAction(IA_Look, ETriggerEvent::Triggered, this, &APlayer_Character::Turn);
+		EnhancedInputComponent->BindAction(IA_Jump, ETriggerEvent::Triggered, this, &ACharacter::Jump);
+		
 
 	}
 
 }
 
-void APlayer_Character::JumpTriggered(const FInputActionValue& Value)
-{
-}
 
 void APlayer_Character::GroundedMovement(const FInputActionValue& Value)
 {
@@ -124,17 +117,32 @@ void APlayer_Character::GroundedMovement(const FInputActionValue& Value)
 
 void APlayer_Character::Look(const FInputActionValue& Value)
 {
-	// ------------- Mouse Direction Control for player Ship --------------
+	// ------------- Mouse Direction Control for player --------------
 
 	//Checking if the controller is received.
 	if (GetController())
 	{
-		//Getting the general vector as in the MOvement function.
-		const FVector2D LookAxisInput = Value.Get<FVector2D>();
+		//Getting the general vector as in the Movement function.
+		const FVector2d LookAxisInput = Value.Get<FVector2d>();
 
 		//Same principle as in Movement, but with 2 vectors.
 		AddControllerYawInput(LookAxisInput.X);
+	}
+}
+
+void APlayer_Character::Turn(const FInputActionValue& Value)
+{
+	// ------------- Mouse Direction Control for player --------------
+
+	//Checking if the controller is received.
+	if (GetController())
+	{
+		//Getting the general vector as in the Movement function.
+		const FVector2d LookAxisInput = Value.Get<FVector2d>();
+
+		//Same principle as in Movement, but with 2 vectors.
 		AddControllerPitchInput(LookAxisInput.Y);
 	}
 }
+
 

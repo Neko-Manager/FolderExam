@@ -35,8 +35,7 @@ public:
 	// ------------------------ Components ----------------------------
 
 	//Main Components
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Main Components")
-		UStaticMeshComponent* PlayerMesh;
+
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Main Components")
 		class UCameraComponent* Camera;
@@ -56,16 +55,13 @@ public:
 		class UInputAction* IA_Look;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inputsystem")
+		class UInputAction* IA_Turn;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inputsystem")
 		class UInputAction* IA_Jump;
 
 	//Audio Components
-	// ------------------------ Jump controller----------------------------
-
-	UFUNCTION(BlueprintCallable)
-		void JumpTriggered(const FInputActionValue& Value);
-
-
-
+	
 	// ------------------------ Functions ----------------------------
 
 	UFUNCTION(BlueprintCallable)
@@ -73,5 +69,10 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 		void Look(const FInputActionValue& Value);
+
+	UFUNCTION(BlueprintCallable)
+		void Turn(const FInputActionValue& Value);
+
+	
 
 };
