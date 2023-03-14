@@ -3,22 +3,19 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Pawn.h"
+#include "GameFramework/Character.h"
 #include "InputActionValue.h"
 #include "Components/AudioComponent.h"
-#include "Charachter_Pawn.generated.h"
-
-//Auto Include for advanced imput actions to work?
-
+#include "Player_Character.generated.h"
 
 UCLASS()
-class EXAMGAME_API ACharachter_Pawn : public APawn
+class EXAMGAME_API APlayer_Character : public ACharacter
 {
 	GENERATED_BODY()
 
 public:
-	// Sets default values for this pawn's properties
-	ACharachter_Pawn();
+	// Sets default values for this character's properties
+	APlayer_Character();
 
 protected:
 	// Called when the game starts or when spawned
@@ -32,46 +29,49 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	// ------------------------ Verriables ----------------------------
-	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Space ship Variables")
-	float MovementSpeed;
-
-
-
+		float MovementSpeed;
 
 	// ------------------------ Components ----------------------------
 
 	//Main Components
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Main Components")
-	class UStaticMeshComponent* PlayerMesh;
+		UStaticMeshComponent* PlayerMesh;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Main Components")
-	class UCameraComponent* Camera;
+		class UCameraComponent* Camera;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Main Components")
-	class USpringArmComponent* SpringArm;
+		class USpringArmComponent* SpringArm;
 
 	//Input Components
-	
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inputsystem")
 		class UInputMappingContext* IMC;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inputsystem")
-		class UInputAction* IA_Movement;
+		class UInputAction* IA_GroundMovement;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inputsystem")
 		class UInputAction* IA_Look;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inputsystem")
+		class UInputAction* IA_Jump;
+
 	//Audio Components
+	// ------------------------ Jump controller----------------------------
+
+	UFUNCTION(BlueprintCallable)
+		void JumpTriggered(const FInputActionValue& Value);
+
 
 
 	// ------------------------ Functions ----------------------------
 
 	UFUNCTION(BlueprintCallable)
-		void Movement(const FInputActionValue& Value);
+		void GroundedMovement(const FInputActionValue& Value);
 
 	UFUNCTION(BlueprintCallable)
 		void Look(const FInputActionValue& Value);
-
 
 };
