@@ -32,10 +32,10 @@ APlayer_Character::APlayer_Character()
 	//Initializing the spring arm.
 
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
-	SpringArm->SetupAttachment(GetMesh());
-	SpringArm->TargetArmLength = 500.f;
-	SpringArm->SetRelativeLocation(FVector3d(0.f, 0.f, 50.f));
-	SpringArm->SetRelativeRotation(FRotator(-20.f, 0.f, 0.f));
+	SpringArm->SetupAttachment(GetCapsuleComponent());
+	SpringArm->TargetArmLength = 80.f;
+	SpringArm->SetRelativeLocation(FVector3d(50.f, 0.f, 70.f));
+	SpringArm->SetRelativeRotation(FRotator(0.f, -10.f, 0.f));
 	SpringArm->bEnableCameraLag = true;
 	SpringArm->CameraLagSpeed = 1.f;
 	SpringArm->CameraLagMaxDistance = 1.f;
@@ -46,8 +46,6 @@ APlayer_Character::APlayer_Character()
 	Camera->SetupAttachment(SpringArm, USpringArmComponent::SocketName);
 
 	//Setting default values for variables.
-	MovementSpeed = 100.f;
-
 	AutoPossessPlayer = EAutoReceiveInput::Player0;
 
 
@@ -86,14 +84,11 @@ void APlayer_Character::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 	{
 		EnhancedInputComponent->BindAction(IA_GroundMovement, ETriggerEvent::Triggered, this, &APlayer_Character::GroundedMovement);
 		EnhancedInputComponent->BindAction(IA_Look, ETriggerEvent::Triggered, this, &APlayer_Character::Look);
-		EnhancedInputComponent->BindAction(IA_Look, ETriggerEvent::Triggered, this, &APlayer_Character::Turn);
 		EnhancedInputComponent->BindAction(IA_Jump, ETriggerEvent::Triggered, this, &ACharacter::Jump);
 		
 
 	}
-
 }
-
 
 void APlayer_Character::GroundedMovement(const FInputActionValue& Value)
 {
@@ -123,26 +118,13 @@ void APlayer_Character::Look(const FInputActionValue& Value)
 	if (GetController())
 	{
 		//Getting the general vector as in the Movement function.
-		const FVector2d LookAxisInput = Value.Get<FVector2d>();
+		const FVector2D LookAxisInput = Value.Get<FVector2D>();
 
 		//Same principle as in Movement, but with 2 vectors.
 		AddControllerYawInput(LookAxisInput.X);
+		AddControllerPitchInput(-LookAxisInput.Y);
 	}
 }
 
-void APlayer_Character::Turn(const FInputActionValue& Value)
-{
-	// ------------- Mouse Direction Control for player --------------
-
-	//Checking if the controller is received.
-	if (GetController())
-	{
-		//Getting the general vector as in the Movement function.
-		const FVector2d LookAxisInput = Value.Get<FVector2d>();
-
-		//Same principle as in Movement, but with 2 vectors.
-		AddControllerPitchInput(LookAxisInput.Y);
-	}
-}
 
 
