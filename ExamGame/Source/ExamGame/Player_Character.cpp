@@ -1,19 +1,18 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-
-//Classes
-#include "Charachter_Pawn.h"
+#include "Player_Character.h"
 
 //Components
 #include "Components/StaticMeshComponent.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Components/AudioComponent.h"
+#include "CharacterMovementComponentAsync.generated.h"
 
 //Other
 #include "Kismet/GameplayStatics.h"
-#include "Components/BoxComponent.h"
+#include "Components/CapsuleComponent.h"
 #include "Engine/World.h"
 #include "Blueprint/UserWidget.h"
 #include "Sound/SoundCue.h"
@@ -21,24 +20,27 @@
 //Inputs
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubSystems.h"
+#include "GameFramework/Character.h"
 
 // Sets default values
-ACharachter_Pawn::ACharachter_Pawn()
+APlayer_Character::APlayer_Character()
 {
- 	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+ 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 	// ------------- Initialization --------------
-
-	//Initializing the Playe
+	//Initializing the Player
 	PlayerMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("PlayerMesh"));
-	SetRootComponent(PlayerMesh);
+	PlayerMesh->SetupAttachment(PlayerMesh);
+
 
 	//Initializing the spring arm.
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
 	SpringArm->SetupAttachment(PlayerMesh);
 	SpringArm->TargetArmLength = 1.f;
-	SpringArm->SetRelativeLocation(FVector3d(20.f, 0.f, 60.f));
+	/*SpringArm->SetRelativeLocation(FVector3d(20.f, 0.f, 60.f));
+	SpringArm->SetRelativeRotation(FRotator(0.f, 0.f, 0.f));*/
+	SpringArm->SetRelativeLocation(FVector3d(200.f, 0.f, 60.f));
 	SpringArm->SetRelativeRotation(FRotator(0.f, 0.f, 0.f));
 	SpringArm->bEnableCameraLag = true;
 	SpringArm->CameraLagSpeed = 1.f;
@@ -53,14 +55,16 @@ ACharachter_Pawn::ACharachter_Pawn()
 	MovementSpeed = 100.f;
 
 	AutoPossessPlayer = EAutoReceiveInput::Player0;
+
+
 }
 
 // Called when the game starts or when spawned
-void ACharachter_Pawn::BeginPlay()
+void APlayer_Character::BeginPlay()
 {
 	Super::BeginPlay();
-	
-	//Controller imputs --------------
+
+	//Controller inputs --------------
 	APlayerController* PlayerController = Cast<APlayerController>(GetController());
 
 	if (PlayerController)
@@ -69,49 +73,56 @@ void ACharachter_Pawn::BeginPlay()
 		if (Subsystem)
 			Subsystem->AddMappingContext(IMC, 0);
 	}
-
 }
 
 // Called every frame
-void ACharachter_Pawn::Tick(float DeltaTime)
+void APlayer_Character::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
 }
 
 // Called to bind functionality to input
-void ACharachter_Pawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+void APlayer_Character::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
 	// ------------- Input components for Spaceship actions --------------
 	if (UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent))
 	{
-		EnhancedInputComponent->BindAction(IA_Movement, ETriggerEvent::Triggered, this, &ACharachter_Pawn::Movement);
-		EnhancedInputComponent->BindAction(IA_Look, ETriggerEvent::Triggered, this, &ACharachter_Pawn::Look);
+		EnhancedInputComponent->BindAction(IA_GroundMovement, ETriggerEvent::Triggered, this, &APlayer_Character::GroundedMovement);
+		EnhancedInputComponent->BindAction(IA_Look, ETriggerEvent::Triggered, this, &APlayer_Character::Look);
+		EnhancedInputComponent->BindAction(IA_Jump, ETriggerEvent::Triggered, this, &APlayer_Character::JumpTriggered);
+
 	}
 
 }
 
-void ACharachter_Pawn::Movement(const FInputActionValue& Value)
+void APlayer_Character::JumpTriggered(const FInputActionValue& Value)
+{
+}
+
+void APlayer_Character::GroundedMovement(const FInputActionValue& Value)
 {
 	//Checking i the controller is not a NullPointer and a Controller.
 	if (Controller && Value.IsNonZero())
 	{
-		//Creating a general const variable for the type of vector we want to recieve/work with.
-		const FVector3d VectorMove = Value.Get<FVector3d>();
+		//We want to move in the direction of the Yaw rotation(x-look-axis). Fixing rotation to Yaw.
+		const FRotator ControlPlayerRotationYaw = GetControlRotation();
+		const FRotator YawPlayerRotation(0.f, ControlPlayerRotationYaw.Yaw, 0.f);
 
-		//creating a new variable for each of the directions we want the movement to have access to. 
-		const FVector3d Forward_Backward = GetActorForwardVector();
-		const FVector3d Right_Left = GetActorRightVector();
+		//Calculated the UnitAxis. We normalize the vector and find the normalized vector.
+		const FVector VectorDirection = Value.Get<FVector>();
+		const FVector PlayerDirectionYaw_Forward_Backward = FRotationMatrix(YawPlayerRotation).GetUnitAxis(EAxis::X);
+		const FVector PlayerDirectionYaw_Left_Right = FRotationMatrix(YawPlayerRotation).GetUnitAxis(EAxis::Y);
 
-		//Adding the movement by defining what to update the received input, and where  to update it. (New vector, Old vector)
-		AddMovementInput(Forward_Backward, VectorMove.Y);
-		AddMovementInput(Right_Left, VectorMove.X);
+		AddMovementInput(PlayerDirectionYaw_Forward_Backward, VectorDirection.Y);
+		AddMovementInput(PlayerDirectionYaw_Left_Right, VectorDirection.X);
 	}
 }
 
-void ACharachter_Pawn::Look(const FInputActionValue& Value)
+
+void APlayer_Character::Look(const FInputActionValue& Value)
 {
 	// ------------- Mouse Direction Control for player Ship --------------
 
