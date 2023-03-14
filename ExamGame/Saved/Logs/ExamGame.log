@@ -1427,3 +1427,15 @@ Script Stack (0 frames) :
 [2023.03.14-10.14.43:306][748]LogUObjectHash: Compacting FUObjectHashTables data took   1.52ms
 [2023.03.14-10.14.43:400][749]LogPlayLevel: Display: Destroying online subsystem :Context_9
 [2023.03.14-10.14.43:403][749]LogViewport: Scene viewport resized to 647x384, mode Windowed.
+<<<<<<< HEAD
+=======
+[2023.03.14-10.16.00:134][168]LogAssetEditorSubsystem: Opening Asset editor for InputMappingContext /Game/Input/InputControll_IMC.InputControll_IMC
+[2023.03.14-10.16.14:681][ 37]LogViewport: Scene viewport resized to 1194x1013, mode Windowed.
+[2023.03.14-10.17.55:299][712]LogUObjectHash: Compacting FUObjectHashTables data took   1.36ms
+[2023.03.14-10.17.55:316][712]LogPackageLocalizationCache: Processed 43 localized package path(s) for 1 prioritized culture(s) in 0.009622 seconds
+[2023.03.14-10.17.55:323][712]LogSerialization: UsePackageTrailer: 'true'
+[2023.03.14-10.17.55:327][712]LogSavePackage: Moving output files for package: /Temp/Autosaves/Game/Levels/MainScene_Auto1
+[2023.03.14-10.17.55:327][712]LogSavePackage: Moving '../../../../../../Spiltek 2023/2PRO201/Compulsories/FolderExam/ExamGame/Saved/MainScene_Auto10866E3F142FE732904973E83C2834028.tmp' to '../../../../../../Spiltek 2023/2PRO201/Compulsories/FolderExam/ExamGame/Saved/Autosaves/Game/Levels/MainScene_Auto1.umap'
+[2023.03.14-10.17.55:334][712]LogFileHelpers: Editor autosave (incl. external actors) for '/Game/Levels/MainScene' took 0.069
+[2023.03.14-10.17.55:334][712]LogFileHelpers: Editor autosave (incl. sublevels & external actors) for all levels took 0.069
+>>>>>>> MainBranch
