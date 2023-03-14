@@ -29,8 +29,7 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	// ------------------------ Verriables ----------------------------
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Space ship Variables")
-		float MovementSpeed;
+
 
 	// ------------------------ Components ----------------------------
 
@@ -55,9 +54,6 @@ public:
 		class UInputAction* IA_Look;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inputsystem")
-		class UInputAction* IA_Turn;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inputsystem")
 		class UInputAction* IA_Jump;
 
 	//Audio Components
@@ -69,9 +65,6 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 		void Look(const FInputActionValue& Value);
-
-	UFUNCTION(BlueprintCallable)
-		void Turn(const FInputActionValue& Value);
 
 	
 
