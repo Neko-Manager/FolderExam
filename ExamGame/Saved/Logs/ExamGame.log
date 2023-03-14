@@ -1,4 +1,5 @@
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 <<<<<<< HEAD
 ﻿Log file open, 03/14/23 11:32:13
 LogWindows: Failed to load 'aqProf.dll' (GetLastError=0)
@@ -81,6 +82,9 @@ LogConfig: Display: Loading IOS ini files took 0.03 seconds
 =======
 ﻿Log file open, 03/14/23 13:23:23
 >>>>>>> Stashed changes
+=======
+﻿Log file open, 03/14/23 13:23:23
+>>>>>>> Stashed changes
 LogConfig: Display: Loading VulkanPC ini files took 0.03 seconds
 LogConfig: Display: Loading IOS ini files took 0.03 seconds
 LogConfig: Display: Loading Android ini files took 0.03 seconds
@@ -121,6 +125,7 @@ LogPluginManager: Mounting Engine plugin ChaosEditor
 LogPluginManager: Mounting Engine plugin ChaosCloth
 LogPluginManager: Mounting Engine plugin ChaosNiagara
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 LogPluginManager: Mounting Engine plugin ChaosUserDataPT
 LogPluginManager: Mounting Engine plugin ChaosClothEditor
 >>>>>>> MainBranch
@@ -142,6 +147,12 @@ LogPluginManager: Mounting Engine plugin FullBodyIK
 LogPluginManager: Mounting Engine plugin GeometryCollectionPlugin
 LogPluginManager: Mounting Engine plugin GeometryFlow
 >>>>>>> Stashed changes
+=======
+LogPluginManager: Mounting Engine plugin Dataflow
+LogPluginManager: Mounting Engine plugin FullBodyIK
+LogPluginManager: Mounting Engine plugin GeometryCollectionPlugin
+LogPluginManager: Mounting Engine plugin GeometryFlow
+>>>>>>> Stashed changes
 LogPluginManager: Mounting Engine plugin Iris
 LogPluginManager: Mounting Engine plugin MeshModelingToolsetExp
 LogPluginManager: Mounting Engine plugin MeshLODToolset
@@ -152,6 +163,7 @@ LogPluginManager: Mounting Engine plugin PlatformCrypto
 LogPluginManager: Mounting Engine plugin PythonScriptPlugin
 LogPluginManager: Mounting Engine plugin SkeletalReduction
 LogPluginManager: Mounting Engine plugin UVEditor
+<<<<<<< Updated upstream
 <<<<<<< Updated upstream
 <<<<<<< HEAD
 LogPluginManager: Mounting Engine plugin AssetManagerEditor
@@ -217,6 +229,8 @@ LogPluginManager: Mounting Engine plugin WmfMedia
 LogPluginManager: Mounting Engine plugin Takes
 LogPluginManager: Mounting Engine plugin Niagara
 =======
+=======
+>>>>>>> Stashed changes
 LogPluginManager: Mounting Engine plugin CameraShakePreviewer
 LogPluginManager: Mounting Engine plugin Interchange
 LogPluginManager: Found config from plugin[Interchange] Game
@@ -249,6 +263,9 @@ LogPluginManager: Mounting Engine plugin SpeedTreeImporter
 LogPluginManager: Mounting Engine plugin StylusInput
 LogPluginManager: Mounting Engine plugin WorldPartitionHLODUtilities
 LogPluginManager: Mounting Engine plugin OodleNetwork
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 LogPluginManager: Mounting Engine plugin ActorSequence
 LogPluginManager: Mounting Engine plugin LevelSequenceEditor
@@ -291,6 +308,7 @@ LogPluginManager: Mounting Engine plugin AudioWidgets
 LogPluginManager: Mounting Engine plugin AppleMoviePlayer
 LogPluginManager: Mounting Engine plugin CableComponent
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 LogPluginManager: Mounting Engine plugin LauncherChunkInstaller
 LogPluginManager: Mounting Engine plugin AudioWidgets
 LogPluginManager: Mounting Engine plugin AudioCapture
@@ -322,6 +340,13 @@ LogPluginManager: Mounting Engine plugin GoogleCloudMessaging
 =======
 >>>>>>> Stashed changes
 LogPluginManager: Mounting Engine plugin GeometryCache
+=======
+LogPluginManager: Mounting Engine plugin AudioSynesthesia
+LogPluginManager: Mounting Engine plugin ChunkDownloader
+LogPluginManager: Mounting Engine plugin CustomMeshComponent
+LogPluginManager: Mounting Engine plugin ExampleDeviceProfileSelector
+LogPluginManager: Mounting Engine plugin GeometryCache
+>>>>>>> Stashed changes
 LogPluginManager: Mounting Engine plugin GeometryProcessing
 LogPluginManager: Mounting Engine plugin GoogleCloudMessaging
 LogPluginManager: Mounting Engine plugin GooglePAD
@@ -339,6 +364,7 @@ LogPluginManager: Mounting Engine plugin MobilePatchingUtils
 LogPluginManager: Mounting Engine plugin ResonanceAudio
 LogPluginManager: Mounting Engine plugin SignificanceManager
 LogPluginManager: Mounting Engine plugin SoundFields
+<<<<<<< Updated upstream
 <<<<<<< Updated upstream
 LogPluginManager: Mounting Engine plugin Synthesis
 LogPluginManager: Mounting Engine plugin WaveTable
@@ -391,6 +417,11 @@ LogPackageName: Display: FPackageName: Mount point added: '../../Plugins/Media/M
 LogPluginManager: Mounting Engine plugin Synthesis
 LogPluginManager: Mounting Engine plugin WaveTable
 LogPluginManager: Mounting Engine plugin WebMMoviePlayer
+=======
+LogPluginManager: Mounting Engine plugin Synthesis
+LogPluginManager: Mounting Engine plugin WaveTable
+LogPluginManager: Mounting Engine plugin WebMMoviePlayer
+>>>>>>> Stashed changes
 LogPluginManager: Mounting Engine plugin WindowsDeviceProfileSelector
 LogPluginManager: Mounting Engine plugin WindowsMoviePlayer
 LogPluginManager: Mounting Engine plugin Paper2D
@@ -415,6 +446,7 @@ LogPackageName: Display: FPackageName: Mount point added: '../../Plugins/Animati
 LogPackageName: Display: FPackageName: Mount point added: '../../Plugins/Animation/IKRig/Content/' mounted to '/IKRig/'
 LogPackageName: Display: FPackageName: Mount point added: '../../Plugins/Enterprise/GLTFExporter/Content/' mounted to '/GLTFExporter/'
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 >>>>>>> MainBranch
 LogPackageName: Display: FPackageName: Mount point added: '../../Plugins/Experimental/ChaosCaching/Content/' mounted to '/ChaosCaching/'
 LogPackageName: Display: FPackageName: Mount point added: '../../Plugins/Experimental/ChaosNiagara/Content/' mounted to '/ChaosNiagara/'
@@ -429,6 +461,10 @@ LogPackageName: Display: FPackageName: Mount point added: '../../Plugins/Experim
 LogPackageName: Display: FPackageName: Mount point added: '../../Plugins/Enterprise/DatasmithContent/Content/' mounted to '/DatasmithContent/'
 LogPackageName: Display: FPackageName: Mount point added: '../../Plugins/FX/Niagara/Content/' mounted to '/Niagara/'
 >>>>>>> Stashed changes
+=======
+LogPackageName: Display: FPackageName: Mount point added: '../../Plugins/Enterprise/DatasmithContent/Content/' mounted to '/DatasmithContent/'
+LogPackageName: Display: FPackageName: Mount point added: '../../Plugins/FX/Niagara/Content/' mounted to '/Niagara/'
+>>>>>>> Stashed changes
 LogPackageName: Display: FPackageName: Mount point added: '../../Plugins/Experimental/ChaosClothEditor/Content/' mounted to '/ChaosClothEditor/'
 LogPackageName: Display: FPackageName: Mount point added: '../../Plugins/Experimental/ChaosSolverPlugin/Content/' mounted to '/ChaosSolverPlugin/'
 LogPackageName: Display: FPackageName: Mount point added: '../../Plugins/Experimental/ChaosCaching/Content/' mounted to '/ChaosCaching/'
@@ -438,15 +474,19 @@ LogPackageName: Display: FPackageName: Mount point added: '../../Plugins/Experim
 LogPackageName: Display: FPackageName: Mount point added: '../../Plugins/Experimental/GeometryCollectionPlugin/Content/' mounted to '/GeometryCollectionPlugin/'
 LogPackageName: Display: FPackageName: Mount point added: '../../Plugins/Experimental/GeometryFlow/Content/' mounted to '/GeometryFlow/'
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 LogPackageName: Display: FPackageName: Mount point added: '../../Plugins/Experimental/FullBodyIK/Content/' mounted to '/FullBodyIK/'
 >>>>>>> MainBranch
 LogPackageName: Display: FPackageName: Mount point added: '../../Plugins/Experimental/MeshLODToolset/Content/' mounted to '/MeshLODToolset/'
+=======
+>>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
 LogPackageName: Display: FPackageName: Mount point added: '../../Plugins/Experimental/MeshModelingToolsetExp/Content/' mounted to '/MeshModelingToolsetExp/'
 LogPackageName: Display: FPackageName: Mount point added: '../../Plugins/Experimental/MeshLODToolset/Content/' mounted to '/MeshLODToolset/'
 LogPackageName: Display: FPackageName: Mount point added: '../../Plugins/Experimental/PythonScriptPlugin/Content/' mounted to '/PythonScriptPlugin/'
 LogPackageName: Display: FPackageName: Mount point added: '../../Plugins/Experimental/UVEditor/Content/' mounted to '/UVEditor/'
+<<<<<<< Updated upstream
 <<<<<<< Updated upstream
 <<<<<<< HEAD
 LogPackageName: Display: FPackageName: Mount point added: '../../Plugins/Editor/BlueprintHeaderView/Content/' mounted to '/BlueprintHeaderView/'
@@ -465,12 +505,17 @@ LogPackageName: Display: FPackageName: Mount point added: '../../Plugins/Virtual
 LogPackageName: Display: FPackageName: Mount point added: '../../Plugins/FX/Niagara/Content/' mounted to '/Niagara/'
 >>>>>>> MainBranch
 =======
+=======
+>>>>>>> Stashed changes
 LogPackageName: Display: FPackageName: Mount point added: '../../Plugins/Interchange/Runtime/Content/' mounted to '/Interchange/'
 LogPackageName: Display: FPackageName: Mount point added: '../../Plugins/Editor/GeometryMode/Content/' mounted to '/GeometryMode/'
 LogPackageName: Display: FPackageName: Mount point added: '../../Plugins/Editor/BlueprintHeaderView/Content/' mounted to '/BlueprintHeaderView/'
 LogPackageName: Display: FPackageName: Mount point added: '../../Plugins/Editor/GLTFImporter/Content/' mounted to '/GLTFImporter/'
 LogPackageName: Display: FPackageName: Mount point added: '../../Plugins/Editor/ModelingToolsEditorMode/Content/' mounted to '/ModelingToolsEditorMode/'
 LogPackageName: Display: FPackageName: Mount point added: '../../Plugins/Editor/SpeedTreeImporter/Content/' mounted to '/SpeedTreeImporter/'
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 LogPackageName: Display: FPackageName: Mount point added: '../../Plugins/MovieScene/SequencerScripting/Content/' mounted to '/SequencerScripting/'
 LogPackageName: Display: FPackageName: Mount point added: '../../Plugins/VirtualProduction/Takes/Content/' mounted to '/Takes/'
@@ -483,6 +528,7 @@ LogPackageName: Display: FPackageName: Mount point added: '../../Plugins/Runtime
 <<<<<<< HEAD
 LogPackageName: Display: FPackageName: Mount point added: '../../Plugins/2D/Paper2D/Content/' mounted to '/Paper2D/'
 LogPackageName: Display: FPackageName: Mount point added: '../../Plugins/Runtime/ResonanceAudio/Content/' mounted to '/ResonanceAudio/'
+<<<<<<< Updated upstream
 LogPackageName: Display: FPackageName: Mount point added: '../../Plugins/Runtime/Synthesis/Content/' mounted to '/Synthesis/'
 LogPackageName: Display: FPackageName: Mount point added: '../../Plugins/Runtime/WaveTable/Content/' mounted to '/WaveTable/'
 LogPackageName: Display: FPackageName: Mount point added: '../../Plugins/Animation/ControlRig/Content/' mounted to '/ControlRig/'
@@ -497,10 +543,16 @@ LogPackageName: Display: FPackageName: Mount point added: '../../Plugins/Runtime
 >>>>>>> MainBranch
 LogPackageName: Display: FPackageName: Mount point added: '../../Plugins/Editor/ObjectMixer/LightMixer/Content/' mounted to '/LightMixer/'
 =======
+=======
+LogPackageName: Display: FPackageName: Mount point added: '../../Plugins/Runtime/Synthesis/Content/' mounted to '/Synthesis/'
+>>>>>>> Stashed changes
 LogPackageName: Display: FPackageName: Mount point added: '../../Plugins/Runtime/WaveTable/Content/' mounted to '/WaveTable/'
 LogPackageName: Display: FPackageName: Mount point added: '../../Plugins/2D/Paper2D/Content/' mounted to '/Paper2D/'
 LogPackageName: Display: FPackageName: Mount point added: '../../Plugins/Media/MediaCompositing/Content/' mounted to '/MediaCompositing/'
 LogPackageName: Display: FPackageName: Mount point added: '../../Plugins/Media/MediaPlate/Content/' mounted to '/MediaPlate/'
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 LogPackageName: Display: FPackageName: Mount point added: '../../Plugins/Editor/ObjectMixer/ObjectMixer/Content/' mounted to '/ObjectMixer/'
 LogPackageName: Display: FPackageName: Mount point added: '../../Plugins/Editor/ObjectMixer/LightMixer/Content/' mounted to '/LightMixer/'
@@ -594,6 +646,7 @@ LogConfig: CVar [[fx.NiagaraAllowRuntimeScalabilityChanges:1]] deferred - dummy 
 LogConfig: CVar [[QualityLevelMapping:high]] deferred - dummy variable created
 LogConfig: Set CVar [[r.Occlusion.SingleRHIThreadStall:1]]
 LogConfig: Set CVar [[r.Shadow.DetectVertexShaderLayerAtRuntime:1]]
+<<<<<<< Updated upstream
 <<<<<<< Updated upstream
 <<<<<<< HEAD
 [2023.03.14-10.32.13:663][  0]LogConfig: Set CVar [[r.VSync:0]]
@@ -2495,6 +2548,8 @@ Script Stack (0 frames) :
 [2023.03.14-11.03.25:196][  0]LogMetasoundEngine: MetaSound Engine Initialized
 [2023.03.14-11.03.25:245][  0]LogOutputDevice: Warning: 
 =======
+=======
+>>>>>>> Stashed changes
 [2023.03.14-12.23.23:800][  0]LogConfig: Set CVar [[r.VSync:0]]
 [2023.03.14-12.23.23:800][  0]LogConfig: Set CVar [[r.RHICmdBypass:0]]
 [2023.03.14-12.23.23:800][  0]LogConfig: Applying CVar settings from Section [/Script/Engine.RendererSettings] File [Engine]
@@ -3094,6 +3149,9 @@ Script Stack (0 frames) :
 [2023.03.14-12.23.27:827][  0]LogAudio: Display: Registering Engine Module Parameter Interfaces...
 [2023.03.14-12.23.27:840][  0]LogMetasoundEngine: MetaSound Engine Initialized
 [2023.03.14-12.23.27:908][  0]LogOutputDevice: Warning: 
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 
 Script Stack (0 frames) :
@@ -3203,6 +3261,7 @@ Script Stack (0 frames) :
 [2023.03.14-12.23.30:394][  0]LogFileCache: Scanning file cache for directory 'C:/Users/simen/OneDrive/Desktop/2nd/Prog2/FolderExam/ExamGame/Content/' took 0.00s
 [2023.03.14-12.23.30:456][  0]LogEditorDomain: Display: Class /Script/AnimationData.AnimationSequencerDataModel is imported by a package but does not exist in memory. EditorDomain keys for packages using it will be invalid if it still exists.
 	To clear this message, resave packages that use the deleted class, or load its module earlier than the packages that use it are referenced.
+<<<<<<< Updated upstream
 <<<<<<< Updated upstream
 [2023.03.14-11.03.27:510][  0]LogLevelSequenceEditor: LevelSequenceEditor subsystem initialized.
 [2023.03.14-11.03.27:550][  0]LogInit: Display: Engine is initialized. Leaving FEngineLoop::Init()
@@ -4325,6 +4384,8 @@ Script Stack (0 frames) :
 [2023.03.14-11.47.10:207][640]Log file closed, 03/14/23 12:47:10
 >>>>>>> MainBranch
 =======
+=======
+>>>>>>> Stashed changes
 [2023.03.14-12.23.30:523][  0]LogLevelSequenceEditor: LevelSequenceEditor subsystem initialized.
 [2023.03.14-12.23.30:631][  0]LogInit: Display: Engine is initialized. Leaving FEngineLoop::Init()
 [2023.03.14-12.23.30:632][  0]SourceControl: Source control is disabled
@@ -4809,6 +4870,7 @@ Script Stack (0 frames) :
 [2023.03.14-12.58.26:638][274]LogFileHelpers: InternalPromptForCheckoutAndSave took 30 ms (total: 768 ms)
 [2023.03.14-12.58.26:642][274]AssetCheck: New page: Asset Save: Inventory
 [2023.03.14-12.58.26:642][274]LogContentValidation: Display: Validating /Script/UMGEditor.WidgetBlueprint /Game/UI/Widgets/InGameOverlays/Inventory.Inventory
+<<<<<<< Updated upstream
 [2023.03.14-12.59.42:599][689]LogEditorViewport: Clicking Background
 [2023.03.14-12.59.43:629][745]LogFileHelpers: InternalPromptForCheckoutAndSave started...
 [2023.03.14-12.59.43:688][745]LogUObjectHash: Compacting FUObjectHashTables data took   1.03ms
@@ -5384,4 +5446,6 @@ Script Stack (0 frames) :
 [2023.03.14-12.59.47:032][801]LogD3D12RHI: ~FD3D12DynamicRHI
 [2023.03.14-12.59.47:067][801]LogExit: Exiting.
 [2023.03.14-12.59.47:073][801]Log file closed, 03/14/23 13:59:47
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
