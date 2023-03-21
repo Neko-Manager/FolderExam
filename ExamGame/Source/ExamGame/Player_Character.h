@@ -79,9 +79,11 @@ public:
 
 	// ------------------------ Over time effects ----------------------------
 	//Counter
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Counter")
-		float Counter;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Counter Adding")
+		float CounterAdding;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Counter equal")
+		float CounterEqual;
 
 	//Stamina Control
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Max stamina")
@@ -89,6 +91,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Live stamina")
 		float Live_Stamina;
+
+	UFUNCTION(BlueprintCallable)
+		void StaminaRecharger(float Time);
 
 	//Exhaust Control
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Exhaust Boolean")
@@ -101,7 +106,7 @@ public:
 		float Exhaust_Speed;
 
 	UFUNCTION(BlueprintCallable)
-		void ExhaustChecker();
+		void ExhaustChecker(float Time);
 
 	//Hunger Control
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hunger")
