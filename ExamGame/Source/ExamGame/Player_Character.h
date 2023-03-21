@@ -28,44 +28,65 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-	// ------------------------ Verriables ----------------------------
+	// ------------------------ Variables ----------------------------
 
 
-	// ------------------------ Components ----------------------------
-
-	//Main Components
-
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Main Components")
+	// ------------------------ Character control basics ----------------------------
+	//Camera control
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera Component")
 		class UCameraComponent* Camera;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Main Components")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SpringArm Component")
 		class USpringArmComponent* SpringArm;
 
-	//Input Components
-
+	//Input actions
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inputsystem")
 		class UInputMappingContext* IMC;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inputsystem")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inputsystem Ground Movement")
 		class UInputAction* IA_GroundMovement;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inputsystem")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inputsystem Look")
 		class UInputAction* IA_Look;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inputsystem")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inputsystem Jump")
 		class UInputAction* IA_Jump;
 
-	//Audio Components
-	
-	// ------------------------ Functions ----------------------------
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inputsystem Sprint")
+		class UInputAction* IA_Sprint;
 
+	//Movement functions
 	UFUNCTION(BlueprintCallable)
 		void GroundedMovement(const FInputActionValue& Value);
 
 	UFUNCTION(BlueprintCallable)
 		void Look(const FInputActionValue& Value);
 
-	
+	UFUNCTION(BlueprintCallable)
+		void Sprint(const FInputActionValue& Value);
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Boolean Sprinting")
+		bool Sprinting;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Walk Speed")
+		float Walk_Speed;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sprint Speed")
+		float Sprint_Speed;
+
+	// ------------------------ Over time effects ----------------------------
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stamina")
+		float Max_Stamina;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stamina")
+		float Live_Stamina;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stamina")
+		float Exhaust;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hunger")
+		float Hunger;
+
+
 
 };

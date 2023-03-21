@@ -1,6 +1,4 @@
 // Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "Player_Character.h"
 
 //Components
@@ -8,7 +6,7 @@
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Components/AudioComponent.h"
-#include "CharacterMovementComponentAsync.generated.h"
+
 
 //Other
 #include "Kismet/GameplayStatics.h"
@@ -21,6 +19,7 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubSystems.h"
 #include "GameFramework/Character.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 // Sets default values
 APlayer_Character::APlayer_Character()
@@ -28,26 +27,21 @@ APlayer_Character::APlayer_Character()
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	// ------------- Initialization --------------
+	// ------------- Camera control --------------
 	//Initializing the spring arm.
-
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
 	SpringArm->SetupAttachment(GetCapsuleComponent());
+	SpringArm->SetRelativeLocation(FVector(100.f, 0.f, 90.f));
 	SpringArm->TargetArmLength = 80.f;
-	SpringArm->SetRelativeLocation(FVector3d(50.f, 0.f, 70.f));
-	SpringArm->SetRelativeRotation(FRotator(0.f, -10.f, 0.f));
-	SpringArm->bEnableCameraLag = true;
-	SpringArm->CameraLagSpeed = 1.f;
-	SpringArm->CameraLagMaxDistance = 1.f;
-	SpringArm->CameraLagMaxTimeStep = 0.01;
+	SpringArm->bUsePawnControlRotation = true;
 
-	//Initializing the camera.
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	Camera->SetupAttachment(SpringArm, USpringArmComponent::SocketName);
+	Camera->bUsePawnControlRotation = false;
 
-	//Setting default values for variables.
+
+	// ------------- Player auto possession --------------
 	AutoPossessPlayer = EAutoReceiveInput::Player0;
-
 
 }
 
@@ -56,15 +50,25 @@ void APlayer_Character::BeginPlay()
 {
 	Super::BeginPlay();
 
-	//Controller inputs --------------
+	// ------------- Player control for Nullpointer --------------
 	APlayerController* PlayerController = Cast<APlayerController>(GetController());
 
 	if (PlayerController)
 	{
 		UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer());
-		if (Subsystem)
-			Subsystem->AddMappingContext(IMC, 0);
+		if (Subsystem) Subsystem->AddMappingContext(IMC, 0);
 	}
+
+	// ------------- Default values --------------
+	Walk_Speed = 600.f;
+	Sprint_Speed = 1000.f;
+
+	Sprinting = false;
+
+	Live_Stamina = 100.f;
+	Max_Stamina = 100.f;
+	Exhaust = 0.f;
+
 }
 
 // Called every frame
@@ -72,6 +76,14 @@ void APlayer_Character::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	Sprinting = false;
+
+	if(Sprinting == false && Live_Stamina <= Max_Stamina)
+	{
+		Live_Stamina += DeltaTime + 0.5f;
+		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, FString::Printf(TEXT("Regaining Stamina:"), Live_Stamina));
+		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, FString::Printf(TEXT("Sprinting=false:"), Live_Stamina));
+	}
 }
 
 // Called to bind functionality to input
@@ -79,20 +91,22 @@ void APlayer_Character::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
-	// ------------- Input components for Spaceship actions --------------
+	// ------------- Input components for character mesh --------------
 	if (UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent))
 	{
 		EnhancedInputComponent->BindAction(IA_GroundMovement, ETriggerEvent::Triggered, this, &APlayer_Character::GroundedMovement);
 		EnhancedInputComponent->BindAction(IA_Look, ETriggerEvent::Triggered, this, &APlayer_Character::Look);
 		EnhancedInputComponent->BindAction(IA_Jump, ETriggerEvent::Triggered, this, &ACharacter::Jump);
-		
-
+		EnhancedInputComponent->BindAction(IA_Sprint, ETriggerEvent::Triggered, this, &APlayer_Character::Sprint);
 	}
 }
 
 void APlayer_Character::GroundedMovement(const FInputActionValue& Value)
 {
 	//Checking i the controller is not a NullPointer and a Controller.
+	FVector2D VectorDirection = Value.Get<FVector2D>();
+	GetCharacterMovement()->MaxWalkSpeed = Walk_Speed;
+
 	if (Controller && Value.IsNonZero())
 	{
 		//We want to move in the direction of the Yaw rotation(x-look-axis). Fixing rotation to Yaw.
@@ -100,7 +114,6 @@ void APlayer_Character::GroundedMovement(const FInputActionValue& Value)
 		const FRotator YawPlayerRotation(0.f, ControlPlayerRotationYaw.Yaw, 0.f);
 
 		//Calculated the UnitAxis. We normalize the vector and find the normalized vector.
-		const FVector VectorDirection = Value.Get<FVector>();
 		const FVector PlayerDirectionYaw_Forward_Backward = FRotationMatrix(YawPlayerRotation).GetUnitAxis(EAxis::X);
 		const FVector PlayerDirectionYaw_Left_Right = FRotationMatrix(YawPlayerRotation).GetUnitAxis(EAxis::Y);
 
@@ -115,14 +128,27 @@ void APlayer_Character::Look(const FInputActionValue& Value)
 	// ------------- Mouse Direction Control for player --------------
 
 	//Checking if the controller is received.
-	if (GetController())
+	if (GetController() && Value.IsNonZero())
 	{
-		//Getting the general vector as in the Movement function.
+		//Creating a reference for a 2D vector.
 		const FVector2D LookAxisInput = Value.Get<FVector2D>();
 
-		//Same principle as in Movement, but with 2 vectors.
+		//Adding values for the respective axis.
 		AddControllerYawInput(LookAxisInput.X);
 		AddControllerPitchInput(-LookAxisInput.Y);
+	}
+}
+
+void APlayer_Character::Sprint(const FInputActionValue& Value)
+{
+	// ------------- Sprinting control with regenerating stamina --------------
+	Sprinting = true;
+	if(Sprinting == true && Value.IsNonZero() && Live_Stamina >= 0)
+	{
+		GetCharacterMovement()->MaxWalkSpeed = Sprint_Speed;
+		Live_Stamina -= 1.f;
+		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, FString::Printf(TEXT("Losing stamina:"), Live_Stamina));
+		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, FString::Printf(TEXT("Sprinting=true:"), Live_Stamina));
 	}
 }
 
