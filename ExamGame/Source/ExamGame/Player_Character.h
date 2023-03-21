@@ -65,9 +65,11 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void Sprint(const FInputActionValue& Value);
 
+	//Movement booleans
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Boolean Sprinting")
 		bool Sprinting;
 
+	//Movement members
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Walk Speed")
 		float Walk_Speed;
 
@@ -75,15 +77,26 @@ public:
 		float Sprint_Speed;
 
 	// ------------------------ Over time effects ----------------------------
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stamina")
+	//Counter
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Counter")
+		float Counter;
+
+
+	//Stamina Control
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Max stamina")
 		float Max_Stamina;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stamina")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Live stamina")
 		float Live_Stamina;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stamina")
-		float Exhaust;
+	//Exhaust Control
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Exhaust Boolean")
+		bool Exhaust;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Exhaust Timer")
+		float Exhaust_Timer;
+
+	//Hunger Control
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hunger")
 		float Hunger;
 
