@@ -96,8 +96,9 @@ void APlayer_Character::Tick(float DeltaTime)
 	{
 		Live_Stamina += DeltaTime + 0.5f;
 		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, FString::Printf(TEXT("Regaining Stamina:"), Live_Stamina));
-		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, FString::Printf(TEXT("Sprinting=false:"), Live_Stamina));
 	}
+
+	Sprint();
 }
 
 // Called to bind functionality to input
@@ -111,7 +112,7 @@ void APlayer_Character::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 		EnhancedInputComponent->BindAction(IA_GroundMovement, ETriggerEvent::Triggered, this, &APlayer_Character::GroundedMovement);
 		EnhancedInputComponent->BindAction(IA_Look, ETriggerEvent::Triggered, this, &APlayer_Character::Look);
 		EnhancedInputComponent->BindAction(IA_Jump, ETriggerEvent::Triggered, this, &ACharacter::Jump);
-		EnhancedInputComponent->BindAction(IA_Sprint, ETriggerEvent::Triggered, this, &APlayer_Character::Sprint);
+		EnhancedInputComponent->BindAction(IA_Sprint, ETriggerEvent::Triggered, this, &APlayer_Character::SprintTriggered);
 	}
 }
 
@@ -153,21 +154,30 @@ void APlayer_Character::Look(const FInputActionValue& Value)
 	}
 }
 
-void APlayer_Character::Sprint(const FInputActionValue& Value)
+void APlayer_Character::SprintTriggered(const FInputActionValue& Value)
+{
+	Sprinting = true;
+	if (Value.IsNonZero() && Live_Stamina >= 0) 
+	{
+		Sprint();
+	}
+}
+
+void APlayer_Character::Sprint()
 {
 	// ------------- Sprinting control with regenerating stamina --------------
-	Sprinting = true;
-	if(Sprinting == true && Value.IsNonZero() && Live_Stamina >= 0)
+	if (Sprinting == true)
 	{
 		GetCharacterMovement()->MaxWalkSpeed = Sprint_Speed;
-		Live_Stamina -= 0.5f;
+		Live_Stamina -= 1.f;
 		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, FString::Printf(TEXT("Losing stamina:"), Live_Stamina));
 	}
 
-	if(Sprinting == true && Value.IsNonZero() && Exhaust == true)
+	/*if(Sprinting == true && Value.IsNonZero() && Exhaust == true)
 	{
 		GetCharacterMovement()->MaxWalkSpeed = Sprint_Speed;
-	}
+	}*/
+
 }
 
 

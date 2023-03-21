@@ -28,8 +28,6 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-	// ------------------------ Variables ----------------------------
-
 
 	// ------------------------ Character control basics ----------------------------
 	//Camera control
@@ -63,7 +61,10 @@ public:
 		void Look(const FInputActionValue& Value);
 
 	UFUNCTION(BlueprintCallable)
-		void Sprint(const FInputActionValue& Value);
+		void SprintTriggered(const FInputActionValue& Value);
+
+	UFUNCTION(BlueprintCallable)
+		void Sprint();
 
 	//Movement booleans
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Boolean Sprinting")
