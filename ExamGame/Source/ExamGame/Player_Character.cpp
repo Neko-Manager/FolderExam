@@ -29,14 +29,15 @@ APlayer_Character::APlayer_Character()
 
 	// ------------- Camera control --------------
 	//Initializing the spring arm.
-	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
-	SpringArm->SetupAttachment(GetCapsuleComponent());
-	SpringArm->SetRelativeLocation(FVector(100.f, 0.f, 90.f));
-	SpringArm->TargetArmLength = 80.f;
-	SpringArm->bUsePawnControlRotation = true;
+	//SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
+	//SpringArm->SetupAttachment(GetCapsuleComponent());
+	//SpringArm->SetRelativeLocation(FVector(100.f, 0.f, 90.f));
+	//SpringArm->TargetArmLength = 80.f;
+	//SpringArm->bUsePawnControlRotation = true;
 
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
-	Camera->SetupAttachment(SpringArm, USpringArmComponent::SocketName);
+	Camera->SetupAttachment(GetCapsuleComponent());
+	Camera->SetRelativeLocation(FVector(100.f, 0.f, 90.f));
 	Camera->bUsePawnControlRotation = false;
 
 
@@ -66,13 +67,14 @@ void APlayer_Character::BeginPlay()
 	//Speed control
 	Walk_Speed = 600.f;
 	Sprint_Speed = 1000.f;
+	Exhaust_Speed = 200.f;
 
 	//Stamina control
 	Live_Stamina = 100.f;
 	Max_Stamina = 100.f;
 
 	//Exhaust Control
-	Exhaust_Timer = 5.f;
+	Exhaust_Timer = 20.f;
 
 	// ------------- Default floats and integers --------------
 	//Booleans for sprinting
@@ -89,16 +91,27 @@ void APlayer_Character::Tick(float DeltaTime)
 	//Counter for general use
 	Counter += DeltaTime;
 
+	// ------------- Stamina Updater --------------
+	//Updating Booleans
 	Sprinting = false;
 	Exhaust = false;
 
-	if(Sprinting == false && Live_Stamina <= Max_Stamina)
+	//Executing and recharging stamina if conditions are met
+	if(Sprinting == false && Live_Stamina <= Max_Stamina && Exhaust == false)
 	{
 		Live_Stamina += DeltaTime + 0.5f;
-		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, FString::Printf(TEXT("Regaining Stamina:"), Live_Stamina));
+		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, FString::Printf(TEXT("Regaining Stamina:")));
 	}
 
+	if(Live_Stamina <= 1.f)
+	{
+		Exhaust = true;
+		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Purple, FString::Printf(TEXT("Exhausted:")));
+	}
+
+	// ------------- Functions` updater --------------
 	Sprint();
+	ExhaustChecker();
 }
 
 // Called to bind functionality to input
@@ -137,7 +150,6 @@ void APlayer_Character::GroundedMovement(const FInputActionValue& Value)
 	}
 }
 
-
 void APlayer_Character::Look(const FInputActionValue& Value)
 {
 	// ------------- Mouse Direction Control for player --------------
@@ -166,18 +178,29 @@ void APlayer_Character::SprintTriggered(const FInputActionValue& Value)
 void APlayer_Character::Sprint()
 {
 	// ------------- Sprinting control with regenerating stamina --------------
-	if (Sprinting == true)
+	if (Sprinting == true && Exhaust == false)
 	{
 		GetCharacterMovement()->MaxWalkSpeed = Sprint_Speed;
 		Live_Stamina -= 1.f;
 		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, FString::Printf(TEXT("Losing stamina:"), Live_Stamina));
 	}
+}
 
-	/*if(Sprinting == true && Value.IsNonZero() && Exhaust == true)
+void APlayer_Character::ExhaustChecker()
+{
+	if (Exhaust == true)
 	{
-		GetCharacterMovement()->MaxWalkSpeed = Sprint_Speed;
-	}*/
+		Counter = 0;
+		for(Counter; Counter <= Exhaust_Timer; Counter++)
+		{
+			GetCharacterMovement()->MaxWalkSpeed = Exhaust_Speed;
+		}
+	}
+	Exhaust = false;
+}
 
+void APlayer_Character::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
 }
 
 
