@@ -59,15 +59,25 @@ void APlayer_Character::BeginPlay()
 		if (Subsystem) Subsystem->AddMappingContext(IMC, 0);
 	}
 
-	// ------------- Default values --------------
+	// ------------- Default floats and integers --------------
+	//Counter Control
+	Counter = 0.f,
+
+	//Speed control
 	Walk_Speed = 600.f;
 	Sprint_Speed = 1000.f;
 
-	Sprinting = false;
-
+	//Stamina control
 	Live_Stamina = 100.f;
 	Max_Stamina = 100.f;
-	Exhaust = 0.f;
+
+	//Exhaust Control
+	Exhaust_Timer = 5.f;
+
+	// ------------- Default floats and integers --------------
+	//Booleans for sprinting
+	Sprinting = false;
+	Exhaust = false; 
 
 }
 
@@ -76,7 +86,11 @@ void APlayer_Character::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	//Counter for general use
+	Counter += DeltaTime;
+
 	Sprinting = false;
+	Exhaust = false;
 
 	if(Sprinting == false && Live_Stamina <= Max_Stamina)
 	{
@@ -146,9 +160,13 @@ void APlayer_Character::Sprint(const FInputActionValue& Value)
 	if(Sprinting == true && Value.IsNonZero() && Live_Stamina >= 0)
 	{
 		GetCharacterMovement()->MaxWalkSpeed = Sprint_Speed;
-		Live_Stamina -= 1.f;
+		Live_Stamina -= 0.5f;
 		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, FString::Printf(TEXT("Losing stamina:"), Live_Stamina));
-		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, FString::Printf(TEXT("Sprinting=true:"), Live_Stamina));
+	}
+
+	if(Sprinting == true && Value.IsNonZero() && Exhaust == true)
+	{
+		GetCharacterMovement()->MaxWalkSpeed = Sprint_Speed;
 	}
 }
 
