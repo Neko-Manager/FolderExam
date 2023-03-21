@@ -29,15 +29,14 @@ APlayer_Character::APlayer_Character()
 
 	// ------------- Camera control --------------
 	//Initializing the spring arm.
-	//SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
-	//SpringArm->SetupAttachment(GetCapsuleComponent());
-	//SpringArm->SetRelativeLocation(FVector(100.f, 0.f, 90.f));
-	//SpringArm->TargetArmLength = 80.f;
-	//SpringArm->bUsePawnControlRotation = true;
+	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
+	SpringArm->SetupAttachment(GetCapsuleComponent());
+	SpringArm->SetRelativeLocation(FVector(20.f, 0.f, 90.f));
+	SpringArm->TargetArmLength = 1.f;
+	SpringArm->bUsePawnControlRotation = true;
 
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
-	Camera->SetupAttachment(GetCapsuleComponent());
-	Camera->SetRelativeLocation(FVector(100.f, 0.f, 90.f));
+	Camera->SetupAttachment(SpringArm, USpringArmComponent::SocketName);
 	Camera->bUsePawnControlRotation = false;
 
 
@@ -62,7 +61,8 @@ void APlayer_Character::BeginPlay()
 
 	// ------------- Default floats and integers --------------
 	//Counter Control
-	Counter = 0.f,
+	CounterAdding = 0.f;
+	CounterEqual = 0.f;
 
 	//Speed control
 	Walk_Speed = 600.f;
@@ -74,7 +74,7 @@ void APlayer_Character::BeginPlay()
 	Max_Stamina = 100.f;
 
 	//Exhaust Control
-	Exhaust_Timer = 20.f;
+	Exhaust_Timer = 10.f;
 
 	// ------------- Default floats and integers --------------
 	//Booleans for sprinting
@@ -87,31 +87,17 @@ void APlayer_Character::BeginPlay()
 void APlayer_Character::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	//Counter for general use
-	Counter += DeltaTime;
-
 	// ------------- Stamina Updater --------------
 	//Updating Booleans
 	Sprinting = false;
-	Exhaust = false;
-
-	//Executing and recharging stamina if conditions are met
-	if(Sprinting == false && Live_Stamina <= Max_Stamina && Exhaust == false)
-	{
-		Live_Stamina += DeltaTime + 0.5f;
-		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, FString::Printf(TEXT("Regaining Stamina:")));
-	}
-
-	if(Live_Stamina <= 1.f)
-	{
-		Exhaust = true;
-		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Purple, FString::Printf(TEXT("Exhausted:")));
-	}
+	CounterAdding += DeltaTime;
+	CounterEqual = DeltaTime;
 
 	// ------------- Functions` updater --------------
+	StaminaRecharger(CounterEqual);
 	Sprint();
-	ExhaustChecker();
+	ExhaustChecker(CounterAdding);
+
 }
 
 // Called to bind functionality to input
@@ -166,6 +152,17 @@ void APlayer_Character::Look(const FInputActionValue& Value)
 	}
 }
 
+
+void APlayer_Character::StaminaRecharger(float Timer)
+{
+	//Executing and recharging stamina if conditions are met
+	if (Sprinting == false && Live_Stamina <= Max_Stamina && Exhaust == false)
+	{
+		Live_Stamina += Timer + 0.5f;
+		/*GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, FString::Printf(TEXT("Regaining Stamina:")));*/
+	}
+}
+
 void APlayer_Character::SprintTriggered(const FInputActionValue& Value)
 {
 	Sprinting = true;
@@ -181,22 +178,28 @@ void APlayer_Character::Sprint()
 	if (Sprinting == true && Exhaust == false)
 	{
 		GetCharacterMovement()->MaxWalkSpeed = Sprint_Speed;
-		Live_Stamina -= 1.f;
-		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, FString::Printf(TEXT("Losing stamina:"), Live_Stamina));
+		Live_Stamina -= 2.f;
+		/*GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, FString::Printf(TEXT("Losing stamina:"), Live_Stamina));*/
 	}
 }
 
-void APlayer_Character::ExhaustChecker()
+void APlayer_Character::ExhaustChecker(float Timer)
 {
-	if (Exhaust == true)
+	if (Live_Stamina <= 1.f)
 	{
-		Counter = 0;
-		for(Counter; Counter <= Exhaust_Timer; Counter++)
+		
+		for(Timer;Timer <= Exhaust_Timer; Timer++)
 		{
-			GetCharacterMovement()->MaxWalkSpeed = Exhaust_Speed;
+			Exhaust = true;
+			if(Timer <= Exhaust_Timer)
+			{
+				GetCharacterMovement()->MaxWalkSpeed = Exhaust_Speed;
+			}
+			
 		}
+		
 	}
-	Exhaust = false;
+
 }
 
 void APlayer_Character::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
