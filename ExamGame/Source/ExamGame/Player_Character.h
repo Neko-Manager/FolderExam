@@ -28,10 +28,8 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-	// ------------------------ Variables ----------------------------
 
-
-	// ------------------------ Character control basics ----------------------------
+	// ------------------------ Character control Input Actions ----------------------------
 	//Camera control
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera Component")
 		class UCameraComponent* Camera;
@@ -43,16 +41,16 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inputsystem")
 		class UInputMappingContext* IMC;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inputsystem Ground Movement")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inputsystem")
 		class UInputAction* IA_GroundMovement;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inputsystem Look")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inputsystem")
 		class UInputAction* IA_Look;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inputsystem Jump")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inputsystem")
 		class UInputAction* IA_Jump;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inputsystem Sprint")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inputsystem")
 		class UInputAction* IA_Sprint;
 
 	//Movement functions
@@ -63,7 +61,10 @@ public:
 		void Look(const FInputActionValue& Value);
 
 	UFUNCTION(BlueprintCallable)
-		void Sprint(const FInputActionValue& Value);
+		void SprintTriggered(const FInputActionValue& Value);
+
+	UFUNCTION(BlueprintCallable)
+		void Sprint();
 
 	//Movement booleans
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Boolean Sprinting")
@@ -96,10 +97,20 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Exhaust Timer")
 		float Exhaust_Timer;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Exhaust Speed")
+		float Exhaust_Speed;
+
+	UFUNCTION(BlueprintCallable)
+		void ExhaustChecker();
+
 	//Hunger Control
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hunger")
 		float Hunger;
 
-
-
+	// ------------------------ Collision Control ----------------------------
+	//Collision function
+	UFUNCTION()
+		void OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+			UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex,
+			bool bFromSweep, const FHitResult& SweepResult);
 };
