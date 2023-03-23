@@ -1,7 +1,13 @@
 
+<<<<<<< Updated upstream
 
 #include "PickUp.h"
 #include "Player_Character.h"
+=======
+#include "PickUp.h"
+#include "Player_Character.h"
+
+>>>>>>> Stashed changes
 #include "Kismet/GameplayStatics.h"
 
 APickUp::APickUp()

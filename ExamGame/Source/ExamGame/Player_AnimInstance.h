@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Animation/AnimInstance.h"
-#include "Player_AnimInstance.generated.h"
+#include "AnimInstance.generated.h"
 
 /**
  * 
@@ -17,7 +17,7 @@ class EXAMGAME_API UPlayer_AnimInstance : public UAnimInstance
 		virtual void NativeInitializeAnimation() override;
 
 public: 
-
+		
 	UFUNCTION(BlueprintCallable)
 	void UpdateAnimationProperties();
 
