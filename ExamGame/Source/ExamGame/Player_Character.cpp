@@ -100,7 +100,7 @@ void APlayer_Character::Tick(float DeltaTime)
 
 }
 
-// Called to bind functionality to input
+// ------------- Character control --------------
 void APlayer_Character::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
@@ -153,6 +153,7 @@ void APlayer_Character::Look(const FInputActionValue& Value)
 }
 
 
+// ------------- Sprint control --------------
 void APlayer_Character::StaminaRecharger(float Timer)
 {
 	//Executing and recharging stamina if conditions are met
@@ -202,6 +203,7 @@ void APlayer_Character::ExhaustChecker(float Timer)
 
 }
 
+// ------------- Collision --------------
 void APlayer_Character::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 }
