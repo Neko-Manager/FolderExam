@@ -21,13 +21,13 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void UpdateAnimationProperties();
 
-	UPROPERTY(EditAnywhere, BlueprrintReadOnly, Catagory = "Animation")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Animation")
 		float MovementSpeed;
 
-	UPROPERTY(EditAnywhere, BlueprrintReadOnly, Catagory = "Animation")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Animation")
 		class APawn* Pawn;
 
-	UPROPERTY(EditAnywhere, BlueprrintReadOnly, Catagory = "Animation")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Animation")
 		class APlayer_Character* Player;
 	
 };
