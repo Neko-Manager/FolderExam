@@ -6,6 +6,8 @@
 #include "GameFramework/Character.h"
 #include "InputActionValue.h"
 #include "Components/AudioComponent.h"
+#include "Interactable.h"
+#include "PickUp.h"
 #include "Player_Character.generated.h"
 
 UCLASS()
@@ -21,7 +23,8 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-public:	
+public:
+
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
@@ -52,6 +55,12 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inputsystem")
 		class UInputAction* IA_Sprint;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inputsystem")
+		class UInputAction* IA_OpenInventory;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inputsystem")
+		class UInputAction* IA_Interact;
 
 	//Movement functions
 	UFUNCTION(BlueprintCallable)
@@ -118,4 +127,26 @@ public:
 		void OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 			UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex,
 			bool bFromSweep, const FHitResult& SweepResult);
+
+
+
+private:
+	//player reach
+	float Reach;
+
+	// Open Inventory
+	void ToggleInventory();
+
+	// Interact with the Interactable(object), if there is one.
+	void Interact();
+
+	//check for interactable
+	void CheckForInteractables();
+
+
+	//Player Help Text
+	FString HelpText;
+
+	//Item the player are looking at
+	AInteractable* CurrInteractable;
 };

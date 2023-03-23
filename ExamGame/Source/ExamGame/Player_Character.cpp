@@ -64,6 +64,9 @@ void APlayer_Character::BeginPlay()
 	CounterAdding = 0.f;
 	CounterEqual = 0.f;
 
+	//playerReach
+	Reach = 250.f;
+
 	//Speed control
 	Walk_Speed = 600.f;
 	Sprint_Speed = 1000.f;
@@ -87,6 +90,9 @@ void APlayer_Character::BeginPlay()
 void APlayer_Character::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	CheckForInteractables();
+
 	// ------------- Stamina Updater --------------
 	//Updating Booleans
 	Sprinting = false;
@@ -112,6 +118,8 @@ void APlayer_Character::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 		EnhancedInputComponent->BindAction(IA_Look, ETriggerEvent::Triggered, this, &APlayer_Character::Look);
 		EnhancedInputComponent->BindAction(IA_Jump, ETriggerEvent::Triggered, this, &ACharacter::Jump);
 		EnhancedInputComponent->BindAction(IA_Sprint, ETriggerEvent::Triggered, this, &APlayer_Character::SprintTriggered);
+		EnhancedInputComponent->BindAction(IA_Interact, ETriggerEvent::Triggered, this, &APlayer_Character::Interact);
+		EnhancedInputComponent->BindAction(IA_OpenInventory, ETriggerEvent::Triggered, this, &APlayer_Character::ToggleInventory);
 	}
 }
 
@@ -206,6 +214,54 @@ void APlayer_Character::ExhaustChecker(float Timer)
 // ------------- Collision --------------
 void APlayer_Character::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+}
+
+void APlayer_Character::ToggleInventory()
+{
+	//Open Inventory
+
+}
+
+void APlayer_Character::Interact()
+{
+	if (CurrInteractable != nullptr)
+	{
+		CurrInteractable->Interact_Implementation();
+	}
+
+}
+
+void APlayer_Character::CheckForInteractables()
+{
+	//LineTrace
+	FVector StartTrace = Camera->GetComponentLocation();
+	FVector	EndTrace = (Camera->GetForwardVector()* Reach) + StartTrace;
+
+	//ShowHit
+	FHitResult HitResult;
+
+	//iniz parameters- ignor the actor
+	FCollisionQueryParams CQP;
+	CQP.AddIgnoredActor(this);
+
+	//Cast the Line trace
+	GetWorld()->LineTraceSingleByChannel(HitResult, StartTrace, EndTrace, ECC_WorldDynamic, CQP);
+
+	AInteractable* PotentialInteractable = Cast<AInteractable>(HitResult.GetActor());
+
+	if (PotentialInteractable == NULL)
+	{
+		HelpText = FString("");
+
+		CurrInteractable = nullptr;
+		return;
+
+	}
+	else
+	{
+		CurrInteractable = PotentialInteractable;
+		HelpText = PotentialInteractable->InteractableHelpText;
+	}
 }
 
 
