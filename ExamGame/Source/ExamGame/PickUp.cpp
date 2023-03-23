@@ -1,7 +1,7 @@
 
 
-#include "Player_Character.h"
 #include "PickUp.h"
+#include "Player_Character.h"
 #include "Kismet/GameplayStatics.h"
 
 APickUp::APickUp()
@@ -16,6 +16,7 @@ APickUp::APickUp()
 void APickUp::BeginPlay()
 {
 	InteractableHelpText = FString::Printf(TEXT("%s: Press E to pick up"), *ItemName);
+	
 }
 
 void APickUp::Interact_Implementation()
