@@ -150,6 +150,8 @@ public:
 			UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex,
 			bool bFromSweep, const FHitResult& SweepResult);
 
+
+
 private:
 	// ------------------------ Inventory and interaction Control ----------------------------
 	//player reach
