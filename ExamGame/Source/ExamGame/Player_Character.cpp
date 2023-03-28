@@ -39,7 +39,6 @@ APlayer_Character::APlayer_Character()
 	Camera->SetupAttachment(SpringArm, USpringArmComponent::SocketName);
 	Camera->bUsePawnControlRotation = false;
 
-
 	// ------------- Player auto possession --------------
 	AutoPossessPlayer = EAutoReceiveInput::Player0;
 
