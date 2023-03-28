@@ -18,11 +18,15 @@ public:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
 	
+	// ------------- Components ------------
+
+	UPROPERTY(VisibleAnywhere)
+	class UPawnSensingComponent* PawnSensing;
 
 	// ------------- class Refs ------------
 
 	UPROPERTY()
-		class AAIController* EnemyController;
+	class AAIController* EnemyController;
 
 	// ------------ Actors -----------------
 
@@ -48,6 +52,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI Navigation")
 	float PatrolDelayMin;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI Navigation")
+	int Health;
 
 	// ------------ Other ---------------------
 
@@ -57,6 +63,9 @@ public:
 protected:
 
 	// ------------ Functions --------------------
+
+	UFUNCTION()
+	void PawnSeen(APawn* SeenPawn);
 
 	// Choose a target, returns and AActor
 	AActor* ChoosePatrolTarget();

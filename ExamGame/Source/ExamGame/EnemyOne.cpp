@@ -2,14 +2,24 @@
 #include "EnemyOne.h"
 #include "AIController.h"
 
+#include "perception/PawnSensingComponent.h"
+
+#include "Kismet/KismetSystemLibrary.h"
+#include "Kismet/GameplayStatics.h"
+
 AEnemyOne::AEnemyOne()
 {
 	PrimaryActorTick.bCanEverTick = true;
+
+	PawnSensing = CreateDefaultSubobject<UPawnSensingComponent>(TEXT("PawnSensing"));
+	PawnSensing->SightRadius = 4000.f;
+	PawnSensing->SetPeripheralVisionAngle(45.f);
 
 	CombatRadius = 500.f;
 	PatrolRadius = 200.f;
 	PatrolDelayMax = 8.f;
 	PatrolDelayMin = 2.f;
+	Health = 10;
 }
 
 void AEnemyOne::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -24,6 +34,11 @@ void AEnemyOne::BeginPlay()
 	// Gets the AI Controller
 	EnemyController = Cast<AAIController>(GetController());
 
+	if(PawnSensing)
+	{
+		PawnSensing->OnSeePawn.AddDynamic(this, &AEnemyOne::PawnSeen);
+	}
+
 	MoveToTarget(PatrolTarget);
 
 }
@@ -33,6 +48,14 @@ void AEnemyOne::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	CheckPatrolTarget();
+}
+
+void AEnemyOne::PawnSeen(APawn* SeenPawn)
+{
+	UE_LOG(LogTemp, Warning, TEXT("PawnSeen"));
+
+
+
 }
 
 AActor* AEnemyOne::ChoosePatrolTarget()
