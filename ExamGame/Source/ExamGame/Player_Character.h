@@ -150,6 +150,27 @@ public:
 			UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex,
 			bool bFromSweep, const FHitResult& SweepResult);
 
+
+	//Player Help Text
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "HUD")
+	FString HelpText;
+
+	//Adds Item to Inventory
+	UFUNCTION(BlueprintPure, Category = "Inventory Functions")
+		bool AddItemToInventory(APickUp* Item);
+
+	//Get the thumbnail for a given inventory slot
+	UFUNCTION(BlueprintPure, Category = "Inventory Functions")
+		UTexture2D* GetThumbnailAtInventorySlot(int32 Slot);
+
+	//Item name for a given inventory slot
+	UFUNCTION(BlueprintPure, Category = "Inventory Functions")
+		FString GivenItemNameAtInventorySlot(int32 Slot);
+
+	//Use Item in a given inventory slot
+	UFUNCTION(BlueprintCallable, Category = "Inventory Functions")
+		void UseItemAtInventorySlot(int32 Slot);
+
 private:
 	// ------------------------ Inventory and interaction Control ----------------------------
 	//player reach
@@ -164,10 +185,12 @@ private:
 	//Check for interactable
 	void CheckForInteractables();
 
-
-	//Player Help Text
-	FString HelpText;
-
 	//Item the player are looking at
-	AInteractable* CurrInteractable;
+	AInteractable* CurrentInteractable;
+
+	//Player Inventory, represented as a TArray of pickup object.
+	UPROPERTY(EditAnywhere)
+		TArray<APickUp*> Inventory;
+
+
 };
