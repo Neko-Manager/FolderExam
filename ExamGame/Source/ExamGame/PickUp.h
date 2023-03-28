@@ -28,7 +28,7 @@ public:
 	virtual void Use_Implementation();
 
 	UPROPERTY(EditAnywhere, Category = "PickUp Properties")
-		UTexture2D* PickUpTexture;
+		UTexture2D* PickUpThumbnail;
 
 	UPROPERTY(EditAnywhere, Category = "PickUp Properties")
 		FString ItemName;
