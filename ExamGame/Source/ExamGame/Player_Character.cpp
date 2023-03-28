@@ -20,6 +20,7 @@
 #include "EnhancedInputSubSystems.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "UObject/ConstructorHelpers.h"
 
 // Sets default values
 APlayer_Character::APlayer_Character()
@@ -38,7 +39,6 @@ APlayer_Character::APlayer_Character()
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	Camera->SetupAttachment(SpringArm, USpringArmComponent::SocketName);
 	Camera->bUsePawnControlRotation = false;
-
 
 	// ------------- Player auto possession --------------
 	AutoPossessPlayer = EAutoReceiveInput::Player0;
@@ -60,30 +60,32 @@ void APlayer_Character::BeginPlay()
 	}
 
 	// ------------- Default floats and integers --------------
-	//Counter Control
-	CounterAdding = 0.f;
-	CounterEqual = 0.f;
+	//DeltaTime Control
+	Exhaust_Timer = NULL;
+	TimeTick = NULL;
+	TimeAddingTick = NULL;
 
 	//playerReach
 	Reach = 250.f;
-
+	
 	//Speed control
 	Walk_Speed = 600.f;
 	Sprint_Speed = 1000.f;
-	Exhaust_Speed = 200.f;
+	Crouch_Speed = 200.f;
+	Exhaust_Speed = 100.f;
 
 	//Stamina control
 	Live_Stamina = 100.f;
 	Max_Stamina = 100.f;
 
-	//Exhaust Control
-	Exhaust_Timer = 10.f;
+	//Condition time limiters
+	Counter = 5.f;
 
 	// ------------- Default floats and integers --------------
 	//Booleans for sprinting
 	Sprinting = false;
-	Exhaust = false; 
-
+	Exhaust = false;
+	Crouching = false;
 }
 
 // Called every frame
@@ -93,17 +95,17 @@ void APlayer_Character::Tick(float DeltaTime)
 
 	CheckForInteractables();
 
-	// ------------- Stamina Updater --------------
-	//Updating Booleans
-	Sprinting = false;
-	CounterAdding += DeltaTime;
-	CounterEqual = DeltaTime;
+	// ------------- DeltaTime control --------------
+	TimeTick = DeltaTime;
+	TimeAddingTick += DeltaTime;
 
+	
 	// ------------- Functions` updater --------------
-	StaminaRecharger(CounterEqual);
+	//Movement
+	StaminaRecharger(TimeTick);
 	Sprint();
-	ExhaustChecker(CounterAdding);
-
+	ExhaustChecker(Live_Stamina);
+	CrouchCustom();
 }
 
 // ------------- Character control --------------
@@ -118,6 +120,7 @@ void APlayer_Character::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 		EnhancedInputComponent->BindAction(IA_Look, ETriggerEvent::Triggered, this, &APlayer_Character::Look);
 		EnhancedInputComponent->BindAction(IA_Jump, ETriggerEvent::Triggered, this, &ACharacter::Jump);
 		EnhancedInputComponent->BindAction(IA_Sprint, ETriggerEvent::Triggered, this, &APlayer_Character::SprintTriggered);
+		EnhancedInputComponent->BindAction(IA_Crouch, ETriggerEvent::Triggered, this, &APlayer_Character::CrouchTriggered);
 		EnhancedInputComponent->BindAction(IA_Interact, ETriggerEvent::Triggered, this, &APlayer_Character::Interact);
 		EnhancedInputComponent->BindAction(IA_OpenInventory, ETriggerEvent::Triggered, this, &APlayer_Character::ToggleInventory);
 	}
@@ -174,41 +177,85 @@ void APlayer_Character::StaminaRecharger(float Timer)
 
 void APlayer_Character::SprintTriggered(const FInputActionValue& Value)
 {
-	Sprinting = true;
-	if (Value.IsNonZero() && Live_Stamina >= 0) 
+	if (Value.IsNonZero())
 	{
-		Sprint();
+		Sprinting = true;
+		if(Live_Stamina >= NULL &&  Exhaust == false)
+		{
+			Sprint();
+		/*	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, FString::Printf(TEXT("Sprinting == true:")));*/
+		}
 	}
+	Sprinting = false;
+	//GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Blue, FString::Printf(TEXT("Sprinting == false:")));
 }
 
 void APlayer_Character::Sprint()
 {
 	// ------------- Sprinting control with regenerating stamina --------------
-	if (Sprinting == true && Exhaust == false)
+	if (Sprinting == true)
 	{
 		GetCharacterMovement()->MaxWalkSpeed = Sprint_Speed;
-		Live_Stamina -= 2.f;
-		/*GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, FString::Printf(TEXT("Losing stamina:"), Live_Stamina));*/
+		Live_Stamina -= 1.f;
+		/*GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, FString::Printf(TEXT("Losing stamina:")));*/
 	}
 }
 
-void APlayer_Character::ExhaustChecker(float Timer)
+void APlayer_Character::CrouchTriggered(const FInputActionValue& Value)
 {
-	if (Live_Stamina <= 1.f)
+	if (Value.IsNonZero())
 	{
-		
-		for(Timer;Timer <= Exhaust_Timer; Timer++)
-		{
-			Exhaust = true;
-			if(Timer <= Exhaust_Timer)
-			{
-				GetCharacterMovement()->MaxWalkSpeed = Exhaust_Speed;
-			}
-			
-		}
+		Crouching = true;
+		CrouchCustom();
+	}
+	Crouching = false;
+	
+}
+
+void APlayer_Character::CrouchCustom()
+{
+	// ------------- Sprinting control with regenerating stamina --------------
+	if (Crouching == true)
+	{
+		GetCapsuleComponent()->SetCapsuleHalfHeight(66.f);
+		GetCharacterMovement()->MaxWalkSpeed = Crouch_Speed;
+	/*	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, FString::Printf(TEXT("Crouch == true:")));*/
 		
 	}
+	else
+	{
+		GetCapsuleComponent()->SetCapsuleHalfHeight(88.f);
+		GetCharacterMovement()->MaxWalkSpeed = Crouch_Speed;
+	/*	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Blue, FString::Printf(TEXT("Crouch == false:")));*/
+	}
+}
 
+void APlayer_Character::ExhaustChecker(float Stamina)
+{
+	if (Stamina <= NULL)
+	{
+		/*GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Turquoise, FString::Printf(TEXT("Exhaust is TRUE")));*/
+
+		Exhaust_Timer += TimeTick;
+
+		if(Exhaust_Timer <= Counter)
+		{
+			Exhaust = true;
+			GetCharacterMovement()->MaxWalkSpeed = Exhaust_Speed;
+			/*GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Blue, FString::Printf(TEXT("Walking Speed Active:")));*/
+		}
+		else
+		{
+			Exhaust = false;
+		}
+	}
+	else
+	{
+		
+		Exhaust = false;
+		Exhaust_Timer = NULL;
+		/*GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Orange, FString::Printf(TEXT("Exhaust is FALSE")));*/
+	}
 }
 
 // ------------- Collision --------------
@@ -233,22 +280,24 @@ void APlayer_Character::Interact()
 
 void APlayer_Character::CheckForInteractables()
 {
-	//LineTrace
+	//LineTrace. Trace:A method for reaching out and getting feedback on objects that is represented as physical objects.
 	FVector StartTrace = Camera->GetComponentLocation();
 	FVector	EndTrace = (Camera->GetForwardVector()* Reach) + StartTrace;
 
 	//ShowHit
 	FHitResult HitResult;
 
-	//iniz parameters- ignor the actor
+	//Initliaize parameters and ignoring the actor, so the visual interaction text does not appear constantly
 	FCollisionQueryParams CQP;
 	CQP.AddIgnoredActor(this);
 
-	//Cast the Line trace
+	//Getting the Line trace by set world
 	GetWorld()->LineTraceSingleByChannel(HitResult, StartTrace, EndTrace, ECC_WorldDynamic, CQP);
 
+	//Cast the Line trace
 	AInteractable* PotentialInteractable = Cast<AInteractable>(HitResult.GetActor());
 
+	//Condition for Visual text to execute
 	if (PotentialInteractable == NULL)
 	{
 		HelpText = FString("");
@@ -263,6 +312,5 @@ void APlayer_Character::CheckForInteractables()
 		HelpText = PotentialInteractable->InteractableHelpText;
 	}
 }
-
 
 
