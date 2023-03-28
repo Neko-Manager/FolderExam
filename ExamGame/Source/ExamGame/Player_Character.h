@@ -57,12 +57,15 @@ public:
 		class UInputAction* IA_Sprint;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inputsystem")
+		class UInputAction* IA_Crouch;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inputsystem")
 		class UInputAction* IA_OpenInventory;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inputsystem")
 		class UInputAction* IA_Interact;
 
-	//Movement functions
+	//Input Triggers
 	UFUNCTION(BlueprintCallable)
 		void GroundedMovement(const FInputActionValue& Value);
 
@@ -73,50 +76,69 @@ public:
 		void SprintTriggered(const FInputActionValue& Value);
 
 	UFUNCTION(BlueprintCallable)
+		void CrouchTriggered(const FInputActionValue& Value);
+
+	//Functions for Input
+	UFUNCTION(BlueprintCallable)
 		void Sprint();
 
+	UFUNCTION(BlueprintCallable)
+		void CrouchCustom();
+
+
 	//Movement booleans
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Boolean Sprinting")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement Boolean")
 		bool Sprinting;
 
-	//Movement members
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Walk Speed")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement Boolean")
+		bool Crouching;
+
+	
+	//Movement Speed Control
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement Speed Control")
 		float Walk_Speed;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sprint Speed")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement Speed Control")
 		float Sprint_Speed;
 
-	// ------------------------ Over time effects ----------------------------
-	//Counter
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Counter Adding")
-		float CounterAdding;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement Speed Control")
+		float Crouch_Speed;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Counter equal")
-		float CounterEqual;
+	// ------------------------ Over time effects ----------------------------
+	//Time Control
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Time Control")
+		float Counter;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Time Control")
+		float TimeTick;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Time Control")
+		float TimeAddingTick;
 
 	//Stamina Control
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Max stamina")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stamina Control")
 		float Max_Stamina;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Live stamina")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stamina Control")
 		float Live_Stamina;
 
 	UFUNCTION(BlueprintCallable)
-		void StaminaRecharger(float Time);
+		void StaminaRecharger(float Timer);
 
 	//Exhaust Control
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Exhaust Boolean")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Exhaust Control")
 		bool Exhaust;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Exhaust Timer")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Exhaust Control")
 		float Exhaust_Timer;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Exhaust Speed")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Exhaust Control")
 		float Exhaust_Speed;
 
 	UFUNCTION(BlueprintCallable)
-		void ExhaustChecker(float Time);
+		void ExhaustChecker(float Stamina);
 
+	
 	//Hunger Control
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hunger")
 		float Hunger;
@@ -128,19 +150,18 @@ public:
 			UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex,
 			bool bFromSweep, const FHitResult& SweepResult);
 
-
-
 private:
+	// ------------------------ Inventory and interaction Control ----------------------------
 	//player reach
 	float Reach;
 
 	// Open Inventory
 	void ToggleInventory();
 
-	// Interact with the Interactable(object), if there is one.
+	// Interact with the interactable (object), if there is one
 	void Interact();
 
-	//check for interactable
+	//Check for interactable
 	void CheckForInteractables();
 
 
