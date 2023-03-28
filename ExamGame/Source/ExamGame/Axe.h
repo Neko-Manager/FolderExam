@@ -42,5 +42,7 @@ public:
 			UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex,
 			bool bFromSweep, const FHitResult& SweepResult);
 
-
+	//___________ Collision Control ___________
+	//UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Weapons)
+	//	class AEnemy_One* Enemy_One;
 };

@@ -13,6 +13,9 @@
 #include "Engine/World.h"
 #include "Blueprint/UserWidget.h"
 #include "Sound/SoundCue.h"
+#include "InventoryGamemode.generated.h"
+#include "PickUp.h"
+#include "Interactable.h"
 
 //Inputs
 #include "EnhancedInputComponent.h"
@@ -51,6 +54,11 @@ APlayer_Character::APlayer_Character()
 void APlayer_Character::BeginPlay()
 {
 	Super::BeginPlay();
+
+	Inventory.SetNum(5);
+	CurrentInteractable = nullptr;
+
+	
 
 	// ------------- Player control for Nullpointer --------------
 	APlayerController* PlayerController = Cast<APlayerController>(GetController());
@@ -205,7 +213,7 @@ void APlayer_Character::Sprint()
 
 void APlayer_Character::CrouchTriggered(const FInputActionValue& Value)
 {
-	if (Value.IsNonZero())
+	if (Value.IsNonZero() && GetCapsuleComponent() != nullptr)
 	{
 		Crouching = true;
 		CrouchCustom();
@@ -221,6 +229,7 @@ void APlayer_Character::CrouchCustom()
 	{
 		GetCapsuleComponent()->SetCapsuleHalfHeight(66.f);
 		GetCharacterMovement()->MaxWalkSpeed = Crouch_Speed;
+	
 	/*	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, FString::Printf(TEXT("Crouch == true:")));*/
 		
 	}
@@ -265,6 +274,56 @@ void APlayer_Character::OnOverlap(UPrimitiveComponent* OverlappedComponent, AAct
 {
 }
 
+bool APlayer_Character::AddItemToInventory(APickUp* Item)
+{
+	if (Item !=  NULL)
+	{
+		const int32 AvailableSlot = Inventory.Find(nullptr); // find first slot with a nullptr in it
+
+		if (AvailableSlot != INDEX_NONE)
+		{
+			Inventory[AvailableSlot] = Item;
+			return true;
+		}
+		else
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("You cant carry any more items!"));
+			return false;
+		}
+	}
+	else return false;
+}
+
+UTexture2D* APlayer_Character::GetThumbnailAtInventorySlot(int32 Slot)
+{
+	if (Inventory[Slot] != NULL)
+	{
+		return Inventory[Slot]->PickUpThumbnail;
+	}
+	else return nullptr;
+	
+}
+
+FString APlayer_Character::GivenItemNameAtInventorySlot(int32 Slot)
+{
+	if (Inventory[Slot] != NULL)
+	{
+		return Inventory[Slot]->ItemName;
+	}
+	return FString("None");
+}
+
+void APlayer_Character::UseItemAtInventorySlot(int32 Slot)
+{
+	if(Inventory[Slot] != NULL)
+	{
+		Inventory[Slot]->Use_Implementation();
+		Inventory[Slot] = NULL; //deleat item from inventory when used;
+	}
+}
+
+
+
 void APlayer_Character::ToggleInventory()
 {
 	//Open Inventory
@@ -273,9 +332,9 @@ void APlayer_Character::ToggleInventory()
 
 void APlayer_Character::Interact()
 {
-	if (CurrInteractable != nullptr)
+	if (CurrentInteractable != nullptr)
 	{
-		CurrInteractable->Interact_Implementation();
+		CurrentInteractable->Interact_Implementation();
 	}
 
 }
@@ -304,15 +363,17 @@ void APlayer_Character::CheckForInteractables()
 	{
 		HelpText = FString("");
 
-		CurrInteractable = nullptr;
+		CurrentInteractable = nullptr;
 		return;
 
 	}
 	else
 	{
-		CurrInteractable = PotentialInteractable;
+		CurrentInteractable = PotentialInteractable;
 		HelpText = PotentialInteractable->InteractableHelpText;
 	}
 }
+
+
 
 
