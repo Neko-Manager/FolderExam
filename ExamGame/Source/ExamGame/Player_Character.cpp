@@ -205,7 +205,7 @@ void APlayer_Character::Sprint()
 
 void APlayer_Character::CrouchTriggered(const FInputActionValue& Value)
 {
-	if (Value.IsNonZero())
+	if (Value.IsNonZero() && GetCapsuleComponent() != nullptr)
 	{
 		Crouching = true;
 		CrouchCustom();
@@ -221,6 +221,7 @@ void APlayer_Character::CrouchCustom()
 	{
 		GetCapsuleComponent()->SetCapsuleHalfHeight(66.f);
 		GetCharacterMovement()->MaxWalkSpeed = Crouch_Speed;
+	
 	/*	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, FString::Printf(TEXT("Crouch == true:")));*/
 		
 	}
@@ -314,5 +315,7 @@ void APlayer_Character::CheckForInteractables()
 		HelpText = PotentialInteractable->InteractableHelpText;
 	}
 }
+
+
 
 
