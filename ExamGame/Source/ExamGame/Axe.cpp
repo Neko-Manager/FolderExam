@@ -2,7 +2,8 @@
 
 
 #include "Axe.h"
-
+#include "EnemyOne.h"
+#include "Player_Character.h"
 #include "Components/BoxComponent.h"
 
 AAxe::AAxe()
@@ -27,12 +28,11 @@ void AAxe::Tick(float DeltaTime)
 
 void AAxe::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	/*if(OtherActor->IsA<navnPåenemy>)
+	if(OtherActor->IsA<AEnemyOne>())
 	{
-	navnPåEnemy->Health --;
-	PlayerCharacter->LiveStamina -= 0.2;
-
-	}*/
+	    /*EnemyOne->Health -= 10;*/
+		Player->Live_Stamina -= 5;
+	}
 }
 
 
