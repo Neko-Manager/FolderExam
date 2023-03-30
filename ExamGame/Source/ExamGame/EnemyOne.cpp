@@ -1,15 +1,38 @@
 
+//Class Include
 #include "EnemyOne.h"
 #include "AIController.h"
+
+//Component Include
+#include "perception/PawnSensingComponent.h"
+#include "Components/SkeletalMeshComponent.h"
+#include "Components/CapsuleComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
+
+//Other Include
+#include "Kismet/KismetSystemLibrary.h"
+#include "Kismet/GameplayStatics.h"
 
 AEnemyOne::AEnemyOne()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
-	CombatRadius = 500.f;
+
+	Colision = CreateDefaultSubobject<UCapsuleComponent>(TEXT("Collision"));
+	Colision->SetupAttachment(GetRootComponent());
+
+	PawnSensing = CreateDefaultSubobject<UPawnSensingComponent>(TEXT("PawnSensing"));
+	PawnSensing->SightRadius = 4000.f;
+	PawnSensing->SetPeripheralVisionAngle(45.f);
+
+	AttackRadius = 150.f;
+	ChaseRadius = 1000.f;
 	PatrolRadius = 200.f;
 	PatrolDelayMax = 8.f;
 	PatrolDelayMin = 2.f;
+	Health = 10;
+	PatrolSpeed = 125.f;
+	ChaseSpeed = 300.f;
 }
 
 void AEnemyOne::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -24,15 +47,55 @@ void AEnemyOne::BeginPlay()
 	// Gets the AI Controller
 	EnemyController = Cast<AAIController>(GetController());
 
-	MoveToTarget(PatrolTarget);
+	if(PawnSensing)
+	{
+		PawnSensing->OnSeePawn.AddDynamic(this, &AEnemyOne::PawnSeen);
+	}
 
+	MoveToTarget(PatrolTarget);
 }
 
 void AEnemyOne::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	CheckPatrolTarget();
+	if(EnemyState > EEnemyState::EES_EnemyPatrolling)
+	{
+		CheckCombatTarget();
+	}
+
+	else
+	{
+		CheckPatrolTarget();
+	}
+
+	if(Health <= 0)
+	{
+		Die();
+	}
+}
+
+void AEnemyOne::PawnSeen(APawn* SeenPawn)
+{
+	//Stops checking for pawn seen if still chasing the player
+	if (EnemyState == EEnemyState::EES_EnemyChaseing) return;
+
+	if(SeenPawn->ActorHasTag(FName("PlayerCharacter")))
+	{
+
+		//Stops the Patrolling function timer to prioritse chasing.
+		GetWorldTimerManager().ClearTimer(PatrolTimer);
+		GetCharacterMovement()->MaxWalkSpeed = ChaseSpeed;
+		CombatTarget = SeenPawn;
+
+		if (EnemyState != EEnemyState::EES_EnemyAttacking)
+		{
+			//Sets State to chasing the player Character
+			EnemyState = EEnemyState::EES_EnemyChaseing;
+			MoveToTarget(CombatTarget);
+			GEngine->AddOnScreenDebugMessage(1, 1.f, FColor::Red, FString::Printf(TEXT("PawnSeen, Chase player")));
+		}
+	}
 }
 
 AActor* AEnemyOne::ChoosePatrolTarget()
@@ -82,6 +145,33 @@ void AEnemyOne::CheckPatrolTarget()
 
 void AEnemyOne::CheckCombatTarget()
 {
+	if (!InTargetRange(CombatTarget, ChaseRadius))
+	{
+		// When outside of chase go back to patrol
+		CombatTarget = nullptr;
+		EnemyState = EEnemyState::EES_EnemyPatrolling;
+		GetCharacterMovement()->MaxWalkSpeed = PatrolSpeed;
+		MoveToTarget(PatrolTarget);
+
+		GEngine->AddOnScreenDebugMessage(1, 1.f, FColor::Red, FString::Printf(TEXT("Loose intrest")));
+	}
+	else if (!InTargetRange(CombatTarget, AttackRadius) && EnemyState != EEnemyState::EES_EnemyChaseing)
+	{
+		// Outside attack range chase character
+		EnemyState = EEnemyState::EES_EnemyChaseing;
+		GetCharacterMovement()->MaxWalkSpeed = ChaseSpeed;
+		MoveToTarget(CombatTarget);
+		GEngine->AddOnScreenDebugMessage(1, 1.f, FColor::Red, FString::Printf(TEXT("Chasing player")));
+	}
+	if(InTargetRange(CombatTarget, AttackRadius) && EnemyState != EEnemyState::EES_EnemyAttacking)
+	{
+		// inside attack range, attack character.
+		EnemyState = EEnemyState::EES_EnemyAttacking;
+
+		GEngine->AddOnScreenDebugMessage(1, 1.f, FColor::Red, FString::Printf(TEXT("Attack player")));
+
+		//This is where attack montage is put.
+	}
 }
 
 void AEnemyOne::MoveToTarget(AActor* Target)
@@ -105,6 +195,13 @@ void AEnemyOne::MoveToTarget(AActor* Target)
 void AEnemyOne::PatrolTimerFinished()
 {
 	MoveToTarget(PatrolTarget);
+
+}
+
+void AEnemyOne::Die()
+{
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	SetLifeSpan(3.f);
 
 }
 
