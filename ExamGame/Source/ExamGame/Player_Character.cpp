@@ -62,9 +62,12 @@ void APlayer_Character::BeginPlay()
 
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 	// Adds a charachter tag to the player Character for AI Detection.
 	Tags.Add(FName("PlayerCharacter"));
 
+=======
+>>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
 =======
@@ -143,11 +146,16 @@ void APlayer_Character::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 		EnhancedInputComponent->BindAction(IA_Interact, ETriggerEvent::Triggered, this, &APlayer_Character::Interact);
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 		EnhancedInputComponent->BindAction(IA_OpenInventory, ETriggerEvent::Triggered, this, &APlayer_Character::ToggleInventory);
 
 
 		//Combat Inputs
 		EnhancedInputComponent->BindAction(IA_AxeCut, ETriggerEvent::Triggered, this, &APlayer_Character::AxeCutTrigger);
+=======
+		EnhancedInputComponent->BindAction(IA_OpenInventory, ETriggerEvent::Started, this, &APlayer_Character::ToggleInventory);
+		EnhancedInputComponent->BindAction(IA_OpenInventory, ETriggerEvent::Completed, this, &APlayer_Character::ToggleInventory);
+>>>>>>> Stashed changes
 =======
 		EnhancedInputComponent->BindAction(IA_OpenInventory, ETriggerEvent::Started, this, &APlayer_Character::ToggleInventory);
 		EnhancedInputComponent->BindAction(IA_OpenInventory, ETriggerEvent::Completed, this, &APlayer_Character::ToggleInventory);
@@ -368,8 +376,13 @@ void APlayer_Character::ToggleInventory()
 	//Open Inventory
 	AInventoryGamemode* Gamemode = Cast<AInventoryGamemode>(GetWorld()->GetAuthGameMode());
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 
 
+=======
+
+
+>>>>>>> Stashed changes
 =======
 
 
