@@ -22,6 +22,7 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+
 public:
 
 	// Called every frame
@@ -39,6 +40,8 @@ public:
 	//___________ Collision Control ___________
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Weapons)
 		class UBoxComponent* HitBox;
+
+	int32 AmountOfAxe;
 
 	UFUNCTION()
 		void OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,

@@ -24,7 +24,12 @@ void APickUp::Interact_Implementation()
 
 
 	//Into Inventory
-	OnPickUp();
+	if (Character->AddItemToInventory(this))
+	{
+		OnPickUp();
+	}
+
+
 }
 
 void APickUp::Use_Implementation()
@@ -37,7 +42,7 @@ void APickUp::OnPickUp()
 {
 	InteractableMesh->SetVisibility(false);
 	InteractableMesh->SetSimulatePhysics(false);
-	InteractableMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	SetActorEnableCollision(false);
 
 
 }
