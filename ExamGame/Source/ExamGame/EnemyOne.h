@@ -4,12 +4,23 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "StateControll.h"
 #include "EnemyOne.generated.h"
 
 UCLASS()
 class EXAMGAME_API AEnemyOne : public ACharacter
 {
 	GENERATED_BODY()
+
+private:
+
+	// ------------ States ---------------------
+
+	// Sets the default state to Idle, from the get AIState beneath.
+	EEnemyState EnemyState = EEnemyState::EES_EnemyPatrolling;
+
+	// Gets the AI state from the state controller
+	FORCEINLINE EEnemyState GetAIState() const { return EnemyState; }
 
 public:
 	// ------------ Constructors and main functions -----------------
@@ -23,6 +34,9 @@ public:
 	UPROPERTY(VisibleAnywhere)
 	class UPawnSensingComponent* PawnSensing;
 
+	UPROPERTY(VisibleAnywhere)
+	class UCapsuleComponent* Colision;
+
 	// ------------- class Refs ------------
 
 	UPROPERTY()
@@ -34,6 +48,9 @@ public:
 	UPROPERTY(EditInstanceOnly, Category = "AI Navigation")
 	AActor* PatrolTarget;
 
+	UPROPERTY(EditInstanceOnly, Category = "AI Navigation")
+	AActor* CombatTarget;
+
 	// Array of patrol points
 	UPROPERTY(EditInstanceOnly, Category = "AI Navigation")
 	TArray<AActor*> PatrolTargets;
@@ -41,7 +58,10 @@ public:
 	// ------------ Variables -----------------
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI Navigation")
-	double CombatRadius;
+	double AttackRadius;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI Navigation")
+	double ChaseRadius;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI Navigation")
 	double PatrolRadius;
@@ -54,6 +74,12 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI Navigation")
 	int Health;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI Navigation")
+	float PatrolSpeed;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI Navigation")
+	float ChaseSpeed;
 
 	// ------------ Other ---------------------
 
@@ -80,6 +106,9 @@ protected:
 
 	void PatrolTimerFinished();
 
+	void Die();
+
+public:
 
 
 
