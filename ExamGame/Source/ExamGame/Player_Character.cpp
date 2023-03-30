@@ -27,7 +27,7 @@
 #include "UObject/ConstructorHelpers.h"
 
 //Test Mesh
-class AAxe;
+//class AAxe;
 
 // Sets default values
 APlayer_Character::APlayer_Character()
@@ -64,6 +64,7 @@ void APlayer_Character::BeginPlay()
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 	// Adds a charachter tag to the player Character for AI Detection.
 	Tags.Add(FName("PlayerCharacter"));
 
@@ -74,6 +75,12 @@ void APlayer_Character::BeginPlay()
 =======
 >>>>>>> Stashed changes
 =======
+>>>>>>> Stashed changes
+=======
+
+	// Adds a charachter tag to the player Character for AI Detection.
+	Tags.Add(FName("PlayerCharacter"));
+
 >>>>>>> Stashed changes
 	// ------------- Player control for Nullpointer --------------
 	APlayerController* PlayerController = Cast<APlayerController>(GetController());
@@ -151,14 +158,18 @@ void APlayer_Character::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 		EnhancedInputComponent->BindAction(IA_OpenInventory, ETriggerEvent::Triggered, this, &APlayer_Character::ToggleInventory);
 
+=======
+>>>>>>> Stashed changes
 
 		//Combat Inputs
 		EnhancedInputComponent->BindAction(IA_AxeCut, ETriggerEvent::Triggered, this, &APlayer_Character::AxeCutTrigger);
-=======
+
 		EnhancedInputComponent->BindAction(IA_OpenInventory, ETriggerEvent::Started, this, &APlayer_Character::ToggleInventory);
 		EnhancedInputComponent->BindAction(IA_OpenInventory, ETriggerEvent::Completed, this, &APlayer_Character::ToggleInventory);
+<<<<<<< Updated upstream
 >>>>>>> Stashed changes
 =======
 		EnhancedInputComponent->BindAction(IA_OpenInventory, ETriggerEvent::Started, this, &APlayer_Character::ToggleInventory);
@@ -171,6 +182,9 @@ void APlayer_Character::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 =======
 		EnhancedInputComponent->BindAction(IA_OpenInventory, ETriggerEvent::Started, this, &APlayer_Character::ToggleInventory);
 		EnhancedInputComponent->BindAction(IA_OpenInventory, ETriggerEvent::Completed, this, &APlayer_Character::ToggleInventory);
+>>>>>>> Stashed changes
+=======
+
 >>>>>>> Stashed changes
 	}
 }

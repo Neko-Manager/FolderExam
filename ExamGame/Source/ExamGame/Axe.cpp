@@ -6,9 +6,12 @@
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
+=======
+>>>>>>> Stashed changes
 #include "EnemyOne.h"
-=======
 #include "InventoryGamemode.h"
+<<<<<<< Updated upstream
 >>>>>>> Stashed changes
 =======
 #include "InventoryGamemode.h"
@@ -18,6 +21,8 @@
 >>>>>>> Stashed changes
 =======
 #include "InventoryGamemode.h"
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 #include "Player_Character.h"
 #include "Components/BoxComponent.h"
@@ -50,19 +55,20 @@ void AAxe::Tick(float DeltaTime)
 
 void AAxe::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if(OtherActor->IsA<AEnemyOne>())
-	{
-<<<<<<< Updated upstream
-	    /*EnemyOne->Health -= 10;*/
-		Player->Live_Stamina -= 5;
-	}
-=======
-	navnPåEnemy->Health --;
-	PlayerCharacter->LiveStamina -= 0.2;
+//	if(OtherActor->IsA<AEnemyOne>())
+//	{
+//
+//	    /*EnemyOne->Health -= 10;*/
+//		Player->Live_Stamina -= 5;
+//	}
+//
+//	navnPåEnemy->Health --;
+//	PlayerCharacter->LiveStamina -= 0.2;
 
-	}*/
+	}
 
 	
+<<<<<<< Updated upstream
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
@@ -74,6 +80,10 @@ void AAxe::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActo
 =======
 >>>>>>> Stashed changes
 }
+=======
+
+
+>>>>>>> Stashed changes
 
 
 
