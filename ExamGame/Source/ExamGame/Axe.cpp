@@ -2,28 +2,8 @@
 
 
 #include "Axe.h"
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-=======
->>>>>>> Stashed changes
 #include "EnemyOne.h"
 #include "InventoryGamemode.h"
-<<<<<<< Updated upstream
->>>>>>> Stashed changes
-=======
-#include "InventoryGamemode.h"
->>>>>>> Stashed changes
-=======
-#include "InventoryGamemode.h"
->>>>>>> Stashed changes
-=======
-#include "InventoryGamemode.h"
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
 #include "Player_Character.h"
 #include "Components/BoxComponent.h"
 
@@ -68,22 +48,6 @@ void AAxe::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActo
 	}
 
 	
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
-}
-=======
-
-
->>>>>>> Stashed changes
 
 
 

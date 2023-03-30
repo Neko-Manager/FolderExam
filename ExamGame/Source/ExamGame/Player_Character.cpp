@@ -60,28 +60,15 @@ void APlayer_Character::BeginPlay()
 	Inventory.SetNum(5);
 	CurrentInteractable = nullptr;
 
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-	// Adds a charachter tag to the player Character for AI Detection.
-	Tags.Add(FName("PlayerCharacter"));
-
-=======
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
-=======
 
 	// Adds a charachter tag to the player Character for AI Detection.
 	Tags.Add(FName("PlayerCharacter"));
 
->>>>>>> Stashed changes
+
+	// Adds a charachter tag to the player Character for AI Detection.
+	Tags.Add(FName("PlayerCharacter"));
+
+
 	// ------------- Player control for Nullpointer --------------
 	APlayerController* PlayerController = Cast<APlayerController>(GetController());
 
@@ -154,38 +141,15 @@ void APlayer_Character::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 		EnhancedInputComponent->BindAction(IA_Sprint, ETriggerEvent::Triggered, this, &APlayer_Character::SprintTriggered);
 		EnhancedInputComponent->BindAction(IA_Crouch, ETriggerEvent::Triggered, this, &APlayer_Character::CrouchTriggered);
 		EnhancedInputComponent->BindAction(IA_Interact, ETriggerEvent::Triggered, this, &APlayer_Character::Interact);
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-		EnhancedInputComponent->BindAction(IA_OpenInventory, ETriggerEvent::Triggered, this, &APlayer_Character::ToggleInventory);
 
-=======
->>>>>>> Stashed changes
+		//open Inventory
+		EnhancedInputComponent->BindAction(IA_OpenInventory, ETriggerEvent::Started, this, &APlayer_Character::ToggleInventory);
+		EnhancedInputComponent->BindAction(IA_OpenInventory, ETriggerEvent::Completed, this, &APlayer_Character::ToggleInventory);
 
 		//Combat Inputs
 		EnhancedInputComponent->BindAction(IA_AxeCut, ETriggerEvent::Triggered, this, &APlayer_Character::AxeCutTrigger);
 
-		EnhancedInputComponent->BindAction(IA_OpenInventory, ETriggerEvent::Started, this, &APlayer_Character::ToggleInventory);
-		EnhancedInputComponent->BindAction(IA_OpenInventory, ETriggerEvent::Completed, this, &APlayer_Character::ToggleInventory);
-<<<<<<< Updated upstream
->>>>>>> Stashed changes
-=======
-		EnhancedInputComponent->BindAction(IA_OpenInventory, ETriggerEvent::Started, this, &APlayer_Character::ToggleInventory);
-		EnhancedInputComponent->BindAction(IA_OpenInventory, ETriggerEvent::Completed, this, &APlayer_Character::ToggleInventory);
->>>>>>> Stashed changes
-=======
-		EnhancedInputComponent->BindAction(IA_OpenInventory, ETriggerEvent::Started, this, &APlayer_Character::ToggleInventory);
-		EnhancedInputComponent->BindAction(IA_OpenInventory, ETriggerEvent::Completed, this, &APlayer_Character::ToggleInventory);
->>>>>>> Stashed changes
-=======
-		EnhancedInputComponent->BindAction(IA_OpenInventory, ETriggerEvent::Started, this, &APlayer_Character::ToggleInventory);
-		EnhancedInputComponent->BindAction(IA_OpenInventory, ETriggerEvent::Completed, this, &APlayer_Character::ToggleInventory);
->>>>>>> Stashed changes
-=======
 
->>>>>>> Stashed changes
 	}
 }
 
@@ -397,23 +361,7 @@ void APlayer_Character::ToggleInventory()
 {
 	//Open Inventory
 	AInventoryGamemode* Gamemode = Cast<AInventoryGamemode>(GetWorld()->GetAuthGameMode());
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
 
-
-=======
-
-
->>>>>>> Stashed changes
-=======
-
-
->>>>>>> Stashed changes
-=======
-
-
->>>>>>> Stashed changes
 	if (Gamemode->GetHUDState() == Gamemode->HS_Ingame)
 	{
 		Gamemode->ChangeHUDState(Gamemode->HS_Inventory);
