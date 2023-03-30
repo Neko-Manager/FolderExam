@@ -15,19 +15,19 @@
 #include "Engine/World.h"
 #include "Blueprint/UserWidget.h"
 #include "Sound/SoundCue.h"
-#include "InventoryGamemode.generated.h"
 #include "PickUp.h"
 #include "Interactable.h"
 
 //Inputs
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubSystems.h"
+#include "InventoryGamemode.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "UObject/ConstructorHelpers.h"
 
 //Test Mesh
-class AAxe;
+//class AAxe;
 
 // Sets default values
 APlayer_Character::APlayer_Character()
@@ -60,8 +60,14 @@ void APlayer_Character::BeginPlay()
 	Inventory.SetNum(5);
 	CurrentInteractable = nullptr;
 
+
 	// Adds a charachter tag to the player Character for AI Detection.
 	Tags.Add(FName("PlayerCharacter"));
+
+
+	// Adds a charachter tag to the player Character for AI Detection.
+	Tags.Add(FName("PlayerCharacter"));
+
 
 	// ------------- Player control for Nullpointer --------------
 	APlayerController* PlayerController = Cast<APlayerController>(GetController());
@@ -135,11 +141,15 @@ void APlayer_Character::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 		EnhancedInputComponent->BindAction(IA_Sprint, ETriggerEvent::Triggered, this, &APlayer_Character::SprintTriggered);
 		EnhancedInputComponent->BindAction(IA_Crouch, ETriggerEvent::Triggered, this, &APlayer_Character::CrouchTriggered);
 		EnhancedInputComponent->BindAction(IA_Interact, ETriggerEvent::Triggered, this, &APlayer_Character::Interact);
-		EnhancedInputComponent->BindAction(IA_OpenInventory, ETriggerEvent::Triggered, this, &APlayer_Character::ToggleInventory);
 
+		//open Inventory
+		EnhancedInputComponent->BindAction(IA_OpenInventory, ETriggerEvent::Started, this, &APlayer_Character::ToggleInventory);
+		EnhancedInputComponent->BindAction(IA_OpenInventory, ETriggerEvent::Completed, this, &APlayer_Character::ToggleInventory);
 
 		//Combat Inputs
 		EnhancedInputComponent->BindAction(IA_AxeCut, ETriggerEvent::Triggered, this, &APlayer_Character::AxeCutTrigger);
+
+
 	}
 }
 
@@ -350,7 +360,16 @@ void APlayer_Character::UseItemAtInventorySlot(int32 Slot)
 void APlayer_Character::ToggleInventory()
 {
 	//Open Inventory
+	AInventoryGamemode* Gamemode = Cast<AInventoryGamemode>(GetWorld()->GetAuthGameMode());
 
+	if (Gamemode->GetHUDState() == Gamemode->HS_Ingame)
+	{
+		Gamemode->ChangeHUDState(Gamemode->HS_Inventory);
+	}
+	else
+	{
+		Gamemode->ChangeHUDState(Gamemode->HS_Ingame);
+	}
 }
 
 void APlayer_Character::Interact()

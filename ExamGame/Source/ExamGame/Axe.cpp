@@ -3,23 +3,30 @@
 
 #include "Axe.h"
 #include "EnemyOne.h"
+#include "InventoryGamemode.h"
 #include "Player_Character.h"
 #include "Components/BoxComponent.h"
 
+
+
 AAxe::AAxe()
 {
+
+	AmountOfAxe = 0;
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	/*PrimaryActorTick.bCanEverTick = true;
 
 	HitBox = CreateDefaultSubobject<UBoxComponent>(TEXT("CollisionBox"));
 	HitBox->InitBoxExtent(FVector(5.f, 20.f, 10.f));
 	HitBox->OnComponentBeginOverlap.AddDynamic(this, &AAxe::OnOverlap);
-	HitBox->SetupAttachment(InteractableMesh);
+	HitBox->SetupAttachment(InteractableMesh);*/
 }
 
 void AAxe::BeginPlay()
 {
 }
+
+
 
 void AAxe::Tick(float DeltaTime)
 {
@@ -34,7 +41,8 @@ void AAxe::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActo
 	    EnemyOne->Health -= 10;
 		Player->Live_Stamina -= 5;
 	}
-}
+
+	
 
 
 
