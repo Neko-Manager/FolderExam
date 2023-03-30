@@ -28,9 +28,10 @@ void AAxe::Tick(float DeltaTime)
 
 void AAxe::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+	//Pointing to information in player class for when the axe hits the player. 
 	if(OtherActor->IsA<AEnemyOne>())
 	{
-	    /*EnemyOne->Health -= 10;*/
+	    EnemyOne->Health -= 10;
 		Player->Live_Stamina -= 5;
 	}
 }
