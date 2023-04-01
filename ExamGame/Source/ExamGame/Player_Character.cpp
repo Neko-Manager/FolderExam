@@ -294,18 +294,15 @@ void APlayer_Character::ExhaustChecker(float Stamina)
 
 
 // ------------- Combat Control (Axe) --------------
-bool APlayer_Character::GetAxeActive()
-{
-	return AxeActive;
-}
-
 void APlayer_Character::AxeAttackTrigger(const FInputActionValue& Value)
 {
-	if (Controller && Value.IsNonZero() && Live_Stamina >= NULL)
+	if (Controller && Value.IsNonZero() && Exhaust == false)
 	{
 		AxeActive = true;
 		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Blue, FString::Printf(TEXT("AxeAttack = true:")));
+		ResetAxeAttack();
 	}
+	
 }
 
 void APlayer_Character::ResetAxeAttack()

@@ -35,7 +35,7 @@ void UPlayer_AnimInstance::UpdateAnimationProperties()
 
 	if(Player)
 	{
-		AttackAnim = Player->GetAxeActive();
+		AttackAnim = Player->AxeActive == true;
 	}
 
 
