@@ -35,7 +35,7 @@ void UPlayer_AnimInstance::UpdateAnimationProperties()
 
 	if(Player)
 	{
-		/*AttackAnim = Player->Attacking = true);*/
+		AttackAnim = Player->GetAxeActive();
 	}
 
 
@@ -45,6 +45,6 @@ void UPlayer_AnimInstance::AttackAnimReset()
 {
 	if(Player)
 	{
-		/*AttackAnim = Player->Attacking = true;*/
+		Player->ResetAxeAttack();
 	}
 }
