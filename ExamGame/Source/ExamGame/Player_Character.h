@@ -156,9 +156,6 @@ public:
 		void ExhaustChecker(float Stamina);
 
 	// ------------------------ Combat Control ----------------------------
-	UFUNCTION(BlueprintCallable)
-		bool GetAxeActive();
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat Control")
 		bool AxeActive;
 
