@@ -22,6 +22,7 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+
 public:
 
 	// Called every frame
@@ -33,9 +34,14 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Weapons)
 		UStaticMeshComponent* Axe;
 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Weapons)
+		AInteractable* Weapon;
+
 	//___________ Collision Control ___________
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Weapons)
 		class UBoxComponent* HitBox;
+
+	int32 AmountOfAxe;
 
 	UFUNCTION()
 		void OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
@@ -43,6 +49,9 @@ public:
 			bool bFromSweep, const FHitResult& SweepResult);
 
 	//___________ Collision Control ___________
-	//UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Weapons)
-	//	class AEnemy_One* Enemy_One;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+		class AEnemyOne* EnemyOne;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+		class APlayer_Character* Player;
 };
