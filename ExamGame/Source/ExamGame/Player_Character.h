@@ -33,10 +33,12 @@ public:
 
 
 	// ------------------------ Class references ----------------------------
-	//UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class AAxe* Axe;
 
-	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class AEnemyOne* EnemyOne;
+
 
 
 	// ------------------------ Character control Input Actions ----------------------------
@@ -75,7 +77,7 @@ public:
 
 	//Input action for combat
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inputsystem")
-		class UInputAction* IA_AxeCut;
+		class UInputAction* IA_AxeAttack;
 
 	//Input Triggers
 	UFUNCTION(BlueprintCallable)
@@ -91,7 +93,7 @@ public:
 		void CrouchTriggered(const FInputActionValue& Value);
 
 	UFUNCTION(BlueprintCallable)
-		void AxeCutTrigger(const FInputActionValue& Value);
+		void AxeAttackTrigger(const FInputActionValue& Value);
 
 	//Functions for Input
 	UFUNCTION(BlueprintCallable)
@@ -153,10 +155,15 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void ExhaustChecker(float Stamina);
 
-	//Combat Control
+	// ------------------------ Combat Control ----------------------------
 	UFUNCTION(BlueprintCallable)
-		void AxeCut();
+		bool GetAxeActive();
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat Control")
+		bool AxeActive;
+
+	UFUNCTION(BlueprintCallable)
+		void ResetAxeAttack();
 
 	
 	//Hunger Control
