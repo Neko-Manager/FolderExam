@@ -19,6 +19,7 @@
 #include "Interactable.h"
 
 //Inputs
+#include "EnemyOne.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubSystems.h"
 #include "InventoryGamemode.h"
@@ -105,6 +106,7 @@ void APlayer_Character::BeginPlay()
 	Sprinting = false;
 	Exhaust = false;
 	Crouching = false;
+	AxeActive = false;
 }
 
 // Called every frame
@@ -147,7 +149,7 @@ void APlayer_Character::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 		EnhancedInputComponent->BindAction(IA_OpenInventory, ETriggerEvent::Completed, this, &APlayer_Character::ToggleInventory);
 
 		//Combat Inputs
-		EnhancedInputComponent->BindAction(IA_AxeCut, ETriggerEvent::Triggered, this, &APlayer_Character::AxeCutTrigger);
+		EnhancedInputComponent->BindAction(IA_AxeAttack, ETriggerEvent::Triggered, this, &APlayer_Character::AxeAttackTrigger);
 
 
 	}
@@ -228,6 +230,8 @@ void APlayer_Character::Sprint()
 	}
 }
 
+
+// ------------- crouch Control --------------
 void APlayer_Character::CrouchTriggered(const FInputActionValue& Value)
 {
 	if (Controller && Value.IsNonZero() && GetCapsuleComponent() != nullptr)
@@ -239,17 +243,6 @@ void APlayer_Character::CrouchTriggered(const FInputActionValue& Value)
 	
 }
 
-void APlayer_Character::AxeCutTrigger(const FInputActionValue& Value)
-{
-	if (Controller && Value.IsNonZero() && Live_Stamina >= NULL)
-	{
-		for (float ActiveFrame = NULL; ActiveFrame <= 5.f; ActiveFrame++)
-		{
-			AxeCut();
-		}
-	}
-}
-
 void APlayer_Character::CrouchCustom()
 {
 	// ------------- Sprinting control with regenerating stamina --------------
@@ -257,18 +250,20 @@ void APlayer_Character::CrouchCustom()
 	{
 		GetCapsuleComponent()->SetCapsuleHalfHeight(66.f);
 		GetCharacterMovement()->MaxWalkSpeed = Crouch_Speed;
-	
-	/*	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, FString::Printf(TEXT("Crouch == true:")));*/
-		
+
+		/*	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, FString::Printf(TEXT("Crouch == true:")));*/
+
 	}
 	else
 	{
 		GetCapsuleComponent()->SetCapsuleHalfHeight(88.f);
 		GetCharacterMovement()->MaxWalkSpeed = Crouch_Speed;
-	/*	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Blue, FString::Printf(TEXT("Crouch == false:")));*/
+		/*	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Blue, FString::Printf(TEXT("Crouch == false:")));*/
 	}
 }
 
+
+// ------------- Over time Effect Control --------------
 void APlayer_Character::ExhaustChecker(float Stamina)
 {
 	if (Stamina <= NULL)
@@ -277,7 +272,7 @@ void APlayer_Character::ExhaustChecker(float Stamina)
 
 		Exhaust_Timer += TimeTick;
 
-		if(Exhaust_Timer <= Counter)
+		if (Exhaust_Timer <= Counter)
 		{
 			Exhaust = true;
 			GetCharacterMovement()->MaxWalkSpeed = Exhaust_Speed;
@@ -290,23 +285,44 @@ void APlayer_Character::ExhaustChecker(float Stamina)
 	}
 	else
 	{
-		
+
 		Exhaust = false;
 		Exhaust_Timer = NULL;
 		/*GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Orange, FString::Printf(TEXT("Exhaust is FALSE")));*/
 	}
 }
 
-void APlayer_Character::AxeCut()
+
+// ------------- Combat Control (Axe) --------------
+bool APlayer_Character::GetAxeActive()
 {
-	Axe->HitBox;
+	return AxeActive;
 }
+
+void APlayer_Character::AxeAttackTrigger(const FInputActionValue& Value)
+{
+	if (Controller && Value.IsNonZero() && Live_Stamina >= NULL)
+	{
+		AxeActive = true;
+		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Blue, FString::Printf(TEXT("AxeAttack = true:")));
+	}
+}
+
+void APlayer_Character::ResetAxeAttack()
+{
+	AxeActive = false;
+	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, FString::Printf(TEXT("AxeAttack = false:")));
+}
+
+
 
 // ------------- Collision --------------
 void APlayer_Character::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 }
 
+
+// ------------- Item Control --------------
 bool APlayer_Character::AddItemToInventory(APickUp* Item)
 {
 	if (Item !=  NULL)
@@ -356,7 +372,7 @@ void APlayer_Character::UseItemAtInventorySlot(int32 Slot)
 }
 
 
-
+// ------------- Interaction Control --------------
 void APlayer_Character::ToggleInventory()
 {
 	//Open Inventory
