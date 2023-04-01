@@ -17,17 +17,26 @@ class EXAMGAME_API UPlayer_AnimInstance : public UAnimInstance
 		virtual void NativeInitializeAnimation() override;
 
 public: 
-		
+
+	// ------------------------ Pointer and references ----------------------------
 	UFUNCTION(BlueprintCallable)
 	void UpdateAnimationProperties();
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Animation")
-		float MovementSpeed;
-
+	UFUNCTION(BlueprintCallable)
+		void AttackAnimReset();
+	// ------------------------ Pointer and references ----------------------------
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Animation")
 		class APawn* Pawn;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Animation")
 		class APlayer_Character* Player;
-	
+
+
+	// ------------------------ Functions ----------------------------
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Variables")
+		float MovementSpeed;
+
+	// ------------------------ Booleans---------------------------
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Booleans")
+		bool AttackAnim;
 };
