@@ -39,9 +39,9 @@ void UPlayer_AnimInstance::NativeUpdateAnimation(float DeltaTime)
 	if(Player)
 	{
 		//Movement animations
-		WalkAnim = Player->Walk_Speed;
-		SprintAnim = Player->Sprint_Speed;
-		ExhaustAnim = Player->Exhaust_Speed;
+	/*	WalkAnim = Player->;*/
+		SprintAnim = Player->Sprinting;
+		ExhaustAnim = Player->Exhaust;
 		FallingIdleAnim = Player->bWasJumping;
 		FallingEndAnim = Player->bClientWasFalling;
 
