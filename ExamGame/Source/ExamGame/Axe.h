@@ -41,8 +41,6 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Weapons)
 		class UBoxComponent* HitBox;
 
-	int32 AmountOfAxe;
-
 	UFUNCTION()
 		void OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 			UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex,
@@ -54,4 +52,6 @@ public:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 		class APlayer_Character* Player;
+
+	int32 AmountOfAxe;
 };
