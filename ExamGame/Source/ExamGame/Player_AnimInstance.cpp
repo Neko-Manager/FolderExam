@@ -6,22 +6,25 @@
 
 void UPlayer_AnimInstance::NativeInitializeAnimation()
 {
+	Super::NativeInitializeAnimation();
 	if (Pawn == nullptr) 
 	{
 		Pawn = TryGetPawnOwner();
-		if (Pawn && Player == nullptr) {
+		if (Pawn && Player == nullptr) 
+		{
 			Player = Cast<APlayer_Character>(Pawn);
 		}
 	}
-	AttackAnim = false;
+	AxeAnim = false;
 }
 
-void UPlayer_AnimInstance::UpdateAnimationProperties()
+void UPlayer_AnimInstance::NativeUpdateAnimation(float DeltaTime)
 {
 	if (Pawn == nullptr) 
 	{
 		Pawn = TryGetPawnOwner();
-		if (Pawn && Player == nullptr) {
+		if (Pawn && Player == nullptr) 
+		{
 			Player = Cast<APlayer_Character>(Pawn);
 		}
 	}
@@ -35,13 +38,26 @@ void UPlayer_AnimInstance::UpdateAnimationProperties()
 
 	if(Player)
 	{
-		AttackAnim = Player->AxeActive == true;
+		//Movement animations
+		WalkAnim = Player->Walk_Speed;
+		SprintAnim = Player->Sprint_Speed;
+		ExhaustAnim = Player->Exhaust_Speed;
+		FallingIdleAnim = Player->bWasJumping;
+		FallingEndAnim = Player->bClientWasFalling;
+
+
+	    //Other Movement animations
+		CrouchAnim = Player->Crouching == true;
+		JumpAnim = Character->bWasJumping == true;
+
+		//CombatAnimations
+		AxeAnim = Player->AxeActive == true;
 	}
 
 
 }
 
-void UPlayer_AnimInstance::AttackAnimReset()
+void UPlayer_AnimInstance::CombatAnimReset()
 {
 	if(Player)
 	{
