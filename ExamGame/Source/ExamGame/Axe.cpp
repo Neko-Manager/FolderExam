@@ -24,6 +24,7 @@ AAxe::AAxe()
 
 void AAxe::BeginPlay()
 {
+	Super::BeginPlay();
 }
 
 
