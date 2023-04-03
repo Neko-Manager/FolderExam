@@ -32,6 +32,15 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 
+	// ------------------------ Class references ----------------------------
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class AAxe* Axe;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class AEnemyOne* EnemyOne;
+
+
+
 	// ------------------------ Character control Input Actions ----------------------------
 	//Camera control
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera Component")
@@ -40,7 +49,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SpringArm Component")
 		class USpringArmComponent* SpringArm;
 
-	//Input actions
+	//Input actions for movement
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inputsystem")
 		class UInputMappingContext* IMC;
 
@@ -59,11 +68,16 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inputsystem")
 		class UInputAction* IA_Crouch;
 
+	//Input actions fro inventory and interact
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inputsystem")
 		class UInputAction* IA_OpenInventory;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inputsystem")
 		class UInputAction* IA_Interact;
+
+	//Input action for combat
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inputsystem")
+		class UInputAction* IA_AxeAttack;
 
 	//Input Triggers
 	UFUNCTION(BlueprintCallable)
@@ -77,6 +91,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 		void CrouchTriggered(const FInputActionValue& Value);
+
+	UFUNCTION(BlueprintCallable)
+		void AxeAttackTrigger(const FInputActionValue& Value);
 
 	//Functions for Input
 	UFUNCTION(BlueprintCallable)
@@ -137,6 +154,13 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 		void ExhaustChecker(float Stamina);
+
+	// ------------------------ Combat Control ----------------------------
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat Control")
+		bool AxeActive;
+
+	UFUNCTION(BlueprintCallable)
+		void ResetAxeAttack();
 
 	
 	//Hunger Control
