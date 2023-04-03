@@ -4,12 +4,23 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "StateControll.h"
 #include "EnemyOne.generated.h"
 
 UCLASS()
 class EXAMGAME_API AEnemyOne : public ACharacter
 {
 	GENERATED_BODY()
+
+private:
+
+	// ------------ States ---------------------
+
+	// Sets the default state to Idle, from the get AIState beneath.
+	EEnemyState EnemyState = EEnemyState::EES_EnemyPatrolling;
+
+	// Gets the AI state from the state controller
+	FORCEINLINE EEnemyState GetAIState() const { return EnemyState; }
 
 public:
 	// ------------ Constructors and main functions -----------------
@@ -18,17 +29,27 @@ public:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
 	
+	// ------------- Components ------------
+
+	UPROPERTY(VisibleAnywhere)
+	class UPawnSensingComponent* PawnSensing;
+
+	UPROPERTY(VisibleAnywhere)
+	class UCapsuleComponent* Colision;
 
 	// ------------- class Refs ------------
 
 	UPROPERTY()
-		class AAIController* EnemyController;
+	class AAIController* EnemyController;
 
 	// ------------ Actors -----------------
 
 	// First patrol point
 	UPROPERTY(EditInstanceOnly, Category = "AI Navigation")
 	AActor* PatrolTarget;
+
+	UPROPERTY(EditInstanceOnly, Category = "AI Navigation")
+	AActor* CombatTarget;
 
 	// Array of patrol points
 	UPROPERTY(EditInstanceOnly, Category = "AI Navigation")
@@ -37,7 +58,10 @@ public:
 	// ------------ Variables -----------------
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI Navigation")
-	double CombatRadius;
+	double AttackRadius;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI Navigation")
+	double ChaseRadius;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI Navigation")
 	double PatrolRadius;
@@ -48,6 +72,14 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI Navigation")
 	float PatrolDelayMin;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI Navigation")
+	int Health;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI Navigation")
+	float PatrolSpeed;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI Navigation")
+	float ChaseSpeed;
 
 	// ------------ Other ---------------------
 
@@ -57,6 +89,9 @@ public:
 protected:
 
 	// ------------ Functions --------------------
+
+	UFUNCTION()
+	void PawnSeen(APawn* SeenPawn);
 
 	// Choose a target, returns and AActor
 	AActor* ChoosePatrolTarget();
@@ -71,6 +106,9 @@ protected:
 
 	void PatrolTimerFinished();
 
+	void Die();
+
+public:
 
 
 
