@@ -1,6 +1,6 @@
 
 //Class Include
-#include "EnemyOne.h"
+#include "EnemyTwo.h"
 #include "AIController.h"
 
 //Component Include
@@ -13,7 +13,7 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "Kismet/GameplayStatics.h"
 
-AEnemyOne::AEnemyOne()
+AEnemyTwo::AEnemyTwo()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
@@ -31,34 +31,33 @@ AEnemyOne::AEnemyOne()
 	ChaseSpeed = 300.f;
 }
 
-void AEnemyOne::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+void AEnemyTwo::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 }
 
-void AEnemyOne::BeginPlay()
+void AEnemyTwo::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
 	// Gets the AI Controller
 	EnemyController = Cast<AAIController>(GetController());
 
-	if(PawnSensing)
+	if (PawnSensing)
 	{
-		PawnSensing->OnSeePawn.AddDynamic(this, &AEnemyOne::PawnSeen);
+		PawnSensing->OnSeePawn.AddDynamic(this, &AEnemyTwo::PawnSeen);
 	}
-	if(PatrolTarget)
+	if (PatrolTarget)
 	{
 		MoveToTarget(PatrolTarget);
 	}
-	
 }
 
-void AEnemyOne::Tick(float DeltaTime)
+void AEnemyTwo::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if(EnemyState == EEnemyState::EES_EnemyChaseing || EnemyState == EEnemyState::EES_EnemyAttacking)
+	if (EnemyState == EEnemyState::EES_EnemyChaseing || EnemyState == EEnemyState::EES_EnemyAttacking)
 	{
 		CheckCombatTarget();
 	}
@@ -66,18 +65,18 @@ void AEnemyOne::Tick(float DeltaTime)
 	{
 		CheckPatrolTarget();
 	}
-	if(Health <= 0)
+	if (Health <= 0)
 	{
 		Die();
 	}
 }
 
-void AEnemyOne::PawnSeen(APawn* SeenPawn)
+void AEnemyTwo::PawnSeen(APawn* SeenPawn)
 {
 	//Stops checking for pawn seen if still chasing the player
 	if (EnemyState == EEnemyState::EES_EnemyChaseing) return;
 
-	if(SeenPawn->ActorHasTag(FName("PlayerCharacter")))
+	if (SeenPawn->ActorHasTag(FName("PlayerCharacter")))
 	{
 		//Stops the Patrolling function timer to prioritse chasing.
 		GetWorldTimerManager().ClearTimer(PatrolTimer);
@@ -94,7 +93,7 @@ void AEnemyOne::PawnSeen(APawn* SeenPawn)
 	}
 }
 
-AActor* AEnemyOne::ChoosePatrolTarget()
+AActor* AEnemyTwo::ChoosePatrolTarget()
 {
 	// Finds all patrol targets that are valid (not currently at)
 	TArray<AActor*> ValidTargets;
@@ -117,17 +116,17 @@ AActor* AEnemyOne::ChoosePatrolTarget()
 	return nullptr;
 }
 
-bool AEnemyOne::InTargetRange(AActor* Target, float Radius)
+bool AEnemyTwo::InTargetRange(AActor* Target, float Radius)
 {
 	//Skips Function if target is a nullptr, otherwise return an input target location
 	if (Target == nullptr) return false;
 
 	const float DistanceToTarget = (Target->GetActorLocation() - GetActorLocation()).Size();
-	
+
 	return DistanceToTarget <= Radius;
 }
 
-void AEnemyOne::CheckPatrolTarget()
+void AEnemyTwo::CheckPatrolTarget()
 {
 	//Checks if in range of a patrol point, if yes then wait a random time and activate the timer function.
 	if (InTargetRange(PatrolTarget, PatrolRadius))
@@ -135,11 +134,11 @@ void AEnemyOne::CheckPatrolTarget()
 		PatrolTarget = ChoosePatrolTarget();
 		const float WaitTime = FMath::RandRange(PatrolDelayMin, PatrolDelayMax);
 		//Sets timer in world timer manager, (timer variabel, object in question, what function to call, wait time.
-		GetWorldTimerManager().SetTimer(PatrolTimer, this, &AEnemyOne::PatrolTimerFinished, WaitTime);
+		GetWorldTimerManager().SetTimer(PatrolTimer, this, &AEnemyTwo::PatrolTimerFinished, WaitTime);
 	}
 }
 
-void AEnemyOne::CheckCombatTarget()
+void AEnemyTwo::CheckCombatTarget()
 {
 	if (!InTargetRange(CombatTarget, ChaseRadius))
 	{
@@ -159,7 +158,7 @@ void AEnemyOne::CheckCombatTarget()
 		MoveToTarget(CombatTarget);
 		GEngine->AddOnScreenDebugMessage(1, 1.f, FColor::Red, FString::Printf(TEXT("Chasing player")));
 	}
-	else if(InTargetRange(CombatTarget, AttackRadius) && EnemyState != EEnemyState::EES_EnemyAttacking)
+	else if (InTargetRange(CombatTarget, AttackRadius) && EnemyState != EEnemyState::EES_EnemyAttacking)
 	{
 		// inside attack range, attack character.
 		EnemyState = EEnemyState::EES_EnemyAttacking;
@@ -170,7 +169,7 @@ void AEnemyOne::CheckCombatTarget()
 	}
 }
 
-void AEnemyOne::MoveToTarget(AActor* Target)
+void AEnemyTwo::MoveToTarget(AActor* Target)
 {
 	// Moves to the return value of target given by in target range
 	if (EnemyController == nullptr || Target == nullptr) return;
@@ -188,13 +187,13 @@ void AEnemyOne::MoveToTarget(AActor* Target)
 	EnemyController->MoveTo(MoveRequest);
 }
 
-void AEnemyOne::PatrolTimerFinished()
+void AEnemyTwo::PatrolTimerFinished()
 {
 	MoveToTarget(PatrolTarget);
 
 }
 
-void AEnemyOne::Die()
+void AEnemyTwo::Die()
 {
 	//GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	//SetLifeSpan(3.f);
