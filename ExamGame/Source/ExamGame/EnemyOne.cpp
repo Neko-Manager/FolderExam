@@ -21,7 +21,7 @@ AEnemyOne::AEnemyOne()
 	PawnSensing->SightRadius = 4000.f;
 	PawnSensing->SetPeripheralVisionAngle(45.f);
 
-	AttackRadius = 150.f;
+	AttackRadius = 250.f;
 	ChaseRadius = 2000.f;
 	PatrolRadius = 200.f;
 	PatrolDelayMax = 8.f;
@@ -164,10 +164,11 @@ void AEnemyOne::CheckCombatTarget()
 		// inside attack range, attack character.
 		EnemyState = EEnemyState::EES_EnemyAttacking;
 
-		GEngine->AddOnScreenDebugMessage(1, 1.f, FColor::Red, FString::Printf(TEXT("Attack player")));
+		GEngine->AddOnScreenDebugMessage(1, 1.f, FColor::Red, FString::Printf(TEXT("InRange of player")));
 
 		//This is where attack montage is put.
 	}
+
 }
 
 void AEnemyOne::MoveToTarget(AActor* Target)
@@ -180,9 +181,9 @@ void AEnemyOne::MoveToTarget(AActor* Target)
 
 	//Sets move to goal location
 	MoveRequest.SetGoalActor(Target);
-
+	
 	//How far away it stops from goal location
-	MoveRequest.SetAcceptanceRadius(15.f);
+	MoveRequest.SetAcceptanceRadius(70.f);
 
 	//Actually moves the player
 	EnemyController->MoveTo(MoveRequest);
