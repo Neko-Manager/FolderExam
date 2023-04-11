@@ -23,6 +23,7 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubSystems.h"
 #include "InventoryGamemode.h"
+#include "Engine/StaticMeshSocket.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "UObject/ConstructorHelpers.h"
@@ -39,9 +40,9 @@ APlayer_Character::APlayer_Character()
 	// ------------- Camera control --------------
 	//Initializing the spring arm.
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
-	SpringArm->SetupAttachment(GetCapsuleComponent());
-	SpringArm->SetRelativeLocation(FVector(20.f, 0.f, 90.f));
-	SpringArm->TargetArmLength = 1.f;
+	SpringArm->SetupAttachment(GetMesh(),"HeadSocket");
+	SpringArm->SetRelativeLocation(FVector(0.f, -7.f, 22.f));
+	SpringArm->TargetArmLength = 0.f;
 	SpringArm->bUsePawnControlRotation = true;
 
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
@@ -61,14 +62,8 @@ void APlayer_Character::BeginPlay()
 	Inventory.SetNum(5);
 	CurrentInteractable = nullptr;
 
-
 	// Adds a charachter tag to the player Character for AI Detection.
 	Tags.Add(FName("PlayerCharacter"));
-
-
-	// Adds a charachter tag to the player Character for AI Detection.
-	Tags.Add(FName("PlayerCharacter"));
-
 
 	// ------------- Player control for Nullpointer --------------
 	APlayerController* PlayerController = Cast<APlayerController>(GetController());
@@ -208,6 +203,7 @@ void APlayer_Character::SprintTriggered(const FInputActionValue& Value)
 {
 	if (Controller && Value.IsNonZero())
 	{
+		//Setting boolean for sprint = true
 		Sprinting = true;
 		if(Live_Stamina >= NULL &&  Exhaust == false)
 		{
