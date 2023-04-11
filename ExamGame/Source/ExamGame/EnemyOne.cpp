@@ -17,16 +17,12 @@ AEnemyOne::AEnemyOne()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
-
-	Colision = CreateDefaultSubobject<UCapsuleComponent>(TEXT("Collision"));
-	Colision->SetupAttachment(GetRootComponent());
-
 	PawnSensing = CreateDefaultSubobject<UPawnSensingComponent>(TEXT("PawnSensing"));
 	PawnSensing->SightRadius = 4000.f;
 	PawnSensing->SetPeripheralVisionAngle(45.f);
 
-	AttackRadius = 150.f;
-	ChaseRadius = 1000.f;
+	AttackRadius = 250.f;
+	ChaseRadius = 2000.f;
 	PatrolRadius = 200.f;
 	PatrolDelayMax = 8.f;
 	PatrolDelayMin = 2.f;
@@ -43,7 +39,7 @@ void AEnemyOne::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 void AEnemyOne::BeginPlay()
 {
 	Super::BeginPlay();
-
+	
 	// Gets the AI Controller
 	EnemyController = Cast<AAIController>(GetController());
 
@@ -51,24 +47,25 @@ void AEnemyOne::BeginPlay()
 	{
 		PawnSensing->OnSeePawn.AddDynamic(this, &AEnemyOne::PawnSeen);
 	}
-
-	MoveToTarget(PatrolTarget);
+	if(PatrolTarget)
+	{
+		MoveToTarget(PatrolTarget);
+	}
+	
 }
 
 void AEnemyOne::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if(EnemyState > EEnemyState::EES_EnemyPatrolling)
+	if(EnemyState == EEnemyState::EES_EnemyChaseing || EnemyState == EEnemyState::EES_EnemyAttacking)
 	{
 		CheckCombatTarget();
 	}
-
 	else
 	{
 		CheckPatrolTarget();
 	}
-
 	if(Health <= 0)
 	{
 		Die();
@@ -82,7 +79,6 @@ void AEnemyOne::PawnSeen(APawn* SeenPawn)
 
 	if(SeenPawn->ActorHasTag(FName("PlayerCharacter")))
 	{
-
 		//Stops the Patrolling function timer to prioritse chasing.
 		GetWorldTimerManager().ClearTimer(PatrolTimer);
 		GetCharacterMovement()->MaxWalkSpeed = ChaseSpeed;
@@ -121,13 +117,13 @@ AActor* AEnemyOne::ChoosePatrolTarget()
 	return nullptr;
 }
 
-bool AEnemyOne::InTargetRange(AActor* Target, double Radius)
+bool AEnemyOne::InTargetRange(AActor* Target, float Radius)
 {
 	//Skips Function if target is a nullptr, otherwise return an input target location
 	if (Target == nullptr) return false;
 
-	const double DistanceToTarget = (Target->GetActorLocation() - GetActorLocation()).Size();
-
+	const float DistanceToTarget = (Target->GetActorLocation() - GetActorLocation()).Size();
+	
 	return DistanceToTarget <= Radius;
 }
 
@@ -147,7 +143,7 @@ void AEnemyOne::CheckCombatTarget()
 {
 	if (!InTargetRange(CombatTarget, ChaseRadius))
 	{
-		// When outside of chase go back to patrol
+		// When outside of chase radius go back to patrol
 		CombatTarget = nullptr;
 		EnemyState = EEnemyState::EES_EnemyPatrolling;
 		GetCharacterMovement()->MaxWalkSpeed = PatrolSpeed;
@@ -163,15 +159,16 @@ void AEnemyOne::CheckCombatTarget()
 		MoveToTarget(CombatTarget);
 		GEngine->AddOnScreenDebugMessage(1, 1.f, FColor::Red, FString::Printf(TEXT("Chasing player")));
 	}
-	if(InTargetRange(CombatTarget, AttackRadius) && EnemyState != EEnemyState::EES_EnemyAttacking)
+	else if(InTargetRange(CombatTarget, AttackRadius) && EnemyState != EEnemyState::EES_EnemyAttacking)
 	{
 		// inside attack range, attack character.
 		EnemyState = EEnemyState::EES_EnemyAttacking;
 
-		GEngine->AddOnScreenDebugMessage(1, 1.f, FColor::Red, FString::Printf(TEXT("Attack player")));
+		GEngine->AddOnScreenDebugMessage(1, 1.f, FColor::Red, FString::Printf(TEXT("InRange of player")));
 
 		//This is where attack montage is put.
 	}
+
 }
 
 void AEnemyOne::MoveToTarget(AActor* Target)
@@ -184,9 +181,9 @@ void AEnemyOne::MoveToTarget(AActor* Target)
 
 	//Sets move to goal location
 	MoveRequest.SetGoalActor(Target);
-
+	
 	//How far away it stops from goal location
-	MoveRequest.SetAcceptanceRadius(15.f);
+	MoveRequest.SetAcceptanceRadius(70.f);
 
 	//Actually moves the player
 	EnemyController->MoveTo(MoveRequest);
@@ -200,9 +197,8 @@ void AEnemyOne::PatrolTimerFinished()
 
 void AEnemyOne::Die()
 {
-	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	SetLifeSpan(3.f);
-
+	//GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	//SetLifeSpan(3.f);
 }
 
 

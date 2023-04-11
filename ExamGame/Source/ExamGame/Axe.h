@@ -30,12 +30,14 @@ public:
 
 	// Called to bind functionality to input
 
+
 	//___________ Mesh Control ___________
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Weapons)
 		UStaticMeshComponent* Axe;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Weapons)
 		AInteractable* Weapon;
+
 
 	//___________ Collision Control ___________
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Weapons)
@@ -46,6 +48,7 @@ public:
 			UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex,
 			bool bFromSweep, const FHitResult& SweepResult);
 
+
 	//___________ Collision Control ___________
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 		class AEnemyOne* EnemyOne;
@@ -53,5 +56,25 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 		class APlayer_Character* Player;
 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+		class ACharacter* Character;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+		class APickUp* Item;
+
+
+	//___________ Variables ___________
 	int32 AmountOfAxe;
+
+
+	//___________ Functions ___________
+	UFUNCTION()
+		void AttachingAxe();
+
+private:
+	UPROPERTY(VisibleAnywhere)
+		USceneComponent* BoxTraceStart;
+
+	UPROPERTY(VisibleAnywhere)
+		USceneComponent* BoxTraceEnd;
 };

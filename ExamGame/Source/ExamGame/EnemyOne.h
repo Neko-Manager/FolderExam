@@ -1,5 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "CoreMinimal.h"
@@ -81,6 +79,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI Navigation")
 	float ChaseSpeed;
 
+
 	// ------------ Other ---------------------
 
 	// Timer Handle
@@ -96,7 +95,7 @@ protected:
 	// Choose a target, returns and AActor
 	AActor* ChoosePatrolTarget();
 
-	bool InTargetRange(AActor* Target, double Radius);
+	bool InTargetRange(AActor* Target, float Radius);
 
 	void CheckPatrolTarget();
 
@@ -107,16 +106,5 @@ protected:
 	void PatrolTimerFinished();
 
 	void Die();
-
-public:
-
-
-
-
-
-
-
-
-
 
 };
