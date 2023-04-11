@@ -62,14 +62,8 @@ void APlayer_Character::BeginPlay()
 	Inventory.SetNum(5);
 	CurrentInteractable = nullptr;
 
-
 	// Adds a charachter tag to the player Character for AI Detection.
 	Tags.Add(FName("PlayerCharacter"));
-
-
-	// Adds a charachter tag to the player Character for AI Detection.
-	Tags.Add(FName("PlayerCharacter"));
-
 
 	// ------------- Player control for Nullpointer --------------
 	APlayerController* PlayerController = Cast<APlayerController>(GetController());
