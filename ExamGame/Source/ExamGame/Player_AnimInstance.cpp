@@ -64,11 +64,6 @@ void UPlayer_AnimInstance::ResetAttack()
 }
 
 
-	    //Other Movement animations
-		CrouchAnim = Player->Crouching == true;
-		JumpAnim = Character->bWasJumping == true;
-
-
 
 
 

@@ -66,11 +66,6 @@ public:
 	//___________ Variables ___________
 	int32 AmountOfAxe;
 
-
-	//___________ Functions ___________
-	UFUNCTION()
-		void AttachingAxe();
-
 private:
 	UPROPERTY(VisibleAnywhere)
 		USceneComponent* BoxTraceStart;

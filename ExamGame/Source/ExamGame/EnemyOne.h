@@ -85,6 +85,9 @@ public:
 	// Timer Handle
 	FTimerHandle PatrolTimer;
 
+	// Timer Handle
+	FTimerHandle AttackTimer;
+
 protected:
 
 	// ------------ Functions --------------------
@@ -102,6 +105,10 @@ protected:
 	void CheckCombatTarget();
 
 	void MoveToTarget(AActor* Target);
+
+	void MoveToAttackRange(AActor* Target);
+
+	void AttackTimerFinished();
 
 	void PatrolTimerFinished();
 
