@@ -79,6 +79,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI Navigation")
 	float ChaseSpeed;
 
+
 	// ------------ Other ---------------------
 
 	// Timer Handle
