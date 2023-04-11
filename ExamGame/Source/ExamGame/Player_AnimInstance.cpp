@@ -46,6 +46,7 @@ void UPlayer_AnimInstance::NativeUpdateAnimation(float DeltaTime)
 		FallingEndAnim = Player->bClientWasFalling;
 
 
+
 	    //Other Movement animations
 		CrouchAnim = Player->Crouching == true;
 		JumpAnim = Character->bWasJumping == true;
