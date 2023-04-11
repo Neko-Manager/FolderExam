@@ -16,14 +16,16 @@ AAxe::AAxe()
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	HitBox = CreateDefaultSubobject<UBoxComponent>(TEXT("CollisionBox"));
-	HitBox->InitBoxExtent(FVector(5.f, 20.f, 10.f));
-	HitBox->OnComponentBeginOverlap.AddDynamic(this, &AAxe::OnOverlap);
-	HitBox->SetupAttachment(InteractableMesh);
+	//HitBox = CreateDefaultSubobject<UBoxComponent>(TEXT("CollisionBox"));
+	//HitBox->InitBoxExtent(FVector(5.f, 20.f, 10.f));
+	//HitBox->OnComponentBeginOverlap.AddDynamic(this, &AAxe::OnOverlap);
+	//HitBox->SetupAttachment(InteractableMesh);
+	InteractableMesh->OnComponentBeginOverlap.AddDynamic(this, &AAxe::OnOverlap);
 }
 
 void AAxe::BeginPlay()
 {
+	Super::BeginPlay();
 }
 
 
