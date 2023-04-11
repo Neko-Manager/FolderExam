@@ -6,7 +6,24 @@
 
 void UPlayer_AnimInstance::NativeInitializeAnimation()
 {
-	Super::NativeInitializeAnimation();
+	//Super::NativeInitializeAnimation();
+
+	//// makes sure its not a null pointer before using it in code.
+	//if (Pawn == nullptr) {
+	//	Pawn = TryGetPawnOwner();
+	//}
+	////IsAttack = false;
+
+
+	//if(Player == nullptr)
+	//{
+	//	Player = Cast<APlayer_Character>(Pawn);
+	//}
+
+	
+
+	//Player = Cast<APlayer_Character>(Pawn);
+	
 	if (Pawn == nullptr) 
 	{
 		Pawn = TryGetPawnOwner();
@@ -15,53 +32,102 @@ void UPlayer_AnimInstance::NativeInitializeAnimation()
 			Player = Cast<APlayer_Character>(Pawn);
 		}
 	}
-	AxeAnim = false;
+	//AxeAnim = false;
 }
 
-void UPlayer_AnimInstance::NativeUpdateAnimation(float DeltaTime)
+void UPlayer_AnimInstance::UpdateAnimationProperties()
 {
-	if (Pawn == nullptr) 
-	{
+	if (Pawn == nullptr) {
 		Pawn = TryGetPawnOwner();
-		if (Pawn && Player == nullptr) 
-		{
+		if (Pawn && Player == nullptr) {
 			Player = Cast<APlayer_Character>(Pawn);
 		}
 	}
 
-	if (Pawn) 
-	{
+
+	if (Pawn) {
 		FVector Speed = Pawn->GetVelocity();
 		Speed.Z = 0.f;
 		MovementSpeed = Speed.Size();
 	}
+	//if (Player) {
+	//	IsAttack = Player->GetIsAttack();
+	//}
 
-	if(Player)
-	{
-		//Movement animations
-	/*	WalkAnim = Player->;*/
-		SprintAnim = Player->Sprinting;
-		ExhaustAnim = Player->Exhaust;
-		FallingIdleAnim = Player->bWasJumping;
-		FallingEndAnim = Player->bClientWasFalling;
+}
 
+void UPlayer_AnimInstance::ResetAttack()
+{
+	//if (Player) {
+	//	Player->resetAttack();
+	//}
+}
 
 
 	    //Other Movement animations
 		CrouchAnim = Player->Crouching == true;
 		JumpAnim = Character->bWasJumping == true;
 
-		//CombatAnimations
-		AxeAnim = Player->AxeActive == true;
-	}
 
 
-}
 
-void UPlayer_AnimInstance::CombatAnimReset()
-{
-	if(Player)
-	{
-		Player->ResetAxeAttack();
-	}
-}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//void UPlayer_AnimInstance::NativeUpdateAnimation(float DeltaTime)
+//{
+//	if (Pawn == nullptr) 
+//	{
+//		Pawn = TryGetPawnOwner();
+//		if (Pawn && Player == nullptr) 
+//		{
+//			Player = Cast<APlayer_Character>(Pawn);
+//		}
+//	}
+//
+//	if (Pawn) 
+//	{
+//		FVector Speed = Pawn->GetVelocity();
+//		Speed.Z = 0.f;
+//		MovementSpeed = Speed.Size();
+//	}
+//
+//	if(Player)
+//	{
+//		//Movement animations
+//	/*	WalkAnim = Player->;*/
+//		SprintAnim = Player->Sprinting;
+//		ExhaustAnim = Player->Exhaust;
+//		FallingIdleAnim = Player->bWasJumping;
+//		FallingEndAnim = Player->bClientWasFalling;
+//
+//
+//	    //Other Movement animations
+//		CrouchAnim = Player->Crouching == true;
+//		JumpAnim = Character->bWasJumping == true;
+//
+//		//CombatAnimations
+//		AxeAnim = Player->AxeActive == true;
+//	}
+//
+//
+//}
+//
+//void UPlayer_AnimInstance::CombatAnimReset()
+//{
+//	if(Player)
+//	{
+//		Player->ResetAxeAttack();
+//	}
+//}
