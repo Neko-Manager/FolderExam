@@ -5,6 +5,7 @@
 #include "EnemyOne.h"
 #include "InventoryGamemode.h"
 #include "Player_Character.h"
+#include "Kismet/GameplayStatics.h"
 #include "Components/BoxComponent.h"
 
 
@@ -15,17 +16,12 @@ AAxe::AAxe()
 	AmountOfAxe = 0;
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
-	//HitBox = CreateDefaultSubobject<UBoxComponent>(TEXT("CollisionBox"));
-	//HitBox->InitBoxExtent(FVector(5.f, 20.f, 10.f));
-	//HitBox->OnComponentBeginOverlap.AddDynamic(this, &AAxe::OnOverlap);
-	//HitBox->SetupAttachment(InteractableMesh);
-	InteractableMesh->OnComponentBeginOverlap.AddDynamic(this, &AAxe::OnOverlap);
 }
 
 void AAxe::BeginPlay()
 {
 	Super::BeginPlay();
+	Axe = InteractableMesh;
 }
 
 
@@ -33,16 +29,35 @@ void AAxe::BeginPlay()
 void AAxe::Tick(float DeltaTime)
 {
 		Super::Tick(DeltaTime);
+		
 }
 
 void AAxe::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	//Pointing to information in player class for when the axe hits the player. 
-	if (OtherActor->IsA<AEnemyOne>() /*&& Player->AxeActive == true*/)
+	if (OtherActor->IsA<AEnemyOne>() && Player->AxeActive == true)
 	{
-		EnemyOne->Health -= 10;
+		Player->UseItemAtInventorySlot(0);
+		EnemyOne->Health -= 5;
+		Player->Live_Stamina -= 5;
 		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Monster Hit!!!")));
 	}
+
+
+}
+
+void AAxe::AttachingAxe(int32 Index)
+{
+	if (Inventory[Index] != NULL && Inventory[Index]->ItemName == "Axe")
+	{
+		InteractableMesh->SetVisibility(true);
+		InteractableMesh->SetSimulatePhysics(true);
+		SetActorEnableCollision(true);
+		FAttachmentTransformRules TransformRules(EAttachmentRule::SnapToTarget, true);
+		InteractableMesh->AttachToComponent(Player->GetMesh(), TransformRules, FName("RightHandSocket"));
+		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Axe attached")));
+	}
+
 }
 	
 

@@ -54,6 +54,7 @@ APlayer_Character::APlayer_Character()
 
 }
 
+
 // Called when the game starts or when spawned
 void APlayer_Character::BeginPlay()
 {
@@ -76,7 +77,6 @@ void APlayer_Character::BeginPlay()
 
 	// ------------- Default floats and integers --------------
 	//DeltaTime Control
-	Exhaust_Timer = NULL;
 	TimeTick = NULL;
 	TimeAddingTick = NULL;
 
@@ -89,20 +89,32 @@ void APlayer_Character::BeginPlay()
 	Crouch_Speed = 200.f;
 	Exhaust_Speed = 100.f;
 
+
 	//Stamina control
 	Live_Stamina = 100.f;
 	Max_Stamina = 100.f;
+	Exhaust_Timer = NULL;
+
+	//Hunger Control
+	Live_Hunger = 100.f;
+	Max_Hunger = 100.f;
 
 	//Condition time limiters
 	Counter = 5.f;
 
 	// ------------- Default floats and integers --------------
-	//Booleans for sprinting
+	//Booleans for sprinting and movement
 	Sprinting = false;
 	Exhaust = false;
-	Crouching = false;
 	AxeActive = false;
+	Crouching = false;
+
+	//Booleans for added effects
+	Eating = false;
+	Starving = false;
+
 }
+
 
 // Called every frame
 void APlayer_Character::Tick(float DeltaTime)
@@ -113,16 +125,22 @@ void APlayer_Character::Tick(float DeltaTime)
 
 	// ------------- DeltaTime control --------------
 	TimeTick = DeltaTime;
+	NegativeTimeTick = -DeltaTime;
 	TimeAddingTick += DeltaTime;
 
-	
 	// ------------- Functions` updater --------------
 	//Movement
 	StaminaRecharger(TimeTick);
 	Sprint();
 	ExhaustChecker(Live_Stamina);
 	CrouchCustom();
+
+	HungerDecay(NegativeTimeTick);
+	StarvingChecker(Live_Hunger);
+	EatingChecker(Live_Hunger);
 }
+
+
 
 // ------------- Character control --------------
 void APlayer_Character::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -134,14 +152,14 @@ void APlayer_Character::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 	{
 		EnhancedInputComponent->BindAction(IA_GroundMovement, ETriggerEvent::Triggered, this, &APlayer_Character::GroundedMovement);
 		EnhancedInputComponent->BindAction(IA_Look, ETriggerEvent::Triggered, this, &APlayer_Character::Look);
-		EnhancedInputComponent->BindAction(IA_Jump, ETriggerEvent::Triggered, this, &ACharacter::Jump);
+		EnhancedInputComponent->BindAction(IA_Jump, ETriggerEvent::Triggered, this, &APlayer_Character::JumpTrigger);
 		EnhancedInputComponent->BindAction(IA_Sprint, ETriggerEvent::Triggered, this, &APlayer_Character::SprintTriggered);
 		EnhancedInputComponent->BindAction(IA_Crouch, ETriggerEvent::Triggered, this, &APlayer_Character::CrouchTriggered);
 		EnhancedInputComponent->BindAction(IA_Interact, ETriggerEvent::Triggered, this, &APlayer_Character::Interact);
 
 		//open Inventory
-		EnhancedInputComponent->BindAction(IA_OpenInventory, ETriggerEvent::Started, this, &APlayer_Character::ToggleInventory);
-		EnhancedInputComponent->BindAction(IA_OpenInventory, ETriggerEvent::Completed, this, &APlayer_Character::ToggleInventory);
+		EnhancedInputComponent->BindAction(IA_OpenInventory, ETriggerEvent::Triggered, this, &APlayer_Character::ToggleInventory);
+		/*EnhancedInputComponent->BindAction(IA_OpenInventory, ETriggerEvent::Completed, this, &APlayer_Character::ToggleInventory);*/
 
 		//Combat Inputs
 		EnhancedInputComponent->BindAction(IA_AxeAttack, ETriggerEvent::Triggered, this, &APlayer_Character::AxeAttackTrigger);
@@ -155,8 +173,9 @@ void APlayer_Character::GroundedMovement(const FInputActionValue& Value)
 	//Checking i the controller is not a NullPointer and a Controller.
 	FVector2D VectorDirection = Value.Get<FVector2D>();
 	GetCharacterMovement()->MaxWalkSpeed = Walk_Speed;
+	AInventoryGamemode* Gamemode = Cast<AInventoryGamemode>(GetWorld()->GetAuthGameMode());
 
-	if (Controller && Value.IsNonZero())
+	if (Controller && Value.IsNonZero() && Gamemode->GetHUDState() == Gamemode->HS_Ingame)
 	{
 		//We want to move in the direction of the Yaw rotation(x-look-axis). Fixing rotation to Yaw.
 		const FRotator ControlPlayerRotationYaw = GetControlRotation();
@@ -174,9 +193,10 @@ void APlayer_Character::GroundedMovement(const FInputActionValue& Value)
 void APlayer_Character::Look(const FInputActionValue& Value)
 {
 	// ------------- Mouse Direction Control for player --------------
+	AInventoryGamemode* Gamemode = Cast<AInventoryGamemode>(GetWorld()->GetAuthGameMode());
 
 	//Checking if the controller is received.
-	if (Controller && Value.IsNonZero())
+	if (Controller && Value.IsNonZero() && Gamemode->GetHUDState() == Gamemode->HS_Ingame)
 	{
 		//Creating a reference for a 2D vector.
 		const FVector2D LookAxisInput = Value.Get<FVector2D>();
@@ -186,6 +206,7 @@ void APlayer_Character::Look(const FInputActionValue& Value)
 		AddControllerPitchInput(-LookAxisInput.Y);
 	}
 }
+
 
 
 // ------------- Sprint control --------------
@@ -201,7 +222,7 @@ void APlayer_Character::StaminaRecharger(float Timer)
 
 void APlayer_Character::SprintTriggered(const FInputActionValue& Value)
 {
-	if (Controller && Value.IsNonZero())
+	if (Controller && Value.IsNonZero() && GetCharacterMovement()->MaxWalkSpeed >= Walk_Speed)
 	{
 		//Setting boolean for sprint = true
 		Sprinting = true;
@@ -227,15 +248,16 @@ void APlayer_Character::Sprint()
 }
 
 
-// ------------- crouch Control --------------
+// ------------- Crouch Control --------------
 void APlayer_Character::CrouchTriggered(const FInputActionValue& Value)
 {
-	if (Controller && Value.IsNonZero() && GetCapsuleComponent() != nullptr)
+	if (Controller && Value.IsNonZero())
 	{
 		Crouching = true;
 		CrouchCustom();
 	}
 	Crouching = false;
+
 	
 }
 
@@ -244,6 +266,7 @@ void APlayer_Character::CrouchCustom()
 	// ------------- Sprinting control with regenerating stamina --------------
 	if (Crouching == true)
 	{
+
 		GetCapsuleComponent()->SetCapsuleHalfHeight(66.f);
 		GetCharacterMovement()->MaxWalkSpeed = Crouch_Speed;
 
@@ -255,6 +278,52 @@ void APlayer_Character::CrouchCustom()
 		GetCapsuleComponent()->SetCapsuleHalfHeight(88.f);
 		GetCharacterMovement()->MaxWalkSpeed = Crouch_Speed;
 		/*	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Blue, FString::Printf(TEXT("Crouch == false:")));*/
+	}
+}
+
+
+// ------------- Hunger Control --------------
+void APlayer_Character::HungerDecay(float Timer)
+{
+	if(Sprinting == false && Exhaust == false && Live_Hunger >= NULL && Starving == false)
+	{
+		Live_Hunger += Timer/3.f;
+	}
+
+}
+
+void APlayer_Character::StarvingChecker(float Hunger)
+{
+	if(Hunger <= NULL)
+	{
+		Starving = true;
+
+		if(Starving == true)
+		{
+			Max_Stamina = Max_Stamina / 2;
+			GetCharacterMovement()->MaxWalkSpeed = Walk_Speed / 2;
+		}
+	}
+}
+
+void APlayer_Character::EatingChecker(float Hunger)
+{
+	if(Eating == true)
+	{
+		Hunger += 20;
+	}
+}
+
+
+// ------------- Jump Control --------------
+void APlayer_Character::JumpTrigger(const FInputActionValue& Value)
+{
+	AInventoryGamemode* Gamemode = Cast<AInventoryGamemode>(GetWorld()->GetAuthGameMode());
+
+	if(Controller && Value.IsNonZero() && Exhaust == false && Gamemode->GetHUDState() == Gamemode->HS_Ingame)
+	{
+		Jump();
+		Live_Stamina -= 20.f;
 	}
 }
 
@@ -289,12 +358,49 @@ void APlayer_Character::ExhaustChecker(float Stamina)
 }
 
 
+
 // ------------- Combat Control (Axe) --------------
 void APlayer_Character::AxeAttackTrigger(const FInputActionValue& Value)
 {
-	if (Controller && Value.IsNonZero() && Exhaust == false)
+	AInventoryGamemode* Gamemode = Cast<AInventoryGamemode>(GetWorld()->GetAuthGameMode());
+
+	if (Controller && Value.IsNonZero() && Exhaust == false && GivenItemNameAtInventorySlot(0) == "Axe" && Gamemode->GetHUDState() == Gamemode->HS_Ingame)
 	{
 		AxeActive = true;
+		/*UseItemAtInventorySlot(0);*/
+
+		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Blue, FString::Printf(TEXT("AxeAttack = true:")));
+		ResetAxeAttack();
+	}
+
+	if (Controller && Value.IsNonZero() && Exhaust == false && GivenItemNameAtInventorySlot(1) == "Axe" && Gamemode->GetHUDState() == Gamemode->HS_Ingame)
+	{
+		AxeActive = true;
+	/*	UseItemAtInventorySlot(1);*/
+		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Blue, FString::Printf(TEXT("AxeAttack = true:")));
+		ResetAxeAttack();
+	}
+
+	if (Controller && Value.IsNonZero() && Exhaust == false && GivenItemNameAtInventorySlot(2) == "Axe" && Gamemode->GetHUDState() == Gamemode->HS_Ingame)
+	{
+		AxeActive = true;
+	/*	UseItemAtInventorySlot(2);*/
+		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Blue, FString::Printf(TEXT("AxeAttack = true:")));
+		ResetAxeAttack();
+	}
+
+	if (Controller && Value.IsNonZero() && Exhaust == false && GivenItemNameAtInventorySlot(3) == "Axe" && Gamemode->GetHUDState() == Gamemode->HS_Ingame)
+	{
+		AxeActive = true;
+		/*UseItemAtInventorySlot(3);*/
+		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Blue, FString::Printf(TEXT("AxeAttack = true:")));
+		ResetAxeAttack();
+	}
+
+	if (Controller && Value.IsNonZero() && Exhaust == false && GivenItemNameAtInventorySlot(4) == "Axe" && Gamemode->GetHUDState() == Gamemode->HS_Ingame)
+	{
+		AxeActive = true;
+		/*UseItemAtInventorySlot(4);*/
 		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Blue, FString::Printf(TEXT("AxeAttack = true:")));
 		ResetAxeAttack();
 	}
@@ -313,6 +419,7 @@ void APlayer_Character::ResetAxeAttack()
 void APlayer_Character::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 }
+
 
 
 // ------------- Item Control --------------
@@ -365,19 +472,20 @@ void APlayer_Character::UseItemAtInventorySlot(int32 Slot)
 }
 
 
+
 // ------------- Interaction Control --------------
-void APlayer_Character::ToggleInventory()
+void APlayer_Character::ToggleInventory(const FInputActionValue& Value)
 {
 	//Open Inventory
 	AInventoryGamemode* Gamemode = Cast<AInventoryGamemode>(GetWorld()->GetAuthGameMode());
 
-	if (Gamemode->GetHUDState() == Gamemode->HS_Ingame)
+	if (Controller && Value.IsNonZero() && Gamemode->GetHUDState() == Gamemode->HS_Ingame)
 	{
 		Gamemode->ChangeHUDState(Gamemode->HS_Inventory);
 	}
 	else
 	{
-		Gamemode->ChangeHUDState(Gamemode->HS_Ingame);
+		Gamemode->ChangeHUDState((Gamemode->HS_Ingame));
 	}
 }
 
@@ -396,18 +504,23 @@ void APlayer_Character::CheckForInteractables()
 	FVector StartTrace = Camera->GetComponentLocation();
 	FVector	EndTrace = (Camera->GetForwardVector()* Reach) + StartTrace;
 
+
 	//ShowHit
 	FHitResult HitResult;
+
 
 	//Initliaize parameters and ignoring the actor, so the visual interaction text does not appear constantly
 	FCollisionQueryParams CQP;
 	CQP.AddIgnoredActor(this);
 
+
 	//Getting the Line trace by set world
 	GetWorld()->LineTraceSingleByChannel(HitResult, StartTrace, EndTrace, ECC_WorldDynamic, CQP);
 
+
 	//Cast the Line trace
 	AInteractable* PotentialInteractable = Cast<AInteractable>(HitResult.GetActor());
+
 
 	//Condition for Visual text to execute
 	if (PotentialInteractable == NULL)

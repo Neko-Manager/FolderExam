@@ -38,18 +38,6 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Weapons)
 		AInteractable* Weapon;
 
-
-	//___________ Collision Control ___________
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Weapons)
-		class UBoxComponent* HitBox;
-
-	UFUNCTION()
-		void OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-			UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex,
-			bool bFromSweep, const FHitResult& SweepResult);
-
-
-	//___________ Collision Control ___________
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 		class AEnemyOne* EnemyOne;
 
@@ -62,14 +50,26 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 		class APickUp* Item;
 
+	//Player Inventory, represented as a TArray of pickup object.
+	UPROPERTY(EditAnywhere)
+		TArray<APickUp*> Inventory;
+
+
+
+	//___________ Collision Control ___________
+	UFUNCTION()
+		void OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+			UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex,
+			bool bFromSweep, const FHitResult& SweepResult);
+
+
 
 	//___________ Variables ___________
 	int32 AmountOfAxe;
 
 
 	//___________ Functions ___________
-	UFUNCTION()
-		void AttachingAxe();
+	void AttachingAxe(int32 Index);
 
 private:
 	UPROPERTY(VisibleAnywhere)
