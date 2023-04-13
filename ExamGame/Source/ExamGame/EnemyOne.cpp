@@ -21,7 +21,7 @@ AEnemyOne::AEnemyOne()
 	PawnSensing->SightRadius = 4000.f;
 	PawnSensing->SetPeripheralVisionAngle(45.f);
 
-	AttackRadius = 250.f;
+	AttackRadius = 300.f;
 	ChaseRadius = 2000.f;
 	PatrolRadius = 200.f;
 	PatrolDelayMax = 8.f;
@@ -70,6 +70,13 @@ void AEnemyOne::Tick(float DeltaTime)
 	{
 		Die();
 	}
+	if(InTargetRange(CombatTarget,AttackRadius) && CombatTarget != nullptr)
+	{
+		//Trigger Attack
+		EnemyState = EEnemyState::EES_EnemyChaseing;
+		GetWorldTimerManager().ClearTimer(AttackTimer);
+	}
+
 }
 
 void AEnemyOne::PawnSeen(APawn* SeenPawn)
@@ -151,20 +158,31 @@ void AEnemyOne::CheckCombatTarget()
 
 		GEngine->AddOnScreenDebugMessage(1, 1.f, FColor::Red, FString::Printf(TEXT("Loose intrest")));
 	}
-	else if (!InTargetRange(CombatTarget, AttackRadius) && EnemyState != EEnemyState::EES_EnemyChaseing)
+	if (InTargetRange(CombatTarget, ChaseRadius) && EnemyState != EEnemyState::EES_EnemyAttacking)
 	{
 		// Outside attack range chase character
 		EnemyState = EEnemyState::EES_EnemyChaseing;
 		GetCharacterMovement()->MaxWalkSpeed = ChaseSpeed;
-		MoveToTarget(CombatTarget);
+		MoveToAttackRange(CombatTarget);
 		GEngine->AddOnScreenDebugMessage(1, 1.f, FColor::Red, FString::Printf(TEXT("Chasing player")));
+		if(InTargetRange(CombatTarget, AttackRadius))
+		{
+			float WaitTime = 3.f;
+			GetWorldTimerManager().SetTimer(PatrolTimer, this, &AEnemyOne::AttackTimerFinished, WaitTime);
+			GEngine->AddOnScreenDebugMessage(1, 1.f, FColor::Red, FString::Printf(TEXT("Attack Timer Started")));
+		}
 	}
-	else if(InTargetRange(CombatTarget, AttackRadius) && EnemyState != EEnemyState::EES_EnemyAttacking)
+	if(InTargetRange(CombatTarget, AttackRadius))
 	{
 		// inside attack range, attack character.
-		EnemyState = EEnemyState::EES_EnemyAttacking;
+		
 
-		GEngine->AddOnScreenDebugMessage(1, 1.f, FColor::Red, FString::Printf(TEXT("InRange of player")));
+		float WaitTime = 3.f;
+	
+
+		GetWorldTimerManager().SetTimer(PatrolTimer, this, &AEnemyOne::AttackTimerFinished, WaitTime);
+	
+		//GEngine->AddOnScreenDebugMessage(1, 1.f, FColor::Red, FString::Printf(TEXT("Attack")));
 
 		//This is where attack montage is put.
 	}
@@ -183,16 +201,45 @@ void AEnemyOne::MoveToTarget(AActor* Target)
 	MoveRequest.SetGoalActor(Target);
 	
 	//How far away it stops from goal location
-	MoveRequest.SetAcceptanceRadius(70.f);
+	MoveRequest.SetAcceptanceRadius(25.f);
 
 	//Actually moves the player
 	EnemyController->MoveTo(MoveRequest);
 }
 
+void AEnemyOne::MoveToAttackRange(AActor* Target)
+{
+	// Moves to the return value of target given by in target range
+	if (EnemyController == nullptr || Target == nullptr) return;
+	//Sets the move request
+	FAIMoveRequest MoveRequest;
+	
+	MoveRequest.SetGoalLocation((Target->GetActorLocation() + FVector(200, 200, 0)));
+	MoveRequest.SetAcceptanceRadius(25.f);
+
+	if(Target->GetActorLocation().X )
+
+
+
+	EnemyController->SetFocalPoint(Target->GetActorLocation(), 1);
+
+	EnemyController->MoveTo(MoveRequest);
+
+	EnemyController->SetFocalPoint(Target->GetActorLocation(), 1);
+
+
+}
+
+void AEnemyOne::AttackTimerFinished()
+{
+	EnemyState = EEnemyState::EES_EnemyAttacking;
+	MoveToTarget(CombatTarget);
+	GEngine->AddOnScreenDebugMessage(1, 1.f, FColor::Red, FString::Printf(TEXT("Attacking")));
+}
+
 void AEnemyOne::PatrolTimerFinished()
 {
 	MoveToTarget(PatrolTarget);
-
 }
 
 void AEnemyOne::Die()
