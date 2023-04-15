@@ -27,8 +27,8 @@ AEnemyOne::AEnemyOne()
 	PatrolDelayMax = 8.f;
 	PatrolDelayMin = 2.f;
 	Health = 10;
-	PatrolSpeed = 125.f;
-	ChaseSpeed = 300.f;
+	PatrolSpeed = 200.f;
+	ChaseSpeed = 400.f;
 }
 
 void AEnemyOne::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
