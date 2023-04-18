@@ -40,7 +40,6 @@ public:
 		class AEnemyOne* EnemyOne;
 
 
-
 	// ------------------------ Character control Input Actions ----------------------------
 	//Camera control
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera Component")
@@ -93,24 +92,19 @@ public:
 		void CrouchTriggered(const FInputActionValue& Value);
 
 	UFUNCTION(BlueprintCallable)
+		void JumpTrigger(const FInputActionValue& Value);
+
+	UFUNCTION(BlueprintCallable)
 		void AxeAttackTrigger(const FInputActionValue& Value);
 
-	//Functions for Input
-	UFUNCTION(BlueprintCallable)
-		void Sprint();
-
-	UFUNCTION(BlueprintCallable)
-		void CrouchCustom();
-
-
-	//Movement booleans
+	//Movement Booleans
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement Boolean")
 		bool Sprinting;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement Boolean")
 		bool Crouching;
 
-	
+
 	//Movement Speed Control
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement Speed Control")
 		float Walk_Speed;
@@ -130,6 +124,9 @@ public:
 		float TimeTick;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Time Control")
+		float NegativeTimeTick;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Time Control")
 		float TimeAddingTick;
 
 	//Stamina Control
@@ -139,8 +136,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stamina Control")
 		float Live_Stamina;
 
-	UFUNCTION(BlueprintCallable)
-		void StaminaRecharger(float Timer);
 
 	//Exhaust Control
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Exhaust Control")
@@ -155,17 +150,34 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void ExhaustChecker(float Stamina);
 
+
 	// ------------------------ Combat Control ----------------------------
+	//Combat Control
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat Control")
 		bool AxeActive;
 
 	UFUNCTION(BlueprintCallable)
 		void ResetAxeAttack();
-
 	
 	//Hunger Control
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "hunger Control")
+		float Max_Hunger;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "hunger Control")
+		float Live_Hunger;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hunger")
-		float Hunger;
+		bool Eating;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hunger")
+		bool Starving;
+
+	UFUNCTION(BlueprintCallable)
+		void StarvingChecker(float HungerTick);
+
+	UFUNCTION(BlueprintCallable)
+		void EatingChecker(float EatingTick);
+
 
 	// ------------------------ Collision Control ----------------------------
 	//Collision function
@@ -175,6 +187,8 @@ public:
 			bool bFromSweep, const FHitResult& SweepResult);
 
 
+
+	// ------------------------ Interaction Control ----------------------------
 	//Player Help Text
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "HUD")
 	FString HelpText;
@@ -195,22 +209,42 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Inventory Functions")
 		void UseItemAtInventorySlot(int32 Slot);
 
+
 private:
+	// ------------------------ Movement Control Private ----------------------------//
+	///Movement Functions
+	UFUNCTION(BlueprintCallable)
+		void Sprint();
+
+	UFUNCTION(BlueprintCallable)
+		void CrouchCustom();
+
+	UFUNCTION(BlueprintCallable)
+		void StaminaRecharger(float Timer);
+
+	UFUNCTION(BlueprintCallable)
+		void HungerDecay(float Timer);
+
+
 	// ------------------------ Inventory and interaction Control ----------------------------
 	//player reach
 	float Reach;
 
 	// Open Inventory
-	void ToggleInventory();
+	void ToggleInventory(const FInputActionValue& Value);
+
 
 	// Interact with the interactable (object), if there is one
 	void Interact();
 
+
 	//Check for interactable
 	void CheckForInteractables();
 
+
 	//Item the player are looking at
 	AInteractable* CurrentInteractable;
+
 
 	//Player Inventory, represented as a TArray of pickup object.
 	UPROPERTY(EditAnywhere)

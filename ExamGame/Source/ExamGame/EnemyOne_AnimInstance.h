@@ -4,18 +4,17 @@
 
 #include "CoreMinimal.h"
 #include "Animation/AnimInstance.h"
-#include "Player_AnimInstance.generated.h"
+#include "EnemyOne_AnimInstance.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class EXAMGAME_API UPlayer_AnimInstance : public UAnimInstance
+class EXAMGAME_API UEnemyOne_AnimInstance : public UAnimInstance
 {
 	GENERATED_BODY()
-		
 
-public: 
+public:
 
 	// ------------------------ Pointer and references ----------------------------
 
@@ -32,6 +31,6 @@ public:
 		class APawn* Pawn;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Animation")
-		class APlayer_Character* Player;
+		class AEnemyOne* EnemyOne;
 
 };
