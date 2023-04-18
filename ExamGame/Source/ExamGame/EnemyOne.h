@@ -112,6 +112,8 @@ protected:
 
 	void PatrolTimerFinished();
 
+	void Timer(float);
+
 	void Die();
 
 };
