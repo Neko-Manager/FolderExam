@@ -163,6 +163,7 @@ void AEnemyOne::CheckCombatTarget()
 		// Outside attack range chase character
 		EnemyState = EEnemyState::EES_EnemyChaseing;
 		GetCharacterMovement()->MaxWalkSpeed = ChaseSpeed;
+		//MoveToTarget(CombatTarget);
 		MoveToAttackRange(CombatTarget);
 		GEngine->AddOnScreenDebugMessage(1, 1.f, FColor::Red, FString::Printf(TEXT("Chasing player")));
 		if(InTargetRange(CombatTarget, AttackRadius))
@@ -216,6 +217,7 @@ void AEnemyOne::MoveToAttackRange(AActor* Target)
 	
 	MoveRequest.SetGoalLocation((Target->GetActorLocation() + FVector(200, 200, 0)));
 	MoveRequest.SetAcceptanceRadius(25.f);
+	MoveRequest.SetCanStrafe(true);
 
 	if(Target->GetActorLocation().X )
 
@@ -233,13 +235,19 @@ void AEnemyOne::MoveToAttackRange(AActor* Target)
 void AEnemyOne::AttackTimerFinished()
 {
 	EnemyState = EEnemyState::EES_EnemyAttacking;
-	MoveToTarget(CombatTarget);
+	//MoveToTarget(CombatTarget);
 	GEngine->AddOnScreenDebugMessage(1, 1.f, FColor::Red, FString::Printf(TEXT("Attacking")));
 }
 
 void AEnemyOne::PatrolTimerFinished()
 {
 	MoveToTarget(PatrolTarget);
+}
+
+void AEnemyOne::Timer(float deltatime)
+{
+	//float time = 5.f;
+	//if()
 }
 
 void AEnemyOne::Die()
