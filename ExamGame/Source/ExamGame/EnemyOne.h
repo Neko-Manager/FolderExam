@@ -79,6 +79,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI Navigation")
 	float ChaseSpeed;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI Navigation")
+	float AcceptanceRadius;
 
 	// ------------ Other ---------------------
 
