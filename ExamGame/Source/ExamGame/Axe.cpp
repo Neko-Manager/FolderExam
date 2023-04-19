@@ -39,7 +39,11 @@ void AAxe::Tick(float DeltaTime)
 void AAxe::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	//Pointing to information in player class for when the axe hits the player. 
+<<<<<<< HEAD
 	if (OtherActor->IsA<AEnemyOne>() && Player->Attaching == true && Player->AxeActive == true)
+=======
+	if (OtherActor->IsA<AEnemyOne>() &&Player->AxeActive == true)
+>>>>>>> MainBranch
 	{
 		EnemyOne->Health -= 5;
 		Player->Live_Stamina -= 5;
@@ -49,11 +53,21 @@ void AAxe::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActo
 
 void AAxe::Use_Implementation()
 {
+<<<<<<< HEAD
 	InteractableMesh->SetVisibility(true);
 	InteractableMesh->SetSimulatePhysics(true);
 	SetActorEnableCollision(true);
 }
 
+=======
+	FAttachmentTransformRules TransformRules(EAttachmentRule::SnapToTarget, true);
+	Axe->AttachToComponent(Player->GetMesh(), TransformRules, FName("RightHandSocket"));
+	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Axe attached")));
+}
+
+
+
+>>>>>>> MainBranch
 	
 
 

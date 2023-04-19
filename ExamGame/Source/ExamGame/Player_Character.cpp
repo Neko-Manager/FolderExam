@@ -23,6 +23,7 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubSystems.h"
 #include "InventoryGamemode.h"
+#include "Components/PanelWidget.h"
 #include "Engine/StaticMeshSocket.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -254,7 +255,9 @@ void APlayer_Character::Sprint()
 // ------------- Crouch Control --------------
 void APlayer_Character::CrouchTriggered(const FInputActionValue& Value)
 {
-	if (Controller && Value.IsNonZero())
+	AInventoryGamemode* Gamemode = Cast<AInventoryGamemode>(GetWorld()->GetAuthGameMode());
+
+	if (Controller && Value.IsNonZero() && Gamemode->GetHUDState() == Gamemode->HS_Ingame)
 	{
 		Crouching = true;
 		CrouchCustom();
@@ -361,11 +364,11 @@ void APlayer_Character::ExhaustChecker(float Stamina)
 }
 
 
-
-// ------------- Combat Control (Axe) --------------
-void APlayer_Character::AxeAttackTrigger(const FInputActionValue& Value)
+// ------------- Attaching Item Control --------------
+void APlayer_Character::AttachingItem()
 {
 	AInventoryGamemode* Gamemode = Cast<AInventoryGamemode>(GetWorld()->GetAuthGameMode());
+<<<<<<< HEAD
 	if(Gamemode->GetHUDState() == Gamemode->HS_Ingame && Attaching == true)
 	{
 		AxeActive = true;
@@ -421,6 +424,66 @@ void APlayer_Character::AttachingItem()
 		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Axe attached")));
 	}
 
+=======
+
+	int slot[] = { 0,1,2,3,4 };
+	if (Gamemode->GetHUDState() == Gamemode->HS_Inventory && Inventory[0] != nullptr)
+	{
+		Attaching = true;
+		FAttachmentTransformRules TransformRules(EAttachmentRule::SnapToTarget, true);
+        Inventory[0]->AttachToComponent(GetMesh(), TransformRules, FName("RightHandSocket"));
+        GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Axe attached")));
+	}
+	if (Gamemode->GetHUDState() == Gamemode->HS_Inventory && Inventory[1] != nullptr)
+	{
+		Attaching = true;
+		FAttachmentTransformRules TransformRules(EAttachmentRule::SnapToTarget, true);
+		Inventory[1]->AttachToComponent(GetMesh(), TransformRules, FName("RightHandSocket"));
+		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Axe attached")));
+	}
+	if (Gamemode->GetHUDState() == Gamemode->HS_Inventory && Inventory[2] != nullptr)
+	{
+		Attaching = true;
+		FAttachmentTransformRules TransformRules(EAttachmentRule::SnapToTarget, true);
+		Inventory[2]->AttachToComponent(GetMesh(), TransformRules, FName("RightHandSocket"));
+		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Axe attached")));
+	}
+	if (Gamemode->GetHUDState() == Gamemode->HS_Inventory && Inventory[3] != nullptr)
+	{
+		Attaching = true;
+		FAttachmentTransformRules TransformRules(EAttachmentRule::SnapToTarget, true);
+		Inventory[3]->AttachToComponent(GetMesh(), TransformRules, FName("RightHandSocket"));
+		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Axe attached")));
+	}
+	if (Gamemode->GetHUDState() == Gamemode->HS_Inventory && Inventory[4] != nullptr)
+	{
+		Attaching = true;
+		FAttachmentTransformRules TransformRules(EAttachmentRule::SnapToTarget, true);
+		Inventory[4]->AttachToComponent(GetMesh(), TransformRules, FName("RightHandSocket"));
+		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Axe attached")));
+	}
+}
+
+
+// ------------- Combat Control (Axe) --------------
+void APlayer_Character::AxeAttackTrigger(const FInputActionValue& Value)
+{
+	AInventoryGamemode* Gamemode = Cast<AInventoryGamemode>(GetWorld()->GetAuthGameMode());
+
+	if (Controller && Value.IsNonZero() && Exhaust == false && Gamemode->GetHUDState() == Gamemode->HS_Ingame && Attaching == true)
+	{
+		AxeActive = true;
+		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Axe triggered")));
+		ResetAxeAttack();
+	}
+}
+
+
+void APlayer_Character::ResetAxeAttack()
+{
+	AxeActive = false;
+	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, FString::Printf(TEXT("AxeAttack = false:")));
+>>>>>>> MainBranch
 }
 
 
