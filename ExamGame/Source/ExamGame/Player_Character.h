@@ -156,9 +156,16 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat Control")
 		bool AxeActive;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat Control")
+		bool Attaching;
+
 	UFUNCTION(BlueprintCallable)
 		void ResetAxeAttack();
-	
+
+	// ------------------------ Attaching Control ----------------------------
+	UFUNCTION(BlueprintCallable)
+		void AttachingItem();
+
 	//Hunger Control
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "hunger Control")
 		float Max_Hunger;
