@@ -67,9 +67,9 @@ public:
 	//___________ Variables ___________
 	int32 AmountOfAxe;
 
-
-	//___________ Functions ___________
-	void AttachingAxe(int32 Index);
+	////___________ Functions ___________
+	virtual void Use_Implementation() override;
+	
 
 private:
 	UPROPERTY(VisibleAnywhere)

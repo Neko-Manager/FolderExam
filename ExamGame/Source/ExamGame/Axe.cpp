@@ -35,30 +35,24 @@ void AAxe::Tick(float DeltaTime)
 void AAxe::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	//Pointing to information in player class for when the axe hits the player. 
-	if (OtherActor->IsA<AEnemyOne>() && Player->AxeActive == true)
+	if (OtherActor->IsA<AEnemyOne>() &&Player->AxeActive == true)
 	{
 		Player->UseItemAtInventorySlot(0);
 		EnemyOne->Health -= 5;
 		Player->Live_Stamina -= 5;
 		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Monster Hit!!!")));
 	}
-
-
 }
 
-void AAxe::AttachingAxe(int32 Index)
+void AAxe::Use_Implementation()
 {
-	if (Inventory[Index] != NULL && Inventory[Index]->ItemName == "Axe")
-	{
-		InteractableMesh->SetVisibility(true);
-		InteractableMesh->SetSimulatePhysics(true);
-		SetActorEnableCollision(true);
-		FAttachmentTransformRules TransformRules(EAttachmentRule::SnapToTarget, true);
-		InteractableMesh->AttachToComponent(Player->GetMesh(), TransformRules, FName("RightHandSocket"));
-		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Axe attached")));
-	}
-
+	FAttachmentTransformRules TransformRules(EAttachmentRule::SnapToTarget, true);
+	Axe->AttachToComponent(Player->GetMesh(), TransformRules, FName("RightHandSocket"));
+	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Axe attached")));
 }
+
+
+
 	
 
 
