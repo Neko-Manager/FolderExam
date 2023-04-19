@@ -36,6 +36,9 @@ public:
 		UStaticMeshComponent* Axe;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Weapons)
+		class UBoxComponent* AxeCollisionMesh;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = Weapons)
 		AInteractable* Weapon;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
@@ -69,7 +72,7 @@ public:
 
 
 	//___________ Functions ___________
-	void AttachingAxe(int32 Index);
+	virtual void Use_Implementation() override;
 
 private:
 	UPROPERTY(VisibleAnywhere)
