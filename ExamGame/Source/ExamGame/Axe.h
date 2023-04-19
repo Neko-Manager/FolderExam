@@ -70,15 +70,7 @@ public:
 	//___________ Variables ___________
 	int32 AmountOfAxe;
 
-<<<<<<< HEAD
 
-	//___________ Functions ___________
-	virtual void Use_Implementation() override;
-=======
-	////___________ Functions ___________
-	virtual void Use_Implementation() override;
-	
->>>>>>> MainBranch
 
 private:
 	UPROPERTY(VisibleAnywhere)
