@@ -363,27 +363,7 @@ void APlayer_Character::ExhaustChecker(float Stamina)
 	}
 }
 
-
 // ------------- Attaching Item Control --------------
-void APlayer_Character::AttachingItem()
-{
-	AInventoryGamemode* Gamemode = Cast<AInventoryGamemode>(GetWorld()->GetAuthGameMode());
-<<<<<<< HEAD
-	if(Gamemode->GetHUDState() == Gamemode->HS_Ingame && Attaching == true)
-	{
-		AxeActive = true;
-		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Axe Active = true")));
-		ResetAxeAttack();
-	}
-}
-
-void APlayer_Character::ResetAxeAttack()
-{
-	AxeActive = false;
-	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, FString::Printf(TEXT("Reset Axe attack:")));
-}
-
-// ------------- Combat Control (Axe) --------------
 void APlayer_Character::AttachingItem()
 {
 	AInventoryGamemode* Gamemode = Cast<AInventoryGamemode>(GetWorld()->GetAuthGameMode());
@@ -393,6 +373,9 @@ void APlayer_Character::AttachingItem()
 		Attaching = true;
 		FAttachmentTransformRules TransformRules(EAttachmentRule::SnapToTarget, true);
 		Inventory[0]->AttachToComponent(GetMesh(), TransformRules, FName("RightHandSocket"));
+		Inventory[0]->InteractableMesh->SetVisibility(true);
+		Inventory[0]->InteractableMesh->SetVisibility(true);
+		SetActorEnableCollision(true);
 		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Axe attached")));
 	}
 	if (Gamemode->GetHUDState() == Gamemode->HS_Inventory && Inventory[1] != nullptr)
@@ -400,6 +383,9 @@ void APlayer_Character::AttachingItem()
 		Attaching = true;
 		FAttachmentTransformRules TransformRules(EAttachmentRule::SnapToTarget, true);
 		Inventory[1]->AttachToComponent(GetMesh(), TransformRules, FName("RightHandSocket"));
+		Inventory[1]->InteractableMesh->SetVisibility(true);
+		Inventory[1]->InteractableMesh->SetVisibility(true);
+		SetActorEnableCollision(true);
 		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Axe attached")));
 	}
 	if (Gamemode->GetHUDState() == Gamemode->HS_Inventory && Inventory[2] != nullptr)
@@ -407,6 +393,9 @@ void APlayer_Character::AttachingItem()
 		Attaching = true;
 		FAttachmentTransformRules TransformRules(EAttachmentRule::SnapToTarget, true);
 		Inventory[2]->AttachToComponent(GetMesh(), TransformRules, FName("RightHandSocket"));
+		Inventory[2]->InteractableMesh->SetVisibility(true);
+		Inventory[2]->InteractableMesh->SetVisibility(true);
+		SetActorEnableCollision(true);
 		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Axe attached")));
 	}
 	if (Gamemode->GetHUDState() == Gamemode->HS_Inventory && Inventory[2] != nullptr)
@@ -414,6 +403,9 @@ void APlayer_Character::AttachingItem()
 		Attaching = true;
 		FAttachmentTransformRules TransformRules(EAttachmentRule::SnapToTarget, true);
 		Inventory[3]->AttachToComponent(GetMesh(), TransformRules, FName("RightHandSocket"));
+		Inventory[3]->InteractableMesh->SetVisibility(true);
+		Inventory[3]->InteractableMesh->SetVisibility(true);
+		SetActorEnableCollision(true);
 		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Axe attached")));
 	}
 	if (Gamemode->GetHUDState() == Gamemode->HS_Inventory && Inventory[2] != nullptr)
@@ -421,45 +413,9 @@ void APlayer_Character::AttachingItem()
 		Attaching = true;
 		FAttachmentTransformRules TransformRules(EAttachmentRule::SnapToTarget, true);
 		Inventory[4]->AttachToComponent(GetMesh(), TransformRules, FName("RightHandSocket"));
-		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Axe attached")));
-	}
-
-=======
-
-	int slot[] = { 0,1,2,3,4 };
-	if (Gamemode->GetHUDState() == Gamemode->HS_Inventory && Inventory[0] != nullptr)
-	{
-		Attaching = true;
-		FAttachmentTransformRules TransformRules(EAttachmentRule::SnapToTarget, true);
-        Inventory[0]->AttachToComponent(GetMesh(), TransformRules, FName("RightHandSocket"));
-        GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Axe attached")));
-	}
-	if (Gamemode->GetHUDState() == Gamemode->HS_Inventory && Inventory[1] != nullptr)
-	{
-		Attaching = true;
-		FAttachmentTransformRules TransformRules(EAttachmentRule::SnapToTarget, true);
-		Inventory[1]->AttachToComponent(GetMesh(), TransformRules, FName("RightHandSocket"));
-		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Axe attached")));
-	}
-	if (Gamemode->GetHUDState() == Gamemode->HS_Inventory && Inventory[2] != nullptr)
-	{
-		Attaching = true;
-		FAttachmentTransformRules TransformRules(EAttachmentRule::SnapToTarget, true);
-		Inventory[2]->AttachToComponent(GetMesh(), TransformRules, FName("RightHandSocket"));
-		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Axe attached")));
-	}
-	if (Gamemode->GetHUDState() == Gamemode->HS_Inventory && Inventory[3] != nullptr)
-	{
-		Attaching = true;
-		FAttachmentTransformRules TransformRules(EAttachmentRule::SnapToTarget, true);
-		Inventory[3]->AttachToComponent(GetMesh(), TransformRules, FName("RightHandSocket"));
-		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Axe attached")));
-	}
-	if (Gamemode->GetHUDState() == Gamemode->HS_Inventory && Inventory[4] != nullptr)
-	{
-		Attaching = true;
-		FAttachmentTransformRules TransformRules(EAttachmentRule::SnapToTarget, true);
-		Inventory[4]->AttachToComponent(GetMesh(), TransformRules, FName("RightHandSocket"));
+		Inventory[4]->InteractableMesh->SetVisibility(true);
+		Inventory[4]->InteractableMesh->SetVisibility(true);
+		SetActorEnableCollision(true);
 		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Axe attached")));
 	}
 }
@@ -481,15 +437,18 @@ void APlayer_Character::AxeAttackTrigger(const FInputActionValue& Value)
 
 void APlayer_Character::ResetAxeAttack()
 {
-	AxeActive = false;
-	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, FString::Printf(TEXT("AxeAttack = false:")));
->>>>>>> MainBranch
+	if(Attaching == true)
+	{
+		AxeActive = false;
+		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, FString::Printf(TEXT("AxeAttack = false:")));
+	}
 }
 
 
 // ------------- Collision --------------
 void APlayer_Character::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+
 }
 
 
