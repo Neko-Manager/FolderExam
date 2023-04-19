@@ -367,44 +367,44 @@ void APlayer_Character::ExhaustChecker(float Stamina)
 // ------------- Attaching Item Control --------------
 void APlayer_Character::AttachingItem()
 {
-	//AInventoryGamemode* Gamemode = Cast<AInventoryGamemode>(GetWorld()->GetAuthGameMode());
+	AInventoryGamemode* Gamemode = Cast<AInventoryGamemode>(GetWorld()->GetAuthGameMode());
 
-	//int slot[] = { 0,1,2,3,4 };
-	//if (Gamemode->GetHUDState() == Gamemode->HS_Inventory && Inventory[0] != nullptr)
-	//{
-	//	Attaching = true;
-	//	FAttachmentTransformRules TransformRules(EAttachmentRule::SnapToTarget, true);
- //       Inventory[0]->AttachToComponent(GetMesh(), TransformRules, FName("RightHandSocket"));
- //       GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Axe attached")));
-	//}
-	//if (Gamemode->GetHUDState() == Gamemode->HS_Inventory && Inventory[1] != nullptr)
-	//{
-	//	Attaching = true;
-	//	FAttachmentTransformRules TransformRules(EAttachmentRule::SnapToTarget, true);
-	//	Inventory[1]->AttachToComponent(GetMesh(), TransformRules, FName("RightHandSocket"));
-	//	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Axe attached")));
-	//}
-	//if (Gamemode->GetHUDState() == Gamemode->HS_Inventory && Inventory[2] != nullptr)
-	//{
-	//	Attaching = true;
-	//	FAttachmentTransformRules TransformRules(EAttachmentRule::SnapToTarget, true);
-	//	Inventory[2]->AttachToComponent(GetMesh(), TransformRules, FName("RightHandSocket"));
-	//	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Axe attached")));
-	//}
-	//if (Gamemode->GetHUDState() == Gamemode->HS_Inventory && Inventory[3] != nullptr)
-	//{
-	//	Attaching = true;
-	//	FAttachmentTransformRules TransformRules(EAttachmentRule::SnapToTarget, true);
-	//	Inventory[3]->AttachToComponent(GetMesh(), TransformRules, FName("RightHandSocket"));
-	//	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Axe attached")));
-	//}
-	//if (Gamemode->GetHUDState() == Gamemode->HS_Inventory && Inventory[4] != nullptr)
-	//{
-	//	Attaching = true;
-	//	FAttachmentTransformRules TransformRules(EAttachmentRule::SnapToTarget, true);
-	//	Inventory[4]->AttachToComponent(GetMesh(), TransformRules, FName("RightHandSocket"));
-	//	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Axe attached")));
-	//}
+	int slot[] = { 0,1,2,3,4 };
+	if (Gamemode->GetHUDState() == Gamemode->HS_Inventory && Inventory[0] != nullptr)
+	{
+		Attaching = true;
+		FAttachmentTransformRules TransformRules(EAttachmentRule::SnapToTarget, true);
+        Inventory[0]->AttachToComponent(GetMesh(), TransformRules, FName("RightHandSocket"));
+        GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Axe attached")));
+	}
+	if (Gamemode->GetHUDState() == Gamemode->HS_Inventory && Inventory[1] != nullptr)
+	{
+		Attaching = true;
+		FAttachmentTransformRules TransformRules(EAttachmentRule::SnapToTarget, true);
+		Inventory[1]->AttachToComponent(GetMesh(), TransformRules, FName("RightHandSocket"));
+		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Axe attached")));
+	}
+	if (Gamemode->GetHUDState() == Gamemode->HS_Inventory && Inventory[2] != nullptr)
+	{
+		Attaching = true;
+		FAttachmentTransformRules TransformRules(EAttachmentRule::SnapToTarget, true);
+		Inventory[2]->AttachToComponent(GetMesh(), TransformRules, FName("RightHandSocket"));
+		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Axe attached")));
+	}
+	if (Gamemode->GetHUDState() == Gamemode->HS_Inventory && Inventory[3] != nullptr)
+	{
+		Attaching = true;
+		FAttachmentTransformRules TransformRules(EAttachmentRule::SnapToTarget, true);
+		Inventory[3]->AttachToComponent(GetMesh(), TransformRules, FName("RightHandSocket"));
+		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Axe attached")));
+	}
+	if (Gamemode->GetHUDState() == Gamemode->HS_Inventory && Inventory[4] != nullptr)
+	{
+		Attaching = true;
+		FAttachmentTransformRules TransformRules(EAttachmentRule::SnapToTarget, true);
+		Inventory[4]->AttachToComponent(GetMesh(), TransformRules, FName("RightHandSocket"));
+		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Axe attached")));
+	}
 }
 
 
