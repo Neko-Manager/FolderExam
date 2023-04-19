@@ -74,6 +74,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inputsystem")
 		class UInputAction* IA_Interact;
 
+
 	//Input action for combat
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inputsystem")
 		class UInputAction* IA_AxeAttack;
@@ -97,6 +98,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void AxeAttackTrigger(const FInputActionValue& Value);
 
+
 	//Movement Booleans
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement Boolean")
 		bool Sprinting;
@@ -104,6 +106,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement Boolean")
 		bool Crouching;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement Boolean")
+		bool Attaching;
 
 	//Movement Speed Control
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement Speed Control")
@@ -151,14 +155,27 @@ public:
 		void ExhaustChecker(float Stamina);
 
 
+	// ------------------------ Attaching Axe ----------------------------
+	UFUNCTION(BlueprintCallable)
+		void AttachingItem();
+
+
+
 	// ------------------------ Combat Control ----------------------------
 	//Combat Control
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat Control")
 		bool AxeActive;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat Control")
+		bool Attaching;
+
 	UFUNCTION(BlueprintCallable)
 		void ResetAxeAttack();
-	
+
+	// ------------------------ Attaching Control ----------------------------
+	UFUNCTION(BlueprintCallable)
+		void AttachingItem();
+
 	//Hunger Control
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "hunger Control")
 		float Max_Hunger;
@@ -208,6 +225,7 @@ public:
 	//Use Item in a given inventory slot
 	UFUNCTION(BlueprintCallable, Category = "Inventory Functions")
 		void UseItemAtInventorySlot(int32 Slot);
+
 
 
 private:

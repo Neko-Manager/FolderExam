@@ -26,61 +26,81 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
-	
+
 	// ------------- Components ------------
 
 	UPROPERTY(VisibleAnywhere)
-	class UPawnSensingComponent* PawnSensing;
+		class UPawnSensingComponent* PawnSensing;
 
 	UPROPERTY(VisibleAnywhere)
-	class UCapsuleComponent* Colision;
+		class UCapsuleComponent* Colision;
 
 	// ------------- class Refs ------------
 
 	UPROPERTY()
-	class AAIController* EnemyController;
+		class AAIController* EnemyController;
 
 	// ------------ Actors -----------------
 
 	// First patrol point
 	UPROPERTY(EditInstanceOnly, Category = "AI Navigation")
-	AActor* PatrolTarget;
+		AActor* PatrolTarget;
 
 	UPROPERTY(EditInstanceOnly, Category = "AI Navigation")
-	AActor* CombatTarget;
+		AActor* CombatTarget;
 
 	// Array of patrol points
 	UPROPERTY(EditInstanceOnly, Category = "AI Navigation")
-	TArray<AActor*> PatrolTargets;
+		TArray<AActor*> PatrolTargets;
 
 	// ------------ Variables -----------------
 
+	// Radius of operations
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI Navigation")
-	double AttackRadius;
+		double PatrolRadius;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI Navigation")
-	double ChaseRadius;
+		double ChaseRadius;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI Navigation")
-	double PatrolRadius;
+		double AttackRadius;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI Navigation")
-	float PatrolDelayMax;
+		double RetreatRadius;
+
+	// Speeds
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI Navigation")
+		float PatrolSpeed;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI Navigation")
-	float PatrolDelayMin;
+		float ChaseSpeed;
+
+	// Timer Delays
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI Navigation")
+		float PatrolDelayMin;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI Navigation")
-	int Health;
+		float PatrolDelayMax;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI Navigation")
-	float PatrolSpeed;
+		float AttackDelayMin;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI Navigation")
-	float ChaseSpeed;
+		float AttackDelayMax;
+
+	// Other
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI Navigation")
+		int Health;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI Navigation")
+		bool ReadyToAttack;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI Navigation")
+<<<<<<< HEAD
 	float AcceptanceRadius;
+=======
+		FVector StandingPosition;
+>>>>>>> MainBranch
 
 	// ------------ Other ---------------------
 
@@ -95,7 +115,7 @@ protected:
 	// ------------ Functions --------------------
 
 	UFUNCTION()
-	void PawnSeen(APawn* SeenPawn);
+		void PawnSeen(APawn* SeenPawn);
 
 	// Choose a target, returns and AActor
 	AActor* ChoosePatrolTarget();
@@ -106,15 +126,15 @@ protected:
 
 	void CheckCombatTarget();
 
-	void MoveToTarget(AActor* Target);
-
-	void MoveToAttackRange(AActor* Target);
-
 	void AttackTimerFinished();
 
 	void PatrolTimerFinished();
 
-	void Timer(float);
+	void GetRelativePos(AActor* Target);
+
+	void MoveToTarget(AActor* Target);
+
+	void MoveToAttackRange(AActor* Target);
 
 	void Die();
 
