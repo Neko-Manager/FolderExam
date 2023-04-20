@@ -106,8 +106,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement Boolean")
 		bool Crouching;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement Boolean")
-		bool Attaching;
 
 	//Movement Speed Control
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement Speed Control")
@@ -153,12 +151,6 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 		void ExhaustChecker(float Stamina);
-
-
-	// ------------------------ Attaching Axe ----------------------------
-	UFUNCTION(BlueprintCallable)
-		void AttachingItem();
-
 
 
 	// ------------------------ Combat Control ----------------------------

@@ -21,9 +21,13 @@ AEnemyOne::AEnemyOne()
 	PawnSensing->SetPeripheralVisionAngle(45.f);
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 	AcceptanceRadius = 100.f;
 	AttackRadius = 300.f;
 	ChaseRadius = 2000.f;
+=======
+	// Radius of operations
+>>>>>>> MainBranch
 =======
 	// Radius of operations
 >>>>>>> MainBranch
@@ -90,6 +94,7 @@ void AEnemyOne::Tick(float DeltaTime)
 		CheckPatrolTarget();
 	}
 <<<<<<< HEAD
+<<<<<<< HEAD
 	if(Health <= 0)
 	{
 		Die();
@@ -98,13 +103,19 @@ void AEnemyOne::Tick(float DeltaTime)
 =======
 	if (InTargetRange(CombatTarget, RetreatRadius) && CombatTarget != nullptr)
 >>>>>>> MainBranch
+=======
+	if (InTargetRange(CombatTarget, RetreatRadius) && CombatTarget != nullptr)
+>>>>>>> MainBranch
 	{
 		//Trigger Attack
 		GetWorldTimerManager().ClearTimer(AttackTimer);
 		EnemyState = EEnemyState::EES_EnemyChaseing;
 <<<<<<< HEAD
+<<<<<<< HEAD
 		GEngine->AddOnScreenDebugMessage(1, 1.f, FColor::Red, FString::Printf(TEXT("In Acceptance Range, leaving")));
 =======
+=======
+>>>>>>> MainBranch
 		ReadyToAttack = false;
 
 		//ATTACK MONTAGE HERE
@@ -115,6 +126,9 @@ void AEnemyOne::Tick(float DeltaTime)
 	if (Health <= 0)
 	{
 		Die();
+<<<<<<< HEAD
+>>>>>>> MainBranch
+=======
 >>>>>>> MainBranch
 	}
 
@@ -203,6 +217,7 @@ void AEnemyOne::CheckCombatTarget()
 		GetCharacterMovement()->MaxWalkSpeed = ChaseSpeed;
 		MoveToAttackRange(CombatTarget);
 <<<<<<< HEAD
+<<<<<<< HEAD
 		GEngine->AddOnScreenDebugMessage(1, 1.f, FColor::Red, FString::Printf(TEXT("Chasing player")));
 	/*	if(InTargetRange(CombatTarget, AttackRadius) && EnemyState != EEnemyState::EES_EnemyAttacking)
 		{
@@ -222,6 +237,8 @@ void AEnemyOne::CheckCombatTarget()
 
 		//GEngine->AddOnScreenDebugMessage(1, 1.f, FColor::Red, FString::Printf(TEXT("Attack")));
 =======
+=======
+>>>>>>> MainBranch
 		GEngine->AddOnScreenDebugMessage(0, 1.f, FColor::Red, FString::Printf(TEXT("Chasing player")));
 
 	}
@@ -230,6 +247,9 @@ void AEnemyOne::CheckCombatTarget()
 		// inside attack range, Get ready to attack character.
 		const float WaitTime = FMath::RandRange(AttackDelayMin, AttackDelayMax);
 		GetWorldTimerManager().SetTimer(PatrolTimer, this, &AEnemyOne::AttackTimerFinished, WaitTime);
+<<<<<<< HEAD
+>>>>>>> MainBranch
+=======
 >>>>>>> MainBranch
 
 		ReadyToAttack = true;
@@ -299,6 +319,7 @@ void AEnemyOne::MoveToAttackRange(AActor* Target)
 	//Sets the move request
 	FAIMoveRequest MoveRequest;
 <<<<<<< HEAD
+<<<<<<< HEAD
 	
 	MoveRequest.SetGoalLocation((Target->GetActorLocation() + FVector(200, 200, 0)));
 	MoveRequest.SetAcceptanceRadius(20.f);
@@ -306,6 +327,8 @@ void AEnemyOne::MoveToAttackRange(AActor* Target)
 
 	if(Target->GetActorLocation().X )
 
+=======
+>>>>>>> MainBranch
 =======
 >>>>>>> MainBranch
 
@@ -316,6 +339,7 @@ void AEnemyOne::MoveToAttackRange(AActor* Target)
 	EnemyController->MoveTo(MoveRequest);
 }
 
+<<<<<<< HEAD
 <<<<<<< HEAD
 void AEnemyOne::AttackTimerFinished()
 {
@@ -334,6 +358,8 @@ void AEnemyOne::Timer(float deltatime)
 	//float time = 5.f;
 	//if()
 }
+=======
+>>>>>>> MainBranch
 =======
 >>>>>>> MainBranch
 
