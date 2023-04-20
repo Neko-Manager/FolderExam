@@ -97,7 +97,11 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI Navigation")
 <<<<<<< HEAD
+<<<<<<< HEAD
 	float AcceptanceRadius;
+=======
+		FVector StandingPosition;
+>>>>>>> MainBranch
 =======
 		FVector StandingPosition;
 >>>>>>> MainBranch
