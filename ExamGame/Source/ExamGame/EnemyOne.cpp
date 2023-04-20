@@ -269,7 +269,7 @@ void AEnemyOne::GetRelativePos(AActor* Target)
 			StandingPosition = FVector(200, -200, 0);
 		}
 		// Fourth Quadrant
-		else if (GetActorLocation().X <= Target->GetActorLocation().X && GetActorLocation().Y <= Target->GetActorLocation().Y) {
+		else if (GetActorLocation().X >= Target->GetActorLocation().X && GetActorLocation().Y <= Target->GetActorLocation().Y) {
 			StandingPosition = FVector(-200, -200, 0);
 		}
 	}
