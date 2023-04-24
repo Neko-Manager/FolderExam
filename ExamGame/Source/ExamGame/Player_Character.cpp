@@ -375,7 +375,6 @@ void APlayer_Character::AttachingItem()
 
 	if (Gamemode->GetHUDState() == Gamemode->HS_Inventory && Inventory[0] != nullptr && Attaching == true)
 	{
-		
 		FAttachmentTransformRules TransformRules(EAttachmentRule::SnapToTarget, true);
 		Inventory[0]->AttachToComponent(GetMesh(), TransformRules, FName("RightHandSocket"));
 		Inventory[0]->InteractableMesh->SetVisibility(true);
