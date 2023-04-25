@@ -39,7 +39,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class AEnemyOne* EnemyOne;
 
-
 	// ------------------------ Character control Input Actions ----------------------------
 	//Camera control
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Camera Component")
@@ -255,7 +254,7 @@ private:
 	//Item the player are looking at
 	AInteractable* CurrentInteractable;
 
-
+public:
 	//Player Inventory, represented as a TArray of pickup object.
 	UPROPERTY(EditAnywhere)
 		TArray<APickUp*> Inventory;

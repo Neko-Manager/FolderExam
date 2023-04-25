@@ -2,7 +2,6 @@
 #include "Player_Character.h"
 #include "Axe.h"
 
-
 //Components
 #include "Components/StaticMeshComponent.h"
 #include "Camera/CameraComponent.h"
@@ -23,6 +22,7 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubSystems.h"
 #include "InventoryGamemode.h"
+#include "Components/Button.h"
 #include "Components/PanelWidget.h"
 #include "Engine/StaticMeshSocket.h"
 #include "GameFramework/Character.h"
@@ -42,7 +42,7 @@ APlayer_Character::APlayer_Character()
 	//Initializing the spring arm.
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
 	SpringArm->SetupAttachment(GetMesh(),"HeadSocket");
-	SpringArm->SetRelativeLocation(FVector(0.f, -7.f, 22.f));
+	SpringArm->SetRelativeLocation(FVector(0.f, -10.f, 20.f));
 	SpringArm->TargetArmLength = 0.f;
 	SpringArm->bUsePawnControlRotation = true;
 
@@ -140,8 +140,8 @@ void APlayer_Character::Tick(float DeltaTime)
 	HungerDecay(NegativeTimeTick);
 	StarvingChecker(Live_Hunger);
 	EatingChecker(Live_Hunger);
-
 	AttachingItem();
+	
 }
 
 
@@ -300,13 +300,14 @@ void APlayer_Character::HungerDecay(float Timer)
 
 void APlayer_Character::StarvingChecker(float Hunger)
 {
+	//Checking what value Hunger has before eventually changing to starving state.
 	if(Hunger <= NULL)
 	{
 		Starving = true;
 
 		if(Starving == true)
 		{
-			Max_Stamina = Max_Stamina / 2;
+			Max_Stamina = Max_Stamina/2;
 			GetCharacterMovement()->MaxWalkSpeed = Walk_Speed / 2;
 		}
 	}
@@ -314,6 +315,7 @@ void APlayer_Character::StarvingChecker(float Hunger)
 
 void APlayer_Character::EatingChecker(float Hunger)
 {
+	//Checking if eating boolean is true
 	if(Eating == true)
 	{
 		Hunger += 20;
@@ -326,10 +328,12 @@ void APlayer_Character::JumpTrigger(const FInputActionValue& Value)
 {
 	AInventoryGamemode* Gamemode = Cast<AInventoryGamemode>(GetWorld()->GetAuthGameMode());
 
-	if(Controller && Value.IsNonZero() && Exhaust == false && Gamemode->GetHUDState() == Gamemode->HS_Ingame)
+	if(Controller && Value.IsNonZero() && Exhaust == false && Gamemode->GetHUDState() == Gamemode->HS_Ingame && bClientWasFalling == false)
 	{
+		//Jump Only activates if Jump function has run through and checked for boolean bclientWasFalling
 		Jump();
 		Live_Stamina -= 20.f;
+		bClientWasFalling = true;
 	}
 }
 
@@ -368,52 +372,43 @@ void APlayer_Character::AttachingItem()
 {
 	AInventoryGamemode* Gamemode = Cast<AInventoryGamemode>(GetWorld()->GetAuthGameMode());
 
-	if (Gamemode->GetHUDState() == Gamemode->HS_Inventory && Inventory[0] != nullptr)
+
+	if (Gamemode->GetHUDState() == Gamemode->HS_Inventory && Inventory[0] != nullptr && Attaching == true)
 	{
-		Attaching = true;
 		FAttachmentTransformRules TransformRules(EAttachmentRule::SnapToTarget, true);
 		Inventory[0]->AttachToComponent(GetMesh(), TransformRules, FName("RightHandSocket"));
-		Inventory[0]->InteractableMesh->SetVisibility(true);
 		Inventory[0]->InteractableMesh->SetVisibility(true);
 		SetActorEnableCollision(true);
 		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Axe attached")));
 	}
 	if (Gamemode->GetHUDState() == Gamemode->HS_Inventory && Inventory[1] != nullptr)
 	{
-		Attaching = true;
 		FAttachmentTransformRules TransformRules(EAttachmentRule::SnapToTarget, true);
 		Inventory[1]->AttachToComponent(GetMesh(), TransformRules, FName("RightHandSocket"));
 		Inventory[1]->InteractableMesh->SetVisibility(true);
-		Inventory[1]->InteractableMesh->SetVisibility(true);
 		SetActorEnableCollision(true);
 		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Axe attached")));
 	}
 	if (Gamemode->GetHUDState() == Gamemode->HS_Inventory && Inventory[2] != nullptr)
 	{
-		Attaching = true;
 		FAttachmentTransformRules TransformRules(EAttachmentRule::SnapToTarget, true);
 		Inventory[2]->AttachToComponent(GetMesh(), TransformRules, FName("RightHandSocket"));
 		Inventory[2]->InteractableMesh->SetVisibility(true);
-		Inventory[2]->InteractableMesh->SetVisibility(true);
 		SetActorEnableCollision(true);
 		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Axe attached")));
 	}
-	if (Gamemode->GetHUDState() == Gamemode->HS_Inventory && Inventory[2] != nullptr)
+	if (Gamemode->GetHUDState() == Gamemode->HS_Inventory && Inventory[3] != nullptr)
 	{
-		Attaching = true;
 		FAttachmentTransformRules TransformRules(EAttachmentRule::SnapToTarget, true);
 		Inventory[3]->AttachToComponent(GetMesh(), TransformRules, FName("RightHandSocket"));
 		Inventory[3]->InteractableMesh->SetVisibility(true);
-		Inventory[3]->InteractableMesh->SetVisibility(true);
 		SetActorEnableCollision(true);
 		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Axe attached")));
 	}
-	if (Gamemode->GetHUDState() == Gamemode->HS_Inventory && Inventory[2] != nullptr)
+	if (Gamemode->GetHUDState() == Gamemode->HS_Inventory && Inventory[4] != nullptr)
 	{
-		Attaching = true;
 		FAttachmentTransformRules TransformRules(EAttachmentRule::SnapToTarget, true);
 		Inventory[4]->AttachToComponent(GetMesh(), TransformRules, FName("RightHandSocket"));
-		Inventory[4]->InteractableMesh->SetVisibility(true);
 		Inventory[4]->InteractableMesh->SetVisibility(true);
 		SetActorEnableCollision(true);
 		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Axe attached")));

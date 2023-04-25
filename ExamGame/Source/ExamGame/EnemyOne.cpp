@@ -20,15 +20,7 @@ AEnemyOne::AEnemyOne()
 	PawnSensing->SightRadius = 4000.f;
 	PawnSensing->SetPeripheralVisionAngle(45.f);
 
-
-	AcceptanceRadius = 100.f;
-	AttackRadius = 300.f;
-	ChaseRadius = 2000.f;
-
 	// Radius of operations
-
-	// Radius of operations
-
 	PatrolRadius = 200.f;
 	ChaseRadius = 2000.f;
 	AttackRadius = 300.f;
@@ -91,21 +83,11 @@ void AEnemyOne::Tick(float DeltaTime)
 	{
 		CheckPatrolTarget();
 	}
-
-	if(Health <= 0)
-	{
-		Die();
-	}
-	if(InTargetRange(CombatTarget,AcceptanceRadius) && CombatTarget != nullptr)
-
+	if (InTargetRange(CombatTarget, RetreatRadius) && CombatTarget != nullptr)
 	{
 		//Trigger Attack
 		GetWorldTimerManager().ClearTimer(AttackTimer);
 		EnemyState = EEnemyState::EES_EnemyChaseing;
-
-		GEngine->AddOnScreenDebugMessage(1, 1.f, FColor::Red, FString::Printf(TEXT("In Acceptance Range, leaving")));
-
-
 		ReadyToAttack = false;
 
 		//ATTACK MONTAGE HERE
@@ -116,7 +98,6 @@ void AEnemyOne::Tick(float DeltaTime)
 	if (Health <= 0)
 	{
 		Die();
-
 	}
 
 }
@@ -203,26 +184,6 @@ void AEnemyOne::CheckCombatTarget()
 		EnemyState = EEnemyState::EES_EnemyChaseing;
 		GetCharacterMovement()->MaxWalkSpeed = ChaseSpeed;
 		MoveToAttackRange(CombatTarget);
-
-		GEngine->AddOnScreenDebugMessage(1, 1.f, FColor::Red, FString::Printf(TEXT("Chasing player")));
-	/*	if(InTargetRange(CombatTarget, AttackRadius) && EnemyState != EEnemyState::EES_EnemyAttacking)
-		{
-			float WaitTime = 3.f;
-			GetWorldTimerManager().SetTimer(PatrolTimer, this, &AEnemyOne::AttackTimerFinished, WaitTime);
-			GEngine->AddOnScreenDebugMessage(1, 1.f, FColor::Red, FString::Printf(TEXT("Attack Timer Started")));
-		}*/
-	}
-	if(InTargetRange(CombatTarget, AttackRadius) && EnemyState != EEnemyState::EES_EnemyAttacking)
-	{
-		// inside attack range, attack character.
-
-				float WaitTime = 3.f;
-				GetWorldTimerManager().SetTimer(PatrolTimer, this, &AEnemyOne::AttackTimerFinished, WaitTime);
-				GEngine->AddOnScreenDebugMessage(1, 1.f, FColor::Red, FString::Printf(TEXT("Attack Timer Started")));
-	
-
-		//GEngine->AddOnScreenDebugMessage(1, 1.f, FColor::Red, FString::Printf(TEXT("Attack")));
-
 		GEngine->AddOnScreenDebugMessage(0, 1.f, FColor::Red, FString::Printf(TEXT("Chasing player")));
 
 	}
@@ -231,7 +192,6 @@ void AEnemyOne::CheckCombatTarget()
 		// inside attack range, Get ready to attack character.
 		const float WaitTime = FMath::RandRange(AttackDelayMin, AttackDelayMax);
 		GetWorldTimerManager().SetTimer(PatrolTimer, this, &AEnemyOne::AttackTimerFinished, WaitTime);
-
 
 		ReadyToAttack = true;
 
@@ -266,11 +226,11 @@ void AEnemyOne::GetRelativePos(AActor* Target)
 		}
 		// Third Quadrant
 		else if (GetActorLocation().X <= Target->GetActorLocation().X && GetActorLocation().Y <= Target->GetActorLocation().Y) {
-			StandingPosition = FVector(200, -200, 0);
+			StandingPosition = FVector(-200, -200, 0);
 		}
 		// Fourth Quadrant
 		else if (GetActorLocation().X >= Target->GetActorLocation().X && GetActorLocation().Y <= Target->GetActorLocation().Y) {
-			StandingPosition = FVector(-200, -200, 0);
+			StandingPosition = FVector(200, -200, 0);
 		}
 	}
 }
@@ -300,29 +260,11 @@ void AEnemyOne::MoveToAttackRange(AActor* Target)
 	//Sets the move request
 	FAIMoveRequest MoveRequest;
 
-	
-	MoveRequest.SetGoalLocation((Target->GetActorLocation() + FVector(200, 200, 0)));
-	MoveRequest.SetAcceptanceRadius(20.f);
-	MoveRequest.SetCanStrafe(true);
-
-	if(Target->GetActorLocation().X )
-
-
 	MoveRequest.SetGoalLocation((Target->GetActorLocation() + StandingPosition));
 	MoveRequest.SetAcceptanceRadius(20.f);
 
 	EnemyController->SetFocus(Target);
 	EnemyController->MoveTo(MoveRequest);
-}
-
-
-
-
-
-void AEnemyOne::Timer(float deltatime)
-{
-	//float time = 5.f;
-	//if()
 }
 
 
