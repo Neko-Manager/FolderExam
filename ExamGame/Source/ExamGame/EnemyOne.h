@@ -96,11 +96,7 @@ public:
 		bool ReadyToAttack;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI Navigation")
-
-	float AcceptanceRadius;
-
 		FVector StandingPosition;
-
 
 	// ------------ Other ---------------------
 
@@ -129,8 +125,6 @@ protected:
 	void AttackTimerFinished();
 
 	void PatrolTimerFinished();
-
-	void Timer(float deltatime);
 
 	void GetRelativePos(AActor* Target);
 
