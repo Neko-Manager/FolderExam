@@ -34,10 +34,10 @@ public:
 
 	// ------------------------ Class references ----------------------------
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		class AAxe* Axe;
+		class AEnemyOne* EnemyOne;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		class AEnemyOne* EnemyOne;
+		class APickUp* PickedItem;
 
 	// ------------------------ Character control Input Actions ----------------------------
 	//Camera control
@@ -157,16 +157,29 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat Control")
 		bool AxeActive;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat Control")
-		bool Attaching;
-
 	UFUNCTION(BlueprintCallable)
 		void ResetAxeAttack();
 
 	// ------------------------ Attaching Control ----------------------------
 	UFUNCTION(BlueprintCallable)
-		void AttachingItem();
+		void EquipItem();
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attaching Control")
+		bool Equiped0;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attaching  Control")
+		bool Equiped1;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attaching  Control")
+		bool Equiped2;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attaching  Control")
+		bool Equiped3;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attaching  Control")
+		bool Equiped4;
+
+	
 	//Hunger Control
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "hunger Control")
 		float Max_Hunger;
@@ -258,6 +271,8 @@ public:
 	//Player Inventory, represented as a TArray of pickup object.
 	UPROPERTY(EditAnywhere)
 		TArray<APickUp*> Inventory;
+
+	
 
 
 };

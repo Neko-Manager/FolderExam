@@ -7,15 +7,12 @@
 AInteractable::AInteractable()
 {
 	InteractableHelpText = FString("Press E to Interact With Item");
-
-
 }
 
 // Called when the game starts or when spawned
 void AInteractable::BeginPlay()
 {
 	Super::BeginPlay();
-	
 }
 
 

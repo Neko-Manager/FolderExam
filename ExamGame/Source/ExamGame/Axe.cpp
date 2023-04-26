@@ -9,44 +9,51 @@
 #include "Components/BoxComponent.h"
 
 
-
 AAxe::AAxe()
 {
-
 	AmountOfAxe = 0;
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+
+	ItemName = FString("Axe");
+	Value = 100;
+
+	//Axe = CreateDefaultSubobject<UBoxComponent>(TEXT("axecollisionmesh"));
+	//SetRootComponent(InteractableMesh);
+	//Axe->InitBoxExtent(FVector(9.6f, 17.4f, 1.46f));
+	//Axe->SetRelativeLocation(FVector(-10.f, 0.f, 0.f));
+	//Axe->SetupAttachment(InteractableMesh);
+	//Axe->OnComponentBeginOverlap.AddUniqueDynamic(this, &AAxe::OnOverlap);
 }
 
 void AAxe::BeginPlay()
 {
 	Super::BeginPlay();
 
-	Axe = InteractableMesh;
-	SetRootComponent(Axe);
-	Axe->OnComponentBeginOverlap.AddDynamic(this, &AAxe::OnOverlap);
-
+	//Inherited properties modified
+	
 }
-
-
 
 void AAxe::Tick(float DeltaTime)
 {
-		Super::Tick(DeltaTime);
-		
+	Super::Tick(DeltaTime);
+
 }
 
-void AAxe::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+void AAxe::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+	UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	//Pointing to information in player class for when the axe hits the player. 
+	APlayer_Character* Character = Cast<APlayer_Character>(UGameplayStatics::GetPlayerCharacter(this, 0));
+	AEnemyOne* EnemyOne = Cast<AEnemyOne>(UGameplayStatics::GetPlayerCharacter(this, 0));
 
-	if (OtherActor->IsA<AEnemyOne>() && Player->Attaching == true && Player->AxeActive == true)
+	if (OtherActor->IsA<AEnemyOne>() && Character->AxeActive == true)
 	{
-		EnemyOne->Health -= 5;
-		Player->Live_Stamina -= 5;
-		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Monster Hit!!!")));
+		EnemyOne->Health -= 10.f;
 	}
 }
+
+
+
 
 
 
