@@ -27,8 +27,8 @@ AEnemyOne::AEnemyOne()
 	RetreatRadius = 100.f;
 
 	// Speeds
-	PatrolSpeed = 200.f;
-	ChaseSpeed = 400.f;
+	PatrolSpeed = 600.f;
+	ChaseSpeed = 800.f;
 
 	// Timer Delays
 	PatrolDelayMax = 8.f;
@@ -230,7 +230,7 @@ void AEnemyOne::GetRelativePos(AActor* Target)
 		}
 		// Fourth Quadrant
 		else if (GetActorLocation().X >= Target->GetActorLocation().X && GetActorLocation().Y <= Target->GetActorLocation().Y) {
-			StandingPosition = FVector(200, -200, 0);
+			StandingPosition = FVector(-200, -200, 0);
 		}
 	}
 }
