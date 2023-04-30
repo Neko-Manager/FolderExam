@@ -31,7 +31,7 @@ public:
 
 	//Sett Up Mesh
 
-		UPROPERTY(EditAnywhere, Category = "Interactable Properties")
+		UPROPERTY(EditAnywhere,BlueprintReadWrite, Category = "Interactable Properties")
 			class UStaticMeshComponent* InteractableMesh;
 
 	//TEXT

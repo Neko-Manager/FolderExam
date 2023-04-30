@@ -19,14 +19,28 @@ public:
 
 	APickUp();
 
+	//___________ Class control  ___________
+	UPROPERTY()
+		TArray<APickUp*> Inventory;
+
+	//Functions
 	virtual void BeginPlay() override;
 
 	virtual void Interact_Implementation() override;
 
-	UFUNCTION(BlueprintNativeEvent)
-	void Use();
 	virtual void Use_Implementation();
 
+	void BackToInventory();
+
+	void OnPickUp();
+
+	UFUNCTION()
+		virtual void OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+			UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex,
+			bool bFromSweep, const FHitResult& SweepResult);
+
+
+	//Uproperties
 	UPROPERTY(EditAnywhere, Category = "PickUp Properties")
 		UTexture2D* PickUpThumbnail;
 
@@ -38,6 +52,7 @@ public:
 
 	//Call When The Item Is picked Up; Clean Up After.
 
-	void OnPickUp();
+
+
 	
 };

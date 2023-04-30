@@ -1,6 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 #include "Player_Character.h"
 #include "Axe.h"
+#include "PickUp.h"
 
 //Components
 #include "Components/StaticMeshComponent.h"
@@ -22,8 +23,6 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubSystems.h"
 #include "InventoryGamemode.h"
-#include "Components/Button.h"
-#include "Components/PanelWidget.h"
 #include "Engine/StaticMeshSocket.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -42,7 +41,7 @@ APlayer_Character::APlayer_Character()
 	//Initializing the spring arm.
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
 	SpringArm->SetupAttachment(GetMesh(),"HeadSocket");
-	SpringArm->SetRelativeLocation(FVector(0.f, -10.f, 20.f));
+	SpringArm->SetRelativeLocation(FVector(0.f, -20.f, 38.f));
 	SpringArm->TargetArmLength = 0.f;
 	SpringArm->bUsePawnControlRotation = true;
 
@@ -109,11 +108,17 @@ void APlayer_Character::BeginPlay()
 	Exhaust = false;
 	AxeActive = false;
 	Crouching = false;
-	Attaching = false;
 
 	//Booleans for added effects
 	Eating = false;
 	Starving = false;
+
+	// ------------- Defaults for equip control --------------
+	Equiped0 = false;
+	Equiped1 = false;
+	Equiped2 = false;
+	Equiped3 = false;
+	Equiped4 = false;
 
 }
 
@@ -140,8 +145,7 @@ void APlayer_Character::Tick(float DeltaTime)
 	HungerDecay(NegativeTimeTick);
 	StarvingChecker(Live_Hunger);
 	EatingChecker(Live_Hunger);
-	AttachingItem();
-	
+	EquipItem();
 }
 
 
@@ -163,7 +167,6 @@ void APlayer_Character::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 
 		//open Inventory
 		EnhancedInputComponent->BindAction(IA_OpenInventory, ETriggerEvent::Triggered, this, &APlayer_Character::ToggleInventory);
-		/*EnhancedInputComponent->BindAction(IA_OpenInventory, ETriggerEvent::Completed, this, &APlayer_Character::ToggleInventory);*/
 
 		//Combat Inputs
 		EnhancedInputComponent->BindAction(IA_AxeAttack, ETriggerEvent::Triggered, this, &APlayer_Character::AxeAttackTrigger);
@@ -219,7 +222,7 @@ void APlayer_Character::StaminaRecharger(float Timer)
 	//Executing and recharging stamina if conditions are met
 	if (Sprinting == false && Live_Stamina <= Max_Stamina && Exhaust == false)
 	{
-		Live_Stamina += Timer + 0.5f;
+		Live_Stamina += Timer + 0.2f;
 		/*GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, FString::Printf(TEXT("Regaining Stamina:")));*/
 	}
 }
@@ -246,7 +249,7 @@ void APlayer_Character::Sprint()
 	if (Sprinting == true)
 	{
 		GetCharacterMovement()->MaxWalkSpeed = Sprint_Speed;
-		Live_Stamina -= 1.f;
+		Live_Stamina -= 0.5f;
 		/*GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, FString::Printf(TEXT("Losing stamina:")));*/
 	}
 }
@@ -257,6 +260,7 @@ void APlayer_Character::CrouchTriggered(const FInputActionValue& Value)
 {
 	AInventoryGamemode* Gamemode = Cast<AInventoryGamemode>(GetWorld()->GetAuthGameMode());
 
+	//Requirements for triggering crouch
 	if (Controller && Value.IsNonZero() && Gamemode->GetHUDState() == Gamemode->HS_Ingame)
 	{
 		Crouching = true;
@@ -295,7 +299,6 @@ void APlayer_Character::HungerDecay(float Timer)
 	{
 		Live_Hunger += Timer/3.f;
 	}
-
 }
 
 void APlayer_Character::StarvingChecker(float Hunger)
@@ -307,7 +310,7 @@ void APlayer_Character::StarvingChecker(float Hunger)
 
 		if(Starving == true)
 		{
-			Max_Stamina = Max_Stamina/2;
+			Max_Stamina = 50.f;
 			GetCharacterMovement()->MaxWalkSpeed = Walk_Speed / 2;
 		}
 	}
@@ -368,51 +371,70 @@ void APlayer_Character::ExhaustChecker(float Stamina)
 }
 
 // ------------- Attaching Item Control --------------
-void APlayer_Character::AttachingItem()
+void APlayer_Character::EquipItem()
 {
 	AInventoryGamemode* Gamemode = Cast<AInventoryGamemode>(GetWorld()->GetAuthGameMode());
+	
+	//AAxe* InHand = Cast<AAxe>(Inventory[0]->InteractableMesh);
 
-
-	if (Gamemode->GetHUDState() == Gamemode->HS_Inventory && Inventory[0] != nullptr && Attaching == true)
+	if (Gamemode->GetHUDState() == Gamemode->HS_Inventory && Inventory[0] != nullptr && Equiped0 == true)
 	{
 		FAttachmentTransformRules TransformRules(EAttachmentRule::SnapToTarget, true);
 		Inventory[0]->AttachToComponent(GetMesh(), TransformRules, FName("RightHandSocket"));
 		Inventory[0]->InteractableMesh->SetVisibility(true);
-		SetActorEnableCollision(true);
-		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Axe attached")));
+		Inventory[0] = nullptr;
+		Equiped0 = false;
+		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Inventory 0 equiped")));
 	}
-	if (Gamemode->GetHUDState() == Gamemode->HS_Inventory && Inventory[1] != nullptr)
+	
+
+	if (Gamemode->GetHUDState() == Gamemode->HS_Inventory && Inventory[1] != nullptr && Equiped1 == true)
 	{
 		FAttachmentTransformRules TransformRules(EAttachmentRule::SnapToTarget, true);
 		Inventory[1]->AttachToComponent(GetMesh(), TransformRules, FName("RightHandSocket"));
 		Inventory[1]->InteractableMesh->SetVisibility(true);
-		SetActorEnableCollision(true);
-		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Axe attached")));
+		Inventory[1] = nullptr;
+		Equiped1 = false;
+		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Inventory 1 equiped")));
 	}
-	if (Gamemode->GetHUDState() == Gamemode->HS_Inventory && Inventory[2] != nullptr)
+
+
+	if (Gamemode->GetHUDState() == Gamemode->HS_Inventory && Inventory[2] != nullptr && Equiped2 == true)
 	{
 		FAttachmentTransformRules TransformRules(EAttachmentRule::SnapToTarget, true);
 		Inventory[2]->AttachToComponent(GetMesh(), TransformRules, FName("RightHandSocket"));
 		Inventory[2]->InteractableMesh->SetVisibility(true);
 		SetActorEnableCollision(true);
-		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Axe attached")));
+		Inventory[2] = nullptr;
+		Equiped2 = false;
+		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Inventory 2 equiped")));
 	}
-	if (Gamemode->GetHUDState() == Gamemode->HS_Inventory && Inventory[3] != nullptr)
+
+
+	if (Gamemode->GetHUDState() == Gamemode->HS_Inventory && Inventory[3] != nullptr && Equiped3 == true)
 	{
 		FAttachmentTransformRules TransformRules(EAttachmentRule::SnapToTarget, true);
 		Inventory[3]->AttachToComponent(GetMesh(), TransformRules, FName("RightHandSocket"));
 		Inventory[3]->InteractableMesh->SetVisibility(true);
 		SetActorEnableCollision(true);
-		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Axe attached")));
+		Inventory[3] = nullptr;
+		Equiped3 = false;
+		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Inventory 3 equiped")));
 	}
-	if (Gamemode->GetHUDState() == Gamemode->HS_Inventory && Inventory[4] != nullptr)
+
+
+	if (Gamemode->GetHUDState() == Gamemode->HS_Inventory && Inventory[4] != nullptr && Equiped4 == true)
 	{
 		FAttachmentTransformRules TransformRules(EAttachmentRule::SnapToTarget, true);
 		Inventory[4]->AttachToComponent(GetMesh(), TransformRules, FName("RightHandSocket"));
 		Inventory[4]->InteractableMesh->SetVisibility(true);
 		SetActorEnableCollision(true);
-		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Axe attached")));
+		Inventory[4] = nullptr;
+		Equiped4 = false;
+		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Inventory 4 equiped")));
 	}
+	
+
 }
 
 
@@ -421,9 +443,10 @@ void APlayer_Character::AxeAttackTrigger(const FInputActionValue& Value)
 {
 	AInventoryGamemode* Gamemode = Cast<AInventoryGamemode>(GetWorld()->GetAuthGameMode());
 
-	if (Controller && Value.IsNonZero() && Exhaust == false && Gamemode->GetHUDState() == Gamemode->HS_Ingame && Attaching == true)
+	if (Controller && Value.IsNonZero() && Exhaust == false && Equiped0 == false)
 	{
 		AxeActive = true;
+		Live_Stamina -= 10.f;
 		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Axe triggered")));
 		ResetAxeAttack();
 	}
@@ -432,7 +455,8 @@ void APlayer_Character::AxeAttackTrigger(const FInputActionValue& Value)
 
 void APlayer_Character::ResetAxeAttack()
 {
-	if(Attaching == true)
+	AInventoryGamemode* Gamemode = Cast<AInventoryGamemode>(GetWorld()->GetAuthGameMode());
+	if(AxeActive == true )
 	{
 		AxeActive = false;
 		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, FString::Printf(TEXT("AxeAttack = false:")));
