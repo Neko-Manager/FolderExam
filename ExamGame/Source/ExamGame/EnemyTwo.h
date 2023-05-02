@@ -1,5 +1,3 @@
-#pragma once
-
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "StateControll.h"
@@ -42,68 +40,56 @@ public:
 
 	// ------------ Actors -----------------
 
-	// First patrol point
-	UPROPERTY(EditInstanceOnly, Category = "AI Navigation")
-		AActor* PatrolTarget;
-
 	UPROPERTY(EditInstanceOnly, Category = "AI Navigation")
 		AActor* CombatTarget;
 
-	// Array of patrol points
-	UPROPERTY(EditInstanceOnly, Category = "AI Navigation")
-		TArray<AActor*> PatrolTargets;
+	//Sets PysicsAsset as blueprint value
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI Navigation")
+		TSubclassOf<AActor> BP_EnemyTwoPysics;
 
 	// ------------ Variables -----------------
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI Navigation")
-		double AttackRadius;
-
+	// Radius of operations
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI Navigation")
 		double ChaseRadius;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI Navigation")
-		double PatrolRadius;
+		double AttackRadius;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI Navigation")
-		float PatrolDelayMax;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI Navigation")
-		float PatrolDelayMin;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI Navigation")
-		int Health;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI Navigation")
-		float PatrolSpeed;
-
+	// Speeds
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI Navigation")
 		float ChaseSpeed;
 
-	// ------------ Other ---------------------
+	// Timer Delays
 
-	// Timer Handle
-	FTimerHandle PatrolTimer;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI Navigation")
+		float AttackDelayMin;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI Navigation")
+		float AttackDelayMax;
+
+	// Other
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI Navigation")
+		int Health;
+
+	// ------------ Other ---------------------
 
 protected:
 
 	// ------------ Functions --------------------
 
 	UFUNCTION()
-		void PawnSeen(APawn* SeenPawn);
+	void PawnSeen(APawn* SeenPawn);
 
-	// Choose a target, returns and AActor
-	AActor* ChoosePatrolTarget();
+	void IsInRange();
 
 	bool InTargetRange(AActor* Target, float Radius);
-
-	void CheckPatrolTarget();
 
 	void CheckCombatTarget();
 
 	void MoveToTarget(AActor* Target);
 
-	void PatrolTimerFinished();
+	void StayAtPosition(FVector Location);
 
 	void Die();
-
 };

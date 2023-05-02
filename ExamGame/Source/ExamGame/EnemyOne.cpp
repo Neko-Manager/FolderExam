@@ -1,16 +1,21 @@
 //Class Include
 #include "EnemyOne.h"
+#include "EnemyOne_Physics.h"
 #include "AIController.h"
+#include "Player_Character.h"
 
 //Component Include
 #include "perception/PawnSensingComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Animation/AnimMontage.h"
 
 //Other Include
 #include "Kismet/KismetSystemLibrary.h"
 #include "Kismet/GameplayStatics.h"
+
+class Player_Character;
 
 AEnemyOne::AEnemyOne()
 {
@@ -20,14 +25,16 @@ AEnemyOne::AEnemyOne()
 	PawnSensing->SightRadius = 4000.f;
 	PawnSensing->SetPeripheralVisionAngle(45.f);
 
+	AEnemyOne::GetMesh()->OnComponentBeginOverlap.AddDynamic(this, &AEnemyOne::OnOverlap);
+
 	// Radius of operations
 	PatrolRadius = 200.f;
 	ChaseRadius = 2000.f;
-	AttackRadius = 300.f;
+	AttackRadius = 400.f;
 	RetreatRadius = 100.f;
 
 	// Speeds
-	PatrolSpeed = 600.f;
+	PatrolSpeed = 400.f;
 	ChaseSpeed = 800.f;
 
 	// Timer Delays
@@ -85,21 +92,20 @@ void AEnemyOne::Tick(float DeltaTime)
 	}
 	if (InTargetRange(CombatTarget, RetreatRadius) && CombatTarget != nullptr)
 	{
+		//Triggers Actual Attack if within retreat radius
 		//Trigger Attack
 		GetWorldTimerManager().ClearTimer(AttackTimer);
-		EnemyState = EEnemyState::EES_EnemyChaseing;
 		ReadyToAttack = false;
 
-		//ATTACK MONTAGE HERE
+		Attack();
 
-		GEngine->AddOnScreenDebugMessage(1, 1.f, FColor::Red, FString::Printf(TEXT("In Acceptance Range, leaving")));
+		GEngine->AddOnScreenDebugMessage(1, 1.f, FColor::Red, FString::Printf(TEXT("Attack Then Leave")));
 	}
 
 	if (Health <= 0)
 	{
 		Die();
 	}
-
 }
 
 void AEnemyOne::PawnSeen(APawn* SeenPawn)
@@ -202,6 +208,7 @@ void AEnemyOne::CheckCombatTarget()
 void AEnemyOne::AttackTimerFinished()
 {
 	EnemyState = EEnemyState::EES_EnemyAttacking;
+	EnemyAttackState = EEnemyAttackState::EES_EnemyUnoccupied;
 	MoveToTarget(CombatTarget);
 	GEngine->AddOnScreenDebugMessage(1, 1.f, FColor::Red, FString::Printf(TEXT("Attacking")));
 }
@@ -218,19 +225,19 @@ void AEnemyOne::GetRelativePos(AActor* Target)
 	{
 		// Firs Quadrant
 		if (GetActorLocation().X >= Target->GetActorLocation().X && GetActorLocation().Y >= Target->GetActorLocation().Y) {
-			StandingPosition = FVector(200, 200, 0);
+			StandingPosition = FVector(180, 180, 0);
 		}
 		// Second Quadrant
 		else if (GetActorLocation().X <= Target->GetActorLocation().X && GetActorLocation().Y >= Target->GetActorLocation().Y) {
-			StandingPosition = FVector(-200, 200, 0);
+			StandingPosition = FVector(-180, 180, 0);
 		}
 		// Third Quadrant
 		else if (GetActorLocation().X <= Target->GetActorLocation().X && GetActorLocation().Y <= Target->GetActorLocation().Y) {
-			StandingPosition = FVector(-200, -200, 0);
+			StandingPosition = FVector(-180, -180, 0);
 		}
 		// Fourth Quadrant
 		else if (GetActorLocation().X >= Target->GetActorLocation().X && GetActorLocation().Y <= Target->GetActorLocation().Y) {
-			StandingPosition = FVector(-200, -200, 0);
+			StandingPosition = FVector(180, -180, 0);
 		}
 	}
 }
@@ -261,15 +268,61 @@ void AEnemyOne::MoveToAttackRange(AActor* Target)
 	FAIMoveRequest MoveRequest;
 
 	MoveRequest.SetGoalLocation((Target->GetActorLocation() + StandingPosition));
-	MoveRequest.SetAcceptanceRadius(20.f);
+	MoveRequest.SetAcceptanceRadius(10.f);
 
 	EnemyController->SetFocus(Target);
 	EnemyController->MoveTo(MoveRequest);
 }
 
+void AEnemyOne::PlayAttackMontage()
+{
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if (AnimInstance && AttackMontage)
+	{
+		GEngine->AddOnScreenDebugMessage(1, 1.f, FColor::Red, FString::Printf(TEXT("Montage Play")));
+		AnimInstance->Montage_Play(AttackMontage);
+		FName SectionName = FName("Attack1");
+		AnimInstance->Montage_JumpToSection(SectionName, AttackMontage);
+	}
+
+}
+
+void AEnemyOne::AttackEnd()
+{
+	EnemyState = EEnemyState::EES_EnemyChaseing;
+}
+
+void AEnemyOne::Attack()
+{
+	if(EnemyAttackState == EEnemyAttackState::EES_EnemyUnoccupied)
+	{
+		PlayAttackMontage();
+		EnemyAttackState = EEnemyAttackState::EES_EnemyAttacking;
+	}
+	
+}
+
+void AEnemyOne::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+	UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	if(OtherActor->ActorHasTag(FName("PlayerCharacter")))
+	{
+
+		if(EnemyAttackState == EEnemyAttackState::EES_EnemyAttacking)
+		{
+			// Cast<AActor>(BP_Player->Health--);
+		}
+	}
+}
 
 void AEnemyOne::Die()
 {
-	//GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	//SetLifeSpan(3.f);
+	//Spawns The pysics asset when it has died
+	GetWorld()->SpawnActor<AActor>(BP_EnemyOnePysics, GetActorTransform());
+
+	//Removes Original mesh
+	SetActorHiddenInGame(true);
+	SetActorEnableCollision(false);
+	this->Destroy();
+	GEngine->AddOnScreenDebugMessage(1, 1.f, FColor::Red, FString::Printf(TEXT("Died")));
 }
