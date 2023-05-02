@@ -126,6 +126,7 @@ void APlayer_Character::BeginPlay()
 	// ------------- Defaults for equip control --------------
 	Equiped = false;
 	Has_Equiped = false;
+	Attacking = false;
 
 	// ------------- Initializing collision --------------
 	GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic(this, &APlayer_Character::OnOverlap);
@@ -133,6 +134,8 @@ void APlayer_Character::BeginPlay()
 	// ------------- animation hit timers --------------
 	Axe_Timer = NULL;
 	Axe_ActiveFrames = 1.f;
+
+
 }
 
 
@@ -159,7 +162,6 @@ void APlayer_Character::Tick(float DeltaTime)
 	StarvingChecker(Live_Hunger);
 	EatingChecker();
 	EquipItem(TimeTick);
-	Attack();
 }
 
 
@@ -503,16 +505,23 @@ void APlayer_Character::AxeAttackTrigger(const FInputActionValue& Value)
 {
 	AInventoryGamemode* Gamemode = Cast<AInventoryGamemode>(GetWorld()->GetAuthGameMode());
 
-	if(Value.IsNonZero() && Live_Stamina != NULL && Gamemode->GetHUDState() == Gamemode->HS_Ingame && Controller && Exhaust == false)
+	if(Value.IsNonZero() && Live_Stamina >= NULL && Has_Equiped == true && Gamemode->GetHUDState() == Gamemode->HS_Ingame && Controller && Exhaust == false)
 	{
-		Axe_Timer += TimeTick;
-		Attack();
-		AxeActive = false;
-		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Axe triggered")));
+		Attacking = true;
+
+		if(Attacking == true)
+		{
+			Attack();
+			GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Attacking activated")));
+		}
+		else
+		{
+			AxeActive = false;
+		}
+		Attacking = false;
+		/*GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Attacking deactivated")));*/
 	}
-	
-	
-	
+
 }
 
 void APlayer_Character::Attack()
@@ -520,21 +529,16 @@ void APlayer_Character::Attack()
 	AInventoryGamemode* Gamemode = Cast<AInventoryGamemode>(GetWorld()->GetAuthGameMode());
 
 
-	if (Axe_Timer <= Axe_ActiveFrames && ItemPickedEquiped == "Axe")
+	if (ItemPickedEquiped == "Axe" && Attacking == true) 
 	{
 		AxeActive = true;
 		Live_Stamina -= 10.f;
-		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Axe active")));
-
-		if(Axe_Timer >= Axe_ActiveFrames)
-		{
-			TimeTick = NULL;
-		}
+		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("true")));
 	}
-	AxeActive = false;
-
-
 	
+	
+
+
 }
 
 
@@ -550,7 +554,7 @@ void APlayer_Character::OnOverlap(UPrimitiveComponent* OverlappedComponent, AAct
 			ThisEnemy->Health -= 10.f;
 			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("OnHitWorks"));
 		}
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("AxeCollison Works"));
+	/*	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("AxeCollison Works"));*/
 	}
 }
 
