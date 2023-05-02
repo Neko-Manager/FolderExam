@@ -36,16 +36,10 @@ public:
 	UPROPERTY(VisibleAnywhere)
 		class UPawnSensingComponent* PawnSensing;
 
-	UPROPERTY(VisibleAnywhere)
-		class UCapsuleComponent* Colision;
-
 	// ------------- class Refs ------------
 
 	UPROPERTY()
 		class AAIController* EnemyController;
-
-	//UPROPERTY()
-	//	class EPlayer_Character* Player{ nullptr };
 
 	// ------------ Actors -----------------
 
@@ -63,9 +57,6 @@ public:
 	//Sets PysicsAsset as blueprint value
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI")
 		TSubclassOf<AActor> BP_EnemyOnePysics;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI")
-		TSubclassOf<AActor> BP_Player;
 
 	// ------------ Variables -----------------
 
@@ -103,7 +94,6 @@ public:
 		float AttackDelayMax;
 
 	// Animation Montages
-
 	UPROPERTY(EditDefaultsOnly, Category = "AI")
 	class UAnimMontage* AttackMontage;
 
@@ -115,9 +105,12 @@ public:
 		bool ReadyToAttack;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI")
+		bool HasDoneDamage;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI")
 		FVector StandingPosition;
 
-	// ------------ Other ---------------------
+	// ------------ Timer Handlers ---------------------
 
 	// Timer Handle
 	FTimerHandle PatrolTimer;
@@ -127,22 +120,22 @@ public:
 
 protected:
 
-	// ------------ Functions --------------------
+	// ------------ Protected Functions --------------------
 
 	UFUNCTION()
 	void PawnSeen(APawn* SeenPawn);
 
-	AActor* ChoosePatrolTarget();
-
 	bool InTargetRange(AActor* Target, float Radius);
 
+	AActor* ChoosePatrolTarget();
+
 	void CheckPatrolTarget();
+
+	void PatrolTimerFinished();
 
 	void CheckCombatTarget();
 
 	void AttackTimerFinished();
-
-	void PatrolTimerFinished();
 
 	void GetRelativePos(AActor* Target);
 
