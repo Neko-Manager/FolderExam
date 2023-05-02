@@ -192,6 +192,11 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void Attack();
 
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat Control Axe")
+		bool Attacking;
+
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat Control Axe")
 		bool AxeActive;
 
