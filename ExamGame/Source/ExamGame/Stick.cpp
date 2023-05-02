@@ -8,7 +8,12 @@
 
 AStick::AStick()
 {
+	PrimaryActorTick.bCanEverTick = true;
+
 	AmountOfStick = 0;
+	ItemName = FString("Stick");
+	Value = 100;
+
 }
 
 

@@ -22,11 +22,6 @@ public:
 		class UBoxComponent* AxeCollisionMesh;*/
 
 
-protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
-
-
 public:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)

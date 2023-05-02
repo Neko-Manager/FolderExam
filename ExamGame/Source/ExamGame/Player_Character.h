@@ -96,6 +96,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inputsystem")
 		class UInputAction* IA_DropItem;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inputsystem")
+		class UInputAction* IA_Eating;
+
 
 	//Input action for combat
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inputsystem")
@@ -130,6 +133,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 		void DroppItemTrigger(const FInputActionValue& Value);
+
+	UFUNCTION(BlueprintCallable)
+		void EatingTrigger(const FInputActionValue& Value);
 
 
 	//Movement Booleans
@@ -242,7 +248,7 @@ public:
 		void StarvingChecker(float HungerTick);
 
 	UFUNCTION(BlueprintCallable)
-		void EatingChecker();
+		void EatingChecker(int32 Index);
 
 
 	// ------------------------ Collision Control ----------------------------

@@ -3,10 +3,8 @@
 
 #include "Axe.h"
 #include "EnemyOne.h"
-#include "InventoryGamemode.h"
 #include "Player_Character.h"
 #include "Kismet/GameplayStatics.h"
-#include "Components/BoxComponent.h"
 
 
 AAxe::AAxe()
@@ -22,12 +20,7 @@ AAxe::AAxe()
 	//AxeCollisionMesh->OnComponentBeginOverlap.AddDynamic(this, &AAxe::OnOverlap);
 }
 
-void AAxe::BeginPlay()
-{
-	Super::BeginPlay();
 
-	//Inherited properties modified
-}
 //
 //void AAxe::OnOverlap(UPrimitiveComponent* OverlappedComponent,
 //	AActor* OtherActor, UPrimitiveComponent* OtherComponent,
