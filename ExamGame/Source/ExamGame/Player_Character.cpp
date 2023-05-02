@@ -188,7 +188,6 @@ void APlayer_Character::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 		//Combat Inputs
 		EnhancedInputComponent->BindAction(IA_AxeAttack, ETriggerEvent::Triggered, this, &APlayer_Character::AxeAttackTrigger);
 
-
 	}
 }
 

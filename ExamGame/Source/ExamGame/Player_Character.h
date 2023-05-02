@@ -108,7 +108,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Control")
 		float Health;
 
-
 	//Input Triggers
 	UFUNCTION(BlueprintCallable)
 		void GroundedMovement(const FInputActionValue& Value);
