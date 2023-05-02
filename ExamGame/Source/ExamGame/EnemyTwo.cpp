@@ -18,17 +18,23 @@ AEnemyTwo::AEnemyTwo()
 	PrimaryActorTick.bCanEverTick = true;
 
 	PawnSensing = CreateDefaultSubobject<UPawnSensingComponent>(TEXT("PawnSensing"));
-	PawnSensing->SightRadius = 4000.f;
-	PawnSensing->SetPeripheralVisionAngle(45.f);
+	PawnSensing->SightRadius = 1000.f;
+	PawnSensing->SetPeripheralVisionAngle(360.f);
 
-	AttackRadius = 150.f;
+
+	// Radius of operations
 	ChaseRadius = 2000.f;
-	PatrolRadius = 200.f;
-	PatrolDelayMax = 8.f;
-	PatrolDelayMin = 2.f;
-	Health = 10;
-	PatrolSpeed = 125.f;
+	AttackRadius = 100.f;
+
+	// Speeds
 	ChaseSpeed = 300.f;
+
+	// Timer Delay
+	AttackDelayMax = 4.f;
+	AttackDelayMin = 1.f;
+
+	// Other
+	Health = 20;
 }
 
 void AEnemyTwo::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -43,13 +49,12 @@ void AEnemyTwo::BeginPlay()
 	// Gets the AI Controller
 	EnemyController = Cast<AAIController>(GetController());
 
+	EnemyState = EEnemyState::EES_EnemyIdle;
+	GetCharacterMovement()->MaxWalkSpeed = ChaseSpeed;
+
 	if (PawnSensing)
 	{
 		PawnSensing->OnSeePawn.AddDynamic(this, &AEnemyTwo::PawnSeen);
-	}
-	if (PatrolTarget)
-	{
-		MoveToTarget(PatrolTarget);
 	}
 }
 
@@ -57,14 +62,11 @@ void AEnemyTwo::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (EnemyState == EEnemyState::EES_EnemyChaseing || EnemyState == EEnemyState::EES_EnemyAttacking)
+	if (EnemyState == EEnemyState::EES_EnemyChaseing)
 	{
 		CheckCombatTarget();
 	}
-	else
-	{
-		CheckPatrolTarget();
-	}
+	
 	if (Health <= 0)
 	{
 		Die();
@@ -73,47 +75,18 @@ void AEnemyTwo::Tick(float DeltaTime)
 
 void AEnemyTwo::PawnSeen(APawn* SeenPawn)
 {
-	//Stops checking for pawn seen if still chasing the player
+	////Stops checking for pawn seen if still chasing the player
 	if (EnemyState == EEnemyState::EES_EnemyChaseing) return;
 
 	if (SeenPawn->ActorHasTag(FName("PlayerCharacter")))
 	{
-		//Stops the Patrolling function timer to prioritse chasing.
-		GetWorldTimerManager().ClearTimer(PatrolTimer);
-		GetCharacterMovement()->MaxWalkSpeed = ChaseSpeed;
 		CombatTarget = SeenPawn;
 
-		if (EnemyState != EEnemyState::EES_EnemyAttacking)
-		{
-			//Sets State to chasing the player Character
-			EnemyState = EEnemyState::EES_EnemyChaseing;
-			MoveToTarget(CombatTarget);
-			GEngine->AddOnScreenDebugMessage(1, 1.f, FColor::Red, FString::Printf(TEXT("PawnSeen, Chase player")));
-		}
+		//Sets State to chasing the player Character
+		EnemyState = EEnemyState::EES_EnemyChaseing;
+		MoveToTarget(CombatTarget);
+		GEngine->AddOnScreenDebugMessage(1, 1.f, FColor::Red, FString::Printf(TEXT("PawnSeen, Chase player")));
 	}
-}
-
-AActor* AEnemyTwo::ChoosePatrolTarget()
-{
-	// Finds all patrol targets that are valid (not currently at)
-	TArray<AActor*> ValidTargets;
-	for (AActor* Target : PatrolTargets)
-	{
-		if (Target != PatrolTarget)
-		{
-			ValidTargets.AddUnique(Target);
-		}
-	}
-
-	// Setts a random destination based on the array of valid targets
-	const int32 NumPatroltargets = ValidTargets.Num();
-	if (NumPatroltargets > 0)
-	{
-		const int32 TargetSelection = FMath::RandRange(0, NumPatroltargets - 1);
-		return ValidTargets[TargetSelection];
-	}
-
-	return nullptr;
 }
 
 bool AEnemyTwo::InTargetRange(AActor* Target, float Radius)
@@ -126,27 +99,14 @@ bool AEnemyTwo::InTargetRange(AActor* Target, float Radius)
 	return DistanceToTarget <= Radius;
 }
 
-void AEnemyTwo::CheckPatrolTarget()
-{
-	//Checks if in range of a patrol point, if yes then wait a random time and activate the timer function.
-	if (InTargetRange(PatrolTarget, PatrolRadius))
-	{
-		PatrolTarget = ChoosePatrolTarget();
-		const float WaitTime = FMath::RandRange(PatrolDelayMin, PatrolDelayMax);
-		//Sets timer in world timer manager, (timer variabel, object in question, what function to call, wait time.
-		GetWorldTimerManager().SetTimer(PatrolTimer, this, &AEnemyTwo::PatrolTimerFinished, WaitTime);
-	}
-}
-
 void AEnemyTwo::CheckCombatTarget()
 {
 	if (!InTargetRange(CombatTarget, ChaseRadius))
 	{
-		// When outside of chase radius go back to patrol
+		// When outside of chase radius Stay where it is
 		CombatTarget = nullptr;
-		EnemyState = EEnemyState::EES_EnemyPatrolling;
-		GetCharacterMovement()->MaxWalkSpeed = PatrolSpeed;
-		MoveToTarget(PatrolTarget);
+		EnemyState = EEnemyState::EES_EnemyIdle;
+		StayAtPosition(GetActorLocation());
 
 		GEngine->AddOnScreenDebugMessage(1, 1.f, FColor::Red, FString::Printf(TEXT("Loose intrest")));
 	}
@@ -154,14 +114,17 @@ void AEnemyTwo::CheckCombatTarget()
 	{
 		// Outside attack range chase character
 		EnemyState = EEnemyState::EES_EnemyChaseing;
-		GetCharacterMovement()->MaxWalkSpeed = ChaseSpeed;
 		MoveToTarget(CombatTarget);
+
+
 		GEngine->AddOnScreenDebugMessage(1, 1.f, FColor::Red, FString::Printf(TEXT("Chasing player")));
 	}
 	else if (InTargetRange(CombatTarget, AttackRadius) && EnemyState != EEnemyState::EES_EnemyAttacking)
 	{
 		// inside attack range, attack character.
 		EnemyState = EEnemyState::EES_EnemyAttacking;
+
+		Die();
 
 		GEngine->AddOnScreenDebugMessage(1, 1.f, FColor::Red, FString::Printf(TEXT("Attack player")));
 
@@ -183,20 +146,42 @@ void AEnemyTwo::MoveToTarget(AActor* Target)
 	//How far away it stops from goal location
 	MoveRequest.SetAcceptanceRadius(15.f);
 
+	//Set focus
+	EnemyController->SetFocus(Target);
+
 	//Actually moves the player
 	EnemyController->MoveTo(MoveRequest);
 }
 
-void AEnemyTwo::PatrolTimerFinished()
+void AEnemyTwo::StayAtPosition(FVector Location)
 {
-	MoveToTarget(PatrolTarget);
+	// Moves to the return value of target given by in target range
+	if (EnemyController == nullptr) return;
+
+	//Sets the move request
+	FAIMoveRequest MoveRequest;
+
+	//Sets move to goal location
+	MoveRequest.SetGoalLocation(Location);
+
+	//How far away it stops from goal location
+	MoveRequest.SetAcceptanceRadius(15.f);
+
+	//Actually moves the player
+	EnemyController->MoveTo(MoveRequest);
 
 }
 
 void AEnemyTwo::Die()
 {
-	//GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	//SetLifeSpan(3.f);
+	//Spawns The pysics asset when it has died
+	GetWorld()->SpawnActor<AActor>(BP_EnemyTwoPysics, GetActorTransform());
+
+	//Removes Original mesh
+	SetActorHiddenInGame(true);
+	SetActorEnableCollision(false);
+	this->Destroy();
+	GEngine->AddOnScreenDebugMessage(1, 1.f, FColor::Red, FString::Printf(TEXT("Died")));
 }
 
 
