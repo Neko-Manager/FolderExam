@@ -3,11 +3,13 @@
 #include "Axe.h"
 #include "PickUp.h"
 
+
 //Components
 #include "Components/StaticMeshComponent.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Components/AudioComponent.h"
+#include "Kismet/KismetSystemLibrary.h"
 
 //Other
 #include "Kismet/GameplayStatics.h"
@@ -23,13 +25,12 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubSystems.h"
 #include "InventoryGamemode.h"
+#include "Components/BoxComponent.h"
 #include "Engine/StaticMeshSocket.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "UObject/ConstructorHelpers.h"
 
-//Test Mesh
-//class AAxe;
 
 // Sets default values
 APlayer_Character::APlayer_Character()
@@ -38,6 +39,8 @@ APlayer_Character::APlayer_Character()
 	PrimaryActorTick.bCanEverTick = true;
 
 	// ------------- Camera control --------------
+	PlayerMesh = CreateDefaultSubobject<UMeshComponent>(TEXT("PlayerMesh"));
+
 	//Initializing the spring arm.
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
 	SpringArm->SetupAttachment(GetMesh(),"HeadSocket");
@@ -52,6 +55,11 @@ APlayer_Character::APlayer_Character()
 	// ------------- Player auto possession --------------
 	AutoPossessPlayer = EAutoReceiveInput::Player0;
 
+	// ------------- Overlap control --------------
+	AxeCollisionMesh = CreateDefaultSubobject<UBoxComponent>(TEXT("AxeCollisionMesh"));
+	AxeCollisionMesh->InitBoxExtent(FVector(10.f, 15.f, 10.f));
+	AxeCollisionMesh->SetupAttachment(GetMesh(),FName(TEXT("RightHandSocket")));
+	AxeCollisionMesh->OnComponentBeginOverlap.AddDynamic(this,&APlayer_Character::OnOverlap);
 }
 
 
@@ -80,7 +88,7 @@ void APlayer_Character::BeginPlay()
 	TimeTick = NULL;
 	TimeAddingTick = NULL;
 
-	//playerReach
+	//PlayerReach
 	Reach = 250.f;
 	
 	//Speed control
@@ -89,6 +97,8 @@ void APlayer_Character::BeginPlay()
 	Crouch_Speed = 200.f;
 	Exhaust_Speed = 100.f;
 
+	//Health and other members
+	Health = 100.f;
 
 	//Stamina control
 	Live_Stamina = 100.f;
@@ -114,12 +124,15 @@ void APlayer_Character::BeginPlay()
 	Starving = false;
 
 	// ------------- Defaults for equip control --------------
-	Equiped0 = false;
-	Equiped1 = false;
-	Equiped2 = false;
-	Equiped3 = false;
-	Equiped4 = false;
+	Equiped = false;
+	Has_Equiped = false;
 
+	// ------------- Initializing collision --------------
+	GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic(this, &APlayer_Character::OnOverlap);
+
+	// ------------- animation hit timers --------------
+	Axe_Timer = NULL;
+	Axe_ActiveFrames = 1.f;
 }
 
 
@@ -144,8 +157,9 @@ void APlayer_Character::Tick(float DeltaTime)
 
 	HungerDecay(NegativeTimeTick);
 	StarvingChecker(Live_Hunger);
-	EatingChecker(Live_Hunger);
-	EquipItem();
+	EatingChecker();
+	EquipItem(TimeTick);
+	Attack();
 }
 
 
@@ -163,11 +177,11 @@ void APlayer_Character::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 		EnhancedInputComponent->BindAction(IA_Jump, ETriggerEvent::Triggered, this, &APlayer_Character::JumpTrigger);
 		EnhancedInputComponent->BindAction(IA_Sprint, ETriggerEvent::Triggered, this, &APlayer_Character::SprintTriggered);
 		EnhancedInputComponent->BindAction(IA_Crouch, ETriggerEvent::Triggered, this, &APlayer_Character::CrouchTriggered);
+
+		//Item related inputs
 		EnhancedInputComponent->BindAction(IA_Interact, ETriggerEvent::Triggered, this, &APlayer_Character::Interact);
-
-		//open Inventory
 		EnhancedInputComponent->BindAction(IA_OpenInventory, ETriggerEvent::Triggered, this, &APlayer_Character::ToggleInventory);
-
+		EnhancedInputComponent->BindAction(IA_DropItem, ETriggerEvent::Triggered, this, &APlayer_Character::DroppItemTrigger);
 		//Combat Inputs
 		EnhancedInputComponent->BindAction(IA_AxeAttack, ETriggerEvent::Triggered, this, &APlayer_Character::AxeAttackTrigger);
 
@@ -316,12 +330,12 @@ void APlayer_Character::StarvingChecker(float Hunger)
 	}
 }
 
-void APlayer_Character::EatingChecker(float Hunger)
+void APlayer_Character::EatingChecker()
 {
 	//Checking if eating boolean is true
 	if(Eating == true)
 	{
-		Hunger += 20;
+		Live_Hunger += 20;
 	}
 }
 
@@ -371,71 +385,117 @@ void APlayer_Character::ExhaustChecker(float Stamina)
 }
 
 // ------------- Attaching Item Control --------------
-void APlayer_Character::EquipItem()
+void APlayer_Character::DroppItemTrigger(const FInputActionValue& Value)
+{
+
+	AInventoryGamemode* Gamemode = Cast<AInventoryGamemode>(GetWorld()->GetAuthGameMode());
+	//const int32 Index = Inventory.Find();
+	int32 Index[] = { 0,1,2,3,4 };
+	
+
+	if(Gamemode->GetHUDState() == Gamemode->HS_Ingame && Value.IsNonZero() && Inventory[Index[0]] && DisabledThumbnails[Index[0]] == true)
+	{
+		DroppItem(Index[0]);
+		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Item 0 dropped")));
+		return;
+	}
+	if (Gamemode->GetHUDState() == Gamemode->HS_Ingame && Value.IsNonZero() && Inventory[Index[1]] && DisabledThumbnails[Index[1]] == true)
+	{
+		DroppItem(Index[1]);
+		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Item 1 dropped")));
+		return;
+	}
+	if (Gamemode->GetHUDState() == Gamemode->HS_Ingame && Value.IsNonZero() && Inventory[Index[2]] && DisabledThumbnails[Index[2]] == true)
+	{
+		DroppItem(Index[2]);
+		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Item 2 dropped")));
+		return;
+	}
+	if (Gamemode->GetHUDState() == Gamemode->HS_Ingame && Value.IsNonZero() && Inventory[Index[3]] && DisabledThumbnails[Index[3]] == true)
+	{
+		DroppItem(Index[3]);
+		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Item 3 dropped")));
+		return;
+	}
+	if (Gamemode->GetHUDState() == Gamemode->HS_Ingame && Value.IsNonZero() && Inventory[Index[4]] && DisabledThumbnails[Index[4]] == true)
+	{
+		DroppItem(Index[4]);
+		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Item 4 dropped")));
+		return;
+	}
+
+	
+}
+
+void APlayer_Character::DroppItem(int32 Index)
 {
 	AInventoryGamemode* Gamemode = Cast<AInventoryGamemode>(GetWorld()->GetAuthGameMode());
-	
-	//AAxe* InHand = Cast<AAxe>(Inventory[0]->InteractableMesh);
+	FDetachmentTransformRules TransformRules(EDetachmentRule::KeepRelative, true);
 
-	if (Gamemode->GetHUDState() == Gamemode->HS_Inventory && Inventory[0] != nullptr && Equiped0 == true)
+	//Checkinf i fitem is equiped and that the disableThumbnail is active for the respective slot and that the name also is the same
+	if (Has_Equiped == true && ItemPickedEquiped == Inventory[Index]->ItemName && DisabledThumbnails[Index] == true)
 	{
-		FAttachmentTransformRules TransformRules(EAttachmentRule::SnapToTarget, true);
-		Inventory[0]->AttachToComponent(GetMesh(), TransformRules, FName("RightHandSocket"));
-		Inventory[0]->InteractableMesh->SetVisibility(true);
-		Inventory[0] = nullptr;
-		Equiped0 = false;
-		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Inventory 0 equiped")));
+		//Setting physics attributes to true when dropping for a realistic effect. Also removes the disabledThumbnail for the respective index and sets it to nullptr. This will make it open for a new item to be picket up
+		Inventory[Index]->DetachFromActor(TransformRules);
+		Inventory[Index]->InteractableMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+		Inventory[Index]->InteractableMesh->GetForwardVector() + FVector(0.f, 100.f, 200.f);
+		Has_Equiped = false;
+		DisabledThumbnails[Index] = false;
+		Inventory[Index] = nullptr;
 	}
-	
+}
 
-	if (Gamemode->GetHUDState() == Gamemode->HS_Inventory && Inventory[1] != nullptr && Equiped1 == true)
+void APlayer_Character::EquipItem(int32 Index)
+{
+	AInventoryGamemode* Gamemode = Cast<AInventoryGamemode>(GetWorld()->GetAuthGameMode());
+
+
+
+	if (Gamemode->GetHUDState() == Gamemode->HS_Inventory && Inventory[Index] != nullptr && Equiped == true && DisabledThumbnails[Index] != true && Has_Equiped == false) 
 	{
+		FCollisionQueryParams QueryParams;
+		QueryParams.AddIgnoredActor(Inventory[Index]);
+
+		//Attaching the item to socket
 		FAttachmentTransformRules TransformRules(EAttachmentRule::SnapToTarget, true);
-		Inventory[1]->AttachToComponent(GetMesh(), TransformRules, FName("RightHandSocket"));
-		Inventory[1]->InteractableMesh->SetVisibility(true);
-		Inventory[1] = nullptr;
-		Equiped1 = false;
-		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Inventory 1 equiped")));
+		Inventory[Index]->AttachToComponent(GetMesh(), TransformRules, FName("RightHandSocket"));
+
+		//Notifyingy that the item is equipped
+		Has_Equiped = true;
+
+		//Disabling the thumbnail
+		DisabledThumbnails[Index] = true;
+
+		//The Item name is the name from the index of the respective item
+		ItemPickedEquiped = Inventory[Index]->ItemName;
+
+		//Making the item visible
+		Inventory[Index]->InteractableMesh->SetVisibility(true);
+		Inventory[Index]->SetActorEnableCollision(true);
+
+		//Equiped state resets the button pressed in BP
+		Equiped = false;
+		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Item equiped:")));
+		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::FromInt(Index));
 	}
-
-
-	if (Gamemode->GetHUDState() == Gamemode->HS_Inventory && Inventory[2] != nullptr && Equiped2 == true)
-	{
-		FAttachmentTransformRules TransformRules(EAttachmentRule::SnapToTarget, true);
-		Inventory[2]->AttachToComponent(GetMesh(), TransformRules, FName("RightHandSocket"));
-		Inventory[2]->InteractableMesh->SetVisibility(true);
-		SetActorEnableCollision(true);
-		Inventory[2] = nullptr;
-		Equiped2 = false;
-		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Inventory 2 equiped")));
-	}
-
-
-	if (Gamemode->GetHUDState() == Gamemode->HS_Inventory && Inventory[3] != nullptr && Equiped3 == true)
-	{
-		FAttachmentTransformRules TransformRules(EAttachmentRule::SnapToTarget, true);
-		Inventory[3]->AttachToComponent(GetMesh(), TransformRules, FName("RightHandSocket"));
-		Inventory[3]->InteractableMesh->SetVisibility(true);
-		SetActorEnableCollision(true);
-		Inventory[3] = nullptr;
-		Equiped3 = false;
-		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Inventory 3 equiped")));
-	}
-
-
-	if (Gamemode->GetHUDState() == Gamemode->HS_Inventory && Inventory[4] != nullptr && Equiped4 == true)
-	{
-		FAttachmentTransformRules TransformRules(EAttachmentRule::SnapToTarget, true);
-		Inventory[4]->AttachToComponent(GetMesh(), TransformRules, FName("RightHandSocket"));
-		Inventory[4]->InteractableMesh->SetVisibility(true);
-		SetActorEnableCollision(true);
-		Inventory[4] = nullptr;
-		Equiped4 = false;
-		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Inventory 4 equiped")));
-	}
-	
 
 }
+
+void APlayer_Character::SwapItem(int32 Index)
+{
+
+	//AInventoryGamemode* Gamemode = Cast<AInventoryGamemode>(GetWorld()->GetAuthGameMode());
+	//FDetachmentTransformRules TransformRules(EDetachmentRule::KeepRelative, true);
+
+	////Checkinf i fitem is equiped and that the disableThumbnail is active for the respective slot and that the name also is the same
+	//if (Gamemode->GetHUDState() == Gamemode->HS_Inventory && Has_Equiped == true && ItemPickedEquiped != Inventory[Index]->ItemName && DisabledThumbnails[Index] == true && Equiped == true && Inventory[Index] != nullptr)
+	//{
+	//	//Setting physics attributes to true when dropping for a realistic effect. Also removes the disabledThumbnail for the respective index and sets it to nullptr. This will make it open for a new item to be picket up
+	//	DisabledThumbnails[Index] = false;
+	//	Inventory[Index]->InteractableMesh->SetVisibility(true);
+	//}
+}
+
 
 
 // ------------- Combat Control (Axe) --------------
@@ -443,31 +503,55 @@ void APlayer_Character::AxeAttackTrigger(const FInputActionValue& Value)
 {
 	AInventoryGamemode* Gamemode = Cast<AInventoryGamemode>(GetWorld()->GetAuthGameMode());
 
-	if (Controller && Value.IsNonZero() && Exhaust == false && Equiped0 == false)
+	if(Value.IsNonZero() && Live_Stamina != NULL && Gamemode->GetHUDState() == Gamemode->HS_Ingame && Controller && Exhaust == false)
+	{
+		Axe_Timer += TimeTick;
+		Attack();
+		AxeActive = false;
+		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Axe triggered")));
+	}
+	
+	
+	
+}
+
+void APlayer_Character::Attack()
+{
+	AInventoryGamemode* Gamemode = Cast<AInventoryGamemode>(GetWorld()->GetAuthGameMode());
+
+
+	if (Axe_Timer <= Axe_ActiveFrames && ItemPickedEquiped == "Axe")
 	{
 		AxeActive = true;
 		Live_Stamina -= 10.f;
-		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Axe triggered")));
-		ResetAxeAttack();
+		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Axe active")));
+
+		if(Axe_Timer >= Axe_ActiveFrames)
+		{
+			TimeTick = NULL;
+		}
 	}
-}
+	AxeActive = false;
 
 
-void APlayer_Character::ResetAxeAttack()
-{
-	AInventoryGamemode* Gamemode = Cast<AInventoryGamemode>(GetWorld()->GetAuthGameMode());
-	if(AxeActive == true )
-	{
-		AxeActive = false;
-		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, FString::Printf(TEXT("AxeAttack = false:")));
-	}
+	
 }
 
 
 // ------------- Collision --------------
 void APlayer_Character::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-
+	if(Has_Equiped == true)
+	{
+		AEnemyOne* ThisEnemy = Cast<AEnemyOne>(OtherActor);
+	
+		if (AxeActive == true && ThisEnemy && ItemPickedEquiped == "Axe")
+		{
+			ThisEnemy->Health -= 10.f;
+			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("OnHitWorks"));
+		}
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("AxeCollison Works"));
+	}
 }
 
 
@@ -477,7 +561,19 @@ bool APlayer_Character::AddItemToInventory(APickUp* Item)
 {
 	if (Item !=  NULL)
 	{
-		const int32 AvailableSlot = Inventory.Find(nullptr); // find first slot with a nullptr in it
+		const int32 AvailableSlot1 = DisabledThumbnails.Find(true);
+		const int32 AvailableSlot2 = Inventory.Find(nullptr); // find first slot with a nullptr in it
+		int32 AvailableSlot = 0;
+
+		if(AvailableSlot1 <= AvailableSlot2 && AvailableSlot1 != -1 && Equiped == true)
+		{
+			AvailableSlot = AvailableSlot1;
+			DisabledThumbnails[AvailableSlot] = false;
+		}
+		else
+		{
+			AvailableSlot = AvailableSlot2;
+		}
 
 		if (AvailableSlot != INDEX_NONE)
 		{
@@ -512,14 +608,14 @@ FString APlayer_Character::GivenItemNameAtInventorySlot(int32 Slot)
 	return FString("None");
 }
 
-void APlayer_Character::UseItemAtInventorySlot(int32 Slot)
-{
-	if(Inventory[Slot] != NULL)
-	{
-		Inventory[Slot]->Use_Implementation();
-		Inventory[Slot] = NULL; //deleat item from inventory when used;
-	}
-}
+//void APlayer_Character::UseItemAtInventorySlot(int32 Slot)
+//{
+//	if(Inventory[Slot] != NULL)
+//	{
+//		Inventory[Slot]->Use_Implementation();
+//		Inventory[Slot] = NULL; //deleat item from inventory when used;
+//	}
+//}
 
 
 

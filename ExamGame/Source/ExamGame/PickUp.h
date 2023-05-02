@@ -28,16 +28,9 @@ public:
 
 	virtual void Interact_Implementation() override;
 
-	virtual void Use_Implementation();
-
-	void BackToInventory();
+	/*virtual void Use_Implementation();*/
 
 	void OnPickUp();
-
-	UFUNCTION()
-		virtual void OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-			UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex,
-			bool bFromSweep, const FHitResult& SweepResult);
 
 
 	//Uproperties

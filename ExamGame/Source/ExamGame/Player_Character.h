@@ -34,10 +34,30 @@ public:
 
 	// ------------------------ Class references ----------------------------
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		UMeshComponent* PlayerMesh;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class AEnemyOne* EnemyOne;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		class APickUp* PickedItem;
+		class AAxe* Axe;
+
+
+	// ------------------------ Do collision for items control ----------------------------
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Equipment Control")
+		bool Has_Equiped;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Equipment Control")
+		FString ItemPickedEquiped;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Equipment Control")
+		class UBoxComponent* AxeCollisionMesh;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Equipment Control")
+		class UCapsuleComponent* TemporarelyCapsuleComponent;
+
+	
+
 
 	// ------------------------ Character control Input Actions ----------------------------
 	//Camera control
@@ -73,10 +93,18 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inputsystem")
 		class UInputAction* IA_Interact;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inputsystem")
+		class UInputAction* IA_DropItem;
+
 
 	//Input action for combat
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inputsystem")
 		class UInputAction* IA_AxeAttack;
+
+	// ------------------------ Character members hud ----------------------------
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Control")
+		float Health;
+
 
 	//Input Triggers
 	UFUNCTION(BlueprintCallable)
@@ -96,6 +124,12 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 		void AxeAttackTrigger(const FInputActionValue& Value);
+
+	UFUNCTION(BlueprintCallable)
+	    void ToggleInventory(const FInputActionValue& Value);
+
+	UFUNCTION(BlueprintCallable)
+		void DroppItemTrigger(const FInputActionValue& Value);
 
 
 	//Movement Booleans
@@ -153,33 +187,39 @@ public:
 
 
 	// ------------------------ Combat Control ----------------------------
-	//Combat Control
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat Control")
+
+	//Axe
+	UFUNCTION(BlueprintCallable)
+		void Attack();
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat Control Axe")
 		bool AxeActive;
 
-	UFUNCTION(BlueprintCallable)
-		void ResetAxeAttack();
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat Control Axe")
+		float Axe_Timer;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat Control Axe")
+		float Axe_ActiveFrames;
+
+	
+
+	
 
 	// ------------------------ Attaching Control ----------------------------
 	UFUNCTION(BlueprintCallable)
-		void EquipItem();
+		void EquipItem(int32 Index);
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attaching Control")
-		bool Equiped0;
+		bool Equiped;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attaching  Control")
-		bool Equiped1;
+	UFUNCTION(BlueprintCallable)
+		void SwapItem (int32 Index);
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attaching  Control")
-		bool Equiped2;
+	UFUNCTION(BlueprintCallable)
+		void DroppItem(int32 Index);
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attaching  Control")
-		bool Equiped3;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attaching  Control")
-		bool Equiped4;
-
-	
 	//Hunger Control
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "hunger Control")
 		float Max_Hunger;
@@ -187,17 +227,17 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "hunger Control")
 		float Live_Hunger;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hunger")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hunger Control")
 		bool Eating;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hunger")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hunger Control")
 		bool Starving;
 
 	UFUNCTION(BlueprintCallable)
 		void StarvingChecker(float HungerTick);
 
 	UFUNCTION(BlueprintCallable)
-		void EatingChecker(float EatingTick);
+		void EatingChecker();
 
 
 	// ------------------------ Collision Control ----------------------------
@@ -227,8 +267,8 @@ public:
 		FString GivenItemNameAtInventorySlot(int32 Slot);
 
 	//Use Item in a given inventory slot
-	UFUNCTION(BlueprintCallable, Category = "Inventory Functions")
-		void UseItemAtInventorySlot(int32 Slot);
+	/*UFUNCTION(BlueprintCallable, Category = "Inventory Functions")
+		void UseItemAtInventorySlot(int32 Slot);*/
 
 
 
@@ -252,8 +292,6 @@ private:
 	//player reach
 	float Reach;
 
-	// Open Inventory
-	void ToggleInventory(const FInputActionValue& Value);
 
 
 	// Interact with the interactable (object), if there is one
@@ -269,8 +307,13 @@ private:
 
 public:
 	//Player Inventory, represented as a TArray of pickup object.
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category=ItemInArray)
 		TArray<APickUp*> Inventory;
+
+	//Array to empty slots when item has been selected
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category=DisabledThumbnails)
+		TArray<bool> DisabledThumbnails = { false, false, false, false, false };
+
 
 	
 
