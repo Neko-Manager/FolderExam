@@ -18,6 +18,8 @@ public:
 	// Sets default values for this character's properties
 	AAxe();
 
+	/*UPROPERTY(BlueprintReadWrite, EditAnywhere)
+		class UBoxComponent* AxeCollisionMesh;*/
 
 
 protected:
@@ -27,40 +29,12 @@ protected:
 
 public:
 
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
-	// Called to bind functionality to input
-
-
-	//___________ Class control Axe-only ___________
-	/*UPROPERTY(BlueprintReadWrite, EditAnywhere)
-		class UBoxComponent* Axe;*/
-
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 		AInteractable* AxeInteracted;
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-		class APickUp* Item;
+	//UFUNCTION()
+	//void OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+	//	UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex,
+	//	bool bFromSweep, const FHitResult& SweepResult);
 
-
-
-	//___________ Collision Control ___________
-
-
-
-	//___________ Variables and booleans___________
-	int32 AmountOfAxe;
-
-	//___________ Functions ___________
-	void OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, 
-		UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, 
-		bool bFromSweep, const FHitResult& SweepResult) override;
-
-private:
-	UPROPERTY(VisibleAnywhere)
-		USceneComponent* BoxTraceStart;
-
-	UPROPERTY(VisibleAnywhere)
-		USceneComponent* BoxTraceEnd;
 };

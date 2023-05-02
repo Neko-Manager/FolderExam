@@ -38,4 +38,6 @@ public:
 
 		UPROPERTY(EditAnywhere, Category = "Interactable Properties")
 			FString InteractableHelpText;
+
+	
 };
