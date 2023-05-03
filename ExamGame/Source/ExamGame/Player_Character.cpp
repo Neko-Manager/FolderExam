@@ -388,11 +388,12 @@ void APlayer_Character::EatingChecker(int32 Index)
 	FDetachmentTransformRules TransformRules(EDetachmentRule::KeepRelative, true);
 
 	//Checking if eating boolean is true
-	if(Has_Equiped == true && DisabledThumbnails[Index] == true)
+	if(Has_Equiped == true && DisabledThumbnails[Index] == true && Health <= 100.f)
 	{
 		if (Inventory[Index]->ItemName == "Mango" && Eating == true)
 		{
 			Live_Hunger += 10.f;
+			Health += 10.f;
 			Inventory[Index]->DetachFromActor(TransformRules);
 			Inventory[Index]->SetActorEnableCollision(false);
 			Inventory[Index]->InteractableMesh->SetVisibility(false);
