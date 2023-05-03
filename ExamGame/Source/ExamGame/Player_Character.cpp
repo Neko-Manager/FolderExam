@@ -327,8 +327,15 @@ void APlayer_Character::StarvingChecker(float Hunger)
 		if(Starving == true)
 		{
 			Max_Stamina = 50.f;
-			GetCharacterMovement()->MaxWalkSpeed = Walk_Speed / 2;
+			Walk_Speed = 300.f;
 		}
+	}
+	else
+	{
+		Starving = false;
+		Max_Stamina = 100.f;
+		Walk_Speed = 600.f;
+		GetCharacterMovement()->MaxWalkSpeed = 600.f;
 	}
 }
 
@@ -348,31 +355,32 @@ void APlayer_Character::EatingTrigger(const FInputActionValue& Value)
 	if (Gamemode->GetHUDState() == Gamemode->HS_Ingame && Value.IsNonZero() && Inventory[Index[1]] && DisabledThumbnails[Index[1]] == true)
 	{
 		Eating = true;
-		ExhaustChecker(Index[1]);
+		EatingChecker(Index[1]);
 		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Item 1 eaten")));
 		return;
 	}
 	if (Gamemode->GetHUDState() == Gamemode->HS_Ingame && Value.IsNonZero() && Inventory[Index[2]] && DisabledThumbnails[Index[2]] == true)
 	{
 		Eating = true;
-		ExhaustChecker(Index[2]);
+		EatingChecker(Index[2]);
 		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Item 2 eaten")));
 		return;
 	}
 	if (Gamemode->GetHUDState() == Gamemode->HS_Ingame && Value.IsNonZero() && Inventory[Index[3]] && DisabledThumbnails[Index[3]] == true)
 	{
-		ExhaustChecker(Index[3]);
+		Eating = true;
+		EatingChecker(Index[3]);
 		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Item 3 eaten")));
 		return;
 	}
 	if (Gamemode->GetHUDState() == Gamemode->HS_Ingame && Value.IsNonZero() && Inventory[Index[4]] && DisabledThumbnails[Index[4]] == true)
 	{
-		ExhaustChecker(Index[4]);
+		Eating = true;
+		EatingChecker(Index[4]);
 		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Item 4 eaten")));
 		return;
 	}
 }
-
 
 void APlayer_Character::EatingChecker(int32 Index)
 {
@@ -382,16 +390,18 @@ void APlayer_Character::EatingChecker(int32 Index)
 	//Checking if eating boolean is true
 	if(Has_Equiped == true && DisabledThumbnails[Index] == true)
 	{
-		if (ItemPickedEquiped == "Mango" && Eating == true)
+		if (Inventory[Index]->ItemName == "Mango" && Eating == true)
 		{
 			Live_Hunger += 10.f;
 			Inventory[Index]->DetachFromActor(TransformRules);
-			Inventory[Index]->InteractableMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-			Inventory[Index]->InteractableMesh->GetForwardVector() + FVector(0.f, 100.f, 200.f);
+			Inventory[Index]->SetActorEnableCollision(false);
+			Inventory[Index]->InteractableMesh->SetVisibility(false);
 			Has_Equiped = false;
 			DisabledThumbnails[Index] = false;
-			Inventory[Index] = nullptr;
 			Eating = false;
+			Starving = false;
+			Inventory[Index] = nullptr;
+			
 		}
 	}
 }

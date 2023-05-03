@@ -7,7 +7,7 @@
 APickUp::APickUp()
 {
 	InteractableMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("PickUpMesh"));
-	InteractableMesh->SetSimulatePhysics(true);
+	InteractableMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndProbe);
 
 	ItemName = FString("Enter An itemName Here");
 	Value = 0;
