@@ -2,12 +2,14 @@
 //Class Include
 #include "EnemyTwo.h"
 #include "AIController.h"
+#include "Player_Character.h"
 
 //Component Include
 #include "perception/PawnSensingComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Components/BoxComponent.h"
 
 //Other Include
 #include "Kismet/KismetSystemLibrary.h"
@@ -25,6 +27,14 @@ AEnemyTwo::AEnemyTwo()
 	// Radius of operations
 	ChaseRadius = 2000.f;
 	AttackRadius = 100.f;
+	DetectionRangeX = 1000;
+	DetectionRangeY = 1000;
+	DetectionRangeZ = 150;
+
+	DetectionSquare = CreateDefaultSubobject<UBoxComponent>(TEXT("Collider"));
+	DetectionSquare->SetupAttachment(GetRootComponent());
+	DetectionSquare->InitBoxExtent(FVector(DetectionRangeX, DetectionRangeY, DetectionRangeZ));
+	DetectionSquare->OnComponentBeginOverlap.AddDynamic(this, &AEnemyTwo::OnSquareDetect);
 
 	// Speeds
 	ChaseSpeed = 300.f;
@@ -35,6 +45,9 @@ AEnemyTwo::AEnemyTwo()
 
 	// Other
 	Health = 20;
+
+	Burrowed = true;
+
 }
 
 void AEnemyTwo::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -45,6 +58,8 @@ void AEnemyTwo::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 void AEnemyTwo::BeginPlay()
 {
 	Super::BeginPlay();
+
+	GetMesh()->SetVisibility(false);
 
 	// Gets the AI Controller
 	EnemyController = Cast<AAIController>(GetController());
@@ -76,17 +91,19 @@ void AEnemyTwo::Tick(float DeltaTime)
 void AEnemyTwo::PawnSeen(APawn* SeenPawn)
 {
 	////Stops checking for pawn seen if still chasing the player
-	if (EnemyState == EEnemyState::EES_EnemyChaseing) return;
+	
+	
+	//if (EnemyState == EEnemyState::EES_EnemyChaseing) return;
 
-	if (SeenPawn->ActorHasTag(FName("PlayerCharacter")))
-	{
-		CombatTarget = SeenPawn;
+	//if (SeenPawn->ActorHasTag(FName("PlayerCharacter")) && Burrowed == false)
+	//{
+	//	CombatTarget = SeenPawn;
 
-		//Sets State to chasing the player Character
-		EnemyState = EEnemyState::EES_EnemyChaseing;
-		MoveToTarget(CombatTarget);
-		GEngine->AddOnScreenDebugMessage(1, 1.f, FColor::Red, FString::Printf(TEXT("PawnSeen, Chase player")));
-	}
+	//	//Sets State to chasing the player Character
+	//	EnemyState = EEnemyState::EES_EnemyChaseing;
+	//	MoveToTarget(CombatTarget);
+	//	GEngine->AddOnScreenDebugMessage(1, 1.f, FColor::Red, FString::Printf(TEXT("PawnSeen, Chase player")));
+	//}
 }
 
 bool AEnemyTwo::InTargetRange(AActor* Target, float Radius)
@@ -107,6 +124,11 @@ void AEnemyTwo::CheckCombatTarget()
 		CombatTarget = nullptr;
 		EnemyState = EEnemyState::EES_EnemyIdle;
 		StayAtPosition(GetActorLocation());
+
+		GetMesh()->SetVisibility(false);
+		Burrowed = true;
+
+		//PLAY BURROW ANIM MONTAGE
 
 		GEngine->AddOnScreenDebugMessage(1, 1.f, FColor::Red, FString::Printf(TEXT("Loose intrest")));
 	}
@@ -169,6 +191,26 @@ void AEnemyTwo::StayAtPosition(FVector Location)
 
 	//Actually moves the player
 	EnemyController->MoveTo(MoveRequest);
+
+}
+
+void AEnemyTwo::OnSquareDetect(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+	UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	APlayer_Character* Player = Cast<APlayer_Character>(OtherActor);
+
+	if (Player && Player->ActorHasTag(FName("PlayerCharacter")) && Burrowed == true)
+	{
+		EnemyState = EEnemyState::EES_EnemyChaseing;
+		GetMesh()->SetVisibility(true);
+		Burrowed = false;
+		CombatTarget = OtherActor;
+		MoveToTarget(CombatTarget);
+
+		// PLAY UNBURROW ANIM MONTAGE
+
+		GEngine->AddOnScreenDebugMessage(0, 1.f, FColor::Yellow, FString::Printf(TEXT("Sees player")));
+	}
 
 }
 

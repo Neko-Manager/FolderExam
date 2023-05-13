@@ -34,7 +34,7 @@ AEnemyOne::AEnemyOne()
 
 	// Speeds
 	PatrolSpeed = 400.f;
-	ChaseSpeed = 800.f;
+	ChaseSpeed = 650.f;
 
 	// Timer Delays
 	PatrolDelayMax = 8.f;
@@ -275,7 +275,7 @@ void AEnemyOne::MoveToAttackRange(AActor* Target)
 	FAIMoveRequest MoveRequest;
 
 	//Sets The Target location based on enemy position and target position
-	MoveRequest.SetGoalLocation((Target->GetActorLocation() + StandingPosition));
+	MoveRequest.SetGoalLocation((Target->GetActorLocation() + (StandingPosition * 1.3)));
 	//Acceptable precision of range
 	MoveRequest.SetAcceptanceRadius(10.f);
 
