@@ -20,32 +20,40 @@ public:
 	APickUp();
 
 	//___________ Class control  ___________
-	UPROPERTY()
-		TArray<APickUp*> Inventory;
+	/*UPROPERTY()
+		TArray<APickUp*> Inventory;*/
 
 	//Functions
-	virtual void BeginPlay() override;
+	/*virtual void BeginPlay() override;
 
 	virtual void Interact_Implementation() override;
 
-	/*virtual void Use_Implementation();*/
+	void OnPickUp();*/
 
-	void OnPickUp();
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "PickUp")
+		void OnUsed();
+
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "PickUp")
+		void OnDrop();
 
 
 	//Uproperties
-	UPROPERTY(EditAnywhere, Category = "PickUp Properties")
-		UTexture2D* PickUpThumbnail;
+	//UPROPERTY(EditAnywhere, Category = "PickUp Properties")
+	//	UTexture2D* PickUpThumbnail;
 
-	UPROPERTY(EditAnywhere, Category = "PickUp Properties")
-		FString ItemName;
+	//UPROPERTY(EditAnywhere, Category = "PickUp Properties")
+	//	FString ItemName;
 
-	UPROPERTY(EditAnywhere, Category = "PickUp Properties")
-		int32 Value;
+	//UPROPERTY(EditAnywhere, Category = "PickUp Properties")
+	//	int32 Value;
 
 	//Call When The Item Is picked Up; Clean Up After.
 
+	UPROPERTY(EditAnywhere)
+		UStaticMeshComponent* PickUpMesh;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		FName ItemID;
 
 	
 };

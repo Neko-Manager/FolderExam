@@ -1,16 +1,100 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
+//Other
 #pragma once
-
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "InputActionValue.h"
 #include "Components/AudioComponent.h"
-#include "Interactable.h"
-#include "PickUp.h"
-#include "Player_Character.generated.h"
+#include "Engine/DataTable.h"
 
-UCLASS()
+//classes
+#include "PickUp.h"
+
+//Class generator
+
+#include "Player_Character.generated.h"
+//_______________________________________________________________________________
+USTRUCT(BlueprintType)
+struct FCraftingInfo : public FTableRowBase
+{
+	GENERATED_BODY()
+
+public:
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		FName ComponentID;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		FName ProductID;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		bool bDestroyItemA;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		bool bDestroyItemB;
+};
+
+//_______________________________________________________________________________
+USTRUCT(BlueprintType)
+struct FInventoryItem : public FTableRowBase
+{
+
+	GENERATED_BODY()
+
+public:
+
+	FInventoryItem()
+	{
+		Name = FText::FromString("Item");
+		Action = FText::FromString("Use");
+		Description = FText::FromString("Please enter a description for this item");
+		Value = 10;
+	}
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		FName ItemID;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TSubclassOf<class APickUp> ItemPickup;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		FText Name;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		FText Action;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		int32 Value;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		UTexture2D* Thumbnail;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		FText Description;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TArray<FCraftingInfo> CraftCombinations;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		bool bCanBeUsed;
+
+	bool operator==(const FInventoryItem& Item) const
+	{
+		if (ItemID == Item.ItemID)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+};
+//_______________________________________________________________________________
+
+UCLASS(config = Game)
+
 class EXAMGAME_API APlayer_Character : public ACharacter
 {
 	GENERATED_BODY()
@@ -42,21 +126,16 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class AAxe* Axe;
 
+	/*UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class AGamePlayerController* FromPlayerController;*/
+
 
 	// ------------------------ Do collision for items control ----------------------------
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Equipment Control")
 		bool Has_Equiped;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Equipment Control")
-		FString ItemPickedEquiped;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Equipment Control")
-		class UBoxComponent* AxeCollisionMesh;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Equipment Control")
-		class UCapsuleComponent* TemporarelyCapsuleComponent;
-
-	
+		FName ItemPickedEquiped;
 
 
 	// ------------------------ Character control Input Actions ----------------------------
@@ -91,13 +170,14 @@ public:
 		class UInputAction* IA_OpenInventory;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inputsystem")
-		class UInputAction* IA_Interact;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inputsystem")
 		class UInputAction* IA_DropItem;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inputsystem")
 		class UInputAction* IA_Eating;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inputsystem")
+		class UInputAction* IA_Interaction;
+
 
 
 	//Input action for combat
@@ -135,6 +215,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 		void EatingTrigger(const FInputActionValue& Value);
+
+	UFUNCTION(BlueprintCallable)
+		void InteractTrigger();
 
 
 	//Movement Booleans
@@ -190,6 +273,10 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void ExhaustChecker(float Stamina);
 
+	//Tracing control
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tracing Control")
+		float Reach;
+
 
 	// ------------------------ Combat Control ----------------------------
 
@@ -214,8 +301,6 @@ public:
 
 	
 
-	
-
 	// ------------------------ Attaching Control ----------------------------
 	UFUNCTION(BlueprintCallable)
 		void EquipItem(int32 Index);
@@ -231,10 +316,10 @@ public:
 
 
 	//Hunger Control
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "hunger Control")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hunger Control")
 		float Max_Hunger;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "hunger Control")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hunger Control")
 		float Live_Hunger;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hunger Control")
@@ -264,23 +349,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "HUD")
 	FString HelpText;
 
-	//Adds Item to Inventory
-	UFUNCTION(BlueprintPure, Category = "Inventory Functions")
-		bool AddItemToInventory(APickUp* Item);
-
-	//Get the thumbnail for a given inventory slot
-	UFUNCTION(BlueprintPure, Category = "Inventory Functions")
-		UTexture2D* GetThumbnailAtInventorySlot(int32 Slot);
-
-	//Item name for a given inventory slot
-	UFUNCTION(BlueprintPure, Category = "Inventory Functions")
-		FString GivenItemNameAtInventorySlot(int32 Slot);
-
-	//Use Item in a given inventory slot
-	/*UFUNCTION(BlueprintCallable, Category = "Inventory Functions")
-		void UseItemAtInventorySlot(int32 Slot);*/
-
-
+	
 
 private:
 	// ------------------------ Movement Control Private ----------------------------//
@@ -297,33 +366,11 @@ private:
 	UFUNCTION(BlueprintCallable)
 		void HungerDecay(float Timer);
 
-
 	// ------------------------ Inventory and interaction Control ----------------------------
-	//player reach
-	float Reach;
 
-
-
-	// Interact with the interactable (object), if there is one
-	void Interact();
-
-
+protected:
 	//Check for interactable
 	void CheckForInteractables();
-
-
-	//Item the player are looking at
-	AInteractable* CurrentInteractable;
-
-public:
-	//Player Inventory, represented as a TArray of pickup object.
-	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category=ItemInArray)
-		TArray<APickUp*> Inventory;
-
-	//Array to empty slots when item has been selected
-	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category=DisabledThumbnails)
-		TArray<bool> DisabledThumbnails = { false, false, false, false, false };
-
 
 	
 

@@ -43,6 +43,9 @@ public:
 	//  -> Apply HUD to screen.
 	bool ApplyHUD(TSubclassOf<UUserWidget> WidgetToApply, bool bShowMouseCursor, bool bEnableClickEvents);
 
+	//Return the value from the dataTable
+	class UDataTable* GetItemDB() const { return ItemDB; }
+
 protected:
 
 	uint8 HUDState;
@@ -59,7 +62,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "HUDWidget", Meta = (BlueprintProtected = "true"))
 		TSubclassOf<class UUserWidget> ShopHUDClass;
 
-
 	UPROPERTY()
 		class UUserWidget* CurrentWidget;
+
+	UPROPERTY(EditDefaultsOnly)
+		class UDataTable* ItemDB;
 };
