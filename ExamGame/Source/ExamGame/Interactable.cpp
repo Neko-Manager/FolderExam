@@ -3,13 +3,10 @@
 
 #include "Interactable.h"
 
-
 // Sets default values
 AInteractable::AInteractable()
 {
-	Name = "Name not set";
-
-	Action = "Interact";
+	InteractableHelpText = FString("Press E to Interact With Item");
 }
 
 // Called when the game starts or when spawned
@@ -19,8 +16,9 @@ void AInteractable::BeginPlay()
 }
 
 
-
-
-
+void AInteractable::Interact_Implementation()
+{
+	GLog->Log("Interact base class: Interact() Something Is Wrong");
+}
 
 

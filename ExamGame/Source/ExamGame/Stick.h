@@ -16,4 +16,8 @@ class EXAMGAME_API AStick : public APickUp
 
 	AStick();
 
+	int32 AmountOfStick;
+private:
+
+
 };

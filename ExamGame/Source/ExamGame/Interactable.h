@@ -18,34 +18,24 @@ public:
 	// Sets default values for this actor's properties
 	AInteractable();
 
-	UFUNCTION(BlueprintImplementableEvent)
-		void Interact(APlayerController* Controller);
-
-	
-
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+public:	
+	UFUNCTION(BlueprintNativeEvent)
+		void Interact();
 
-public:
+		virtual void Interact_Implementation();
 
-	UPROPERTY(EditDefaultsOnly)
-		FString Name;
-
-	UPROPERTY(EditDefaultsOnly)
-		FString Action;
-
-	UFUNCTION(BlueprintCallable, Category = "Pick Up")
-		FString GetUseText() const { return FString::Printf(TEXT("%s : Press E to : %s"), *Name, *Action); }
-
-	
 
 	//Sett Up Mesh
+
 		UPROPERTY(EditAnywhere,BlueprintReadWrite, Category = "Interactable Properties")
 			class UStaticMeshComponent* InteractableMesh;
 
 	//TEXT
+
 		UPROPERTY(EditAnywhere, Category = "Interactable Properties")
 			FString InteractableHelpText;
 

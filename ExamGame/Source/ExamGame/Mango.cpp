@@ -7,4 +7,6 @@ AMango::AMango()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
+	ItemName = FString("Mango");
+	Value = 100;
 }
