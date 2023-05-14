@@ -43,10 +43,10 @@ void AInventoryGamemode::BeginPlay()
 				break;
 
 		 }
-		 case EHUDState::HS_Shop:
+		 case EHUDState::HS_PauseGame:
 		 {
 
-			 ApplyHUD(ShopHUDClass, true, true);
+			 ApplyHUD(PauseGameHUDClass, true, true);
 				break;
 		 }
 		 default:

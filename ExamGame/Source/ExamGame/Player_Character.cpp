@@ -68,6 +68,8 @@ void APlayer_Character::BeginPlay()
 {
 	Super::BeginPlay();
 
+	
+
 	Inventory.SetNum(5);
 	CurrentInteractable = nullptr;
 
@@ -182,6 +184,7 @@ void APlayer_Character::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 		//Item related inputs
 		EnhancedInputComponent->BindAction(IA_Interact, ETriggerEvent::Triggered, this, &APlayer_Character::Interact);
 		EnhancedInputComponent->BindAction(IA_OpenInventory, ETriggerEvent::Triggered, this, &APlayer_Character::ToggleInventory);
+		EnhancedInputComponent->BindAction(IA_PausePlay, ETriggerEvent::Triggered, this, &APlayer_Character::TogglePause);
 		EnhancedInputComponent->BindAction(IA_DropItem, ETriggerEvent::Triggered, this, &APlayer_Character::DroppItemTrigger);
 		EnhancedInputComponent->BindAction(IA_Eating, ETriggerEvent::Triggered, this, &APlayer_Character::EatingTrigger);
 
@@ -700,6 +703,8 @@ void APlayer_Character::ToggleInventory(const FInputActionValue& Value)
 		Gamemode->ChangeHUDState((Gamemode->HS_Ingame));
 	}
 }
+
+
 
 void APlayer_Character::Interact()
 {

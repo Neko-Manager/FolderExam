@@ -21,10 +21,10 @@ public:
 		AInventoryGamemode();
 
 		enum EHUDState : uint8
-	{
-		HS_Ingame,
-		HS_Inventory,
-		HS_Shop,
+		{
+			HS_Ingame,
+			HS_Inventory,
+			HS_PauseGame
 	};
 
 
@@ -55,9 +55,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "HUDWidget", Meta = (BlueprintProtected = "true"))
 		TSubclassOf<class UUserWidget> InventoryHUDClass;
 
-	//The HUD when in a Shop
+	//The HUD when in Pause
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "HUDWidget", Meta = (BlueprintProtected = "true"))
-		TSubclassOf<class UUserWidget> ShopHUDClass;
+		TSubclassOf<class UUserWidget> PauseGameHUDClass;
 
 
 	UPROPERTY()
