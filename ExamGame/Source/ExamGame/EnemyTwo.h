@@ -47,6 +47,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI Navigation")
 		TSubclassOf<AActor> BP_EnemyTwoPysics;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI Navigation")
+		class UBoxComponent* DetectionSquare;
+
 	// ------------ Variables -----------------
 
 	// Radius of operations
@@ -55,6 +58,15 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI Navigation")
 		double AttackRadius;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI Navigation")
+		int DetectionRangeX;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI Navigation")
+		int DetectionRangeY;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI Navigation")
+		int DetectionRangeZ;
 
 	// Speeds
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI Navigation")
@@ -72,6 +84,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI Navigation")
 		int Health;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI Navigation")
+		bool Burrowed;
+
 	// ------------ Other ---------------------
 
 protected:
@@ -85,11 +100,17 @@ protected:
 
 	bool InTargetRange(AActor* Target, float Radius);
 
+
 	void CheckCombatTarget();
 
 	void MoveToTarget(AActor* Target);
 
 	void StayAtPosition(FVector Location);
+
+	UFUNCTION()
+		void OnSquareDetect(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+			UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex,
+			bool bFromSweep, const FHitResult& SweepResult);
 
 	void Die();
 };
