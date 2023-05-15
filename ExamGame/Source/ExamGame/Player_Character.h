@@ -282,6 +282,17 @@ public:
 	UFUNCTION(BlueprintPure, Category = "Inventory Functions")
 		FString GivenItemNameAtInventorySlot(int32 Slot);
 
+	//Notes
+	UFUNCTION(BlueprintCallable, Category= "Notes")
+		void ToggleNote_1(APickUp* Item);
+
+	UFUNCTION(BlueprintCallable, Category = "Notes")
+		void ToggleNote_2(APickUp* Item);
+
+	UFUNCTION(BlueprintCallable, Category = "Notes")
+		void ToggleNote_3(APickUp* Item);
+
+
 	//Use Item in a given inventory slot
 	/*UFUNCTION(BlueprintCallable, Category = "Inventory Functions")
 		void UseItemAtInventorySlot(int32 Slot);*/

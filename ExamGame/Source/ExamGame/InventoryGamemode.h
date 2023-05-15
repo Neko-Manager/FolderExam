@@ -24,16 +24,21 @@ public:
 		{
 			HS_Ingame,
 			HS_Inventory,
-			HS_PauseGame
+			HS_PauseGame,
+			HS_Note_1,
+			HS_Note_2,
+			HS_Note_3,
 	};
 
 
 	//Check hud state, and apply new HUD state.
 
+	UFUNCTION(BlueprintCallable, Category = "HUD Functions")
 	void ApplyHUDChange();
 
 
 	//  -> This gets the Function for the HUD state we are in.
+	UFUNCTION(BlueprintCallable, Category = "HUD Functions")
 	uint8 GetHUDState();
 
 	//  -> This Set's the Function, then apply the new state, and then call ApplyHUDChange(); .
@@ -43,8 +48,7 @@ public:
 	//  -> Apply HUD to screen.
 	bool ApplyHUD(TSubclassOf<UUserWidget> WidgetToApply, bool bShowMouseCursor, bool bEnableClickEvents);
 
-protected:
-
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "HUDWidget", Meta = (BlueprintProtected = "true"))
 	uint8 HUDState;
 
 	//The HUD to show inn game
@@ -58,6 +62,17 @@ protected:
 	//The HUD when in Pause
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "HUDWidget", Meta = (BlueprintProtected = "true"))
 		TSubclassOf<class UUserWidget> PauseGameHUDClass;
+	//The HUD when in Note 1
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "HUDWidget", Meta = (BlueprintProtected = "true"))
+		TSubclassOf<class UUserWidget> Note_1_HUDClass;
+
+	//The HUD when in Note 2
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "HUDWidget", Meta = (BlueprintProtected = "true"))
+		TSubclassOf<class UUserWidget> Note_2_HUDClass;
+
+	//The HUD when in Note 3
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "HUDWidget", Meta = (BlueprintProtected = "true"))
+		TSubclassOf<class UUserWidget> Note_3_HUDClass;
 
 
 	UPROPERTY()

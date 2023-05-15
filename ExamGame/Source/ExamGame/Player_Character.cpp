@@ -20,6 +20,8 @@
 #include "PickUp.h"
 #include "Interactable.h"
 
+
+
 //Inputs
 #include "EnemyOne.h"
 #include "EnhancedInputComponent.h"
@@ -704,6 +706,65 @@ void APlayer_Character::ToggleInventory(const FInputActionValue& Value)
 	}
 }
 
+void APlayer_Character::TogglePause(const FInputActionValue& Value)
+{
+	//Open Inventory
+	AInventoryGamemode* Gamemode = Cast<AInventoryGamemode>(GetWorld()->GetAuthGameMode());
+
+	if (Controller && Value.IsNonZero() && Gamemode->GetHUDState() == Gamemode->HS_Ingame)
+	{
+		Gamemode->ChangeHUDState(Gamemode->HS_PauseGame);
+	}
+	else
+	{
+		Gamemode->ChangeHUDState((Gamemode->HS_Ingame));
+	}
+}
+
+void APlayer_Character::ToggleNote_1(APickUp* Item)
+{
+
+	AInventoryGamemode* Gamemode = Cast<AInventoryGamemode>(GetWorld()->GetAuthGameMode());
+
+	if (Gamemode->GetHUDState() == Gamemode->HS_Ingame)
+	{
+		Gamemode->ChangeHUDState(Gamemode->HS_Note_1);
+	}
+	else
+	{
+		Gamemode->ChangeHUDState((Gamemode->HS_Ingame));
+	}
+}
+
+void APlayer_Character::ToggleNote_2(APickUp* Item)
+{
+	AInventoryGamemode* Gamemode = Cast<AInventoryGamemode>(GetWorld()->GetAuthGameMode());
+
+	if (Gamemode->GetHUDState() == Gamemode->HS_Ingame)
+	{
+		Gamemode->ChangeHUDState(Gamemode->HS_Note_2);
+	}
+	else
+	{
+		Gamemode->ChangeHUDState((Gamemode->HS_Ingame));
+	}
+}
+
+void APlayer_Character::ToggleNote_3(APickUp* Item)
+{
+	AInventoryGamemode* Gamemode = Cast<AInventoryGamemode>(GetWorld()->GetAuthGameMode());
+
+	if (Gamemode->GetHUDState() == Gamemode->HS_Ingame)
+	{
+		Gamemode->ChangeHUDState(Gamemode->HS_Note_3);
+	}
+	else
+	{
+		Gamemode->ChangeHUDState((Gamemode->HS_Ingame));
+	}
+}
+
+
 
 
 void APlayer_Character::Interact()
@@ -712,6 +773,7 @@ void APlayer_Character::Interact()
 	{
 		CurrentInteractable->Interact_Implementation();
 	}
+	
 
 }
 

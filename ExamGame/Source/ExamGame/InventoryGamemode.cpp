@@ -49,6 +49,24 @@ void AInventoryGamemode::BeginPlay()
 			 ApplyHUD(PauseGameHUDClass, true, true);
 				break;
 		 }
+		 case EHUDState::HS_Note_1:
+		 {
+
+			 ApplyHUD(Note_1_HUDClass, false, false);
+			 break;
+		 }
+		 case EHUDState::HS_Note_2:
+		 {
+
+			 ApplyHUD(Note_2_HUDClass, false, false);
+			 break;
+		 }
+		 case EHUDState::HS_Note_3:
+		 {
+
+			 ApplyHUD(Note_3_HUDClass, false, false);
+			 break;
+		 }
 		 default:
 		 {
 
