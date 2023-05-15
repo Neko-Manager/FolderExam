@@ -7,7 +7,8 @@
 APickUp::APickUp()
 {
 	InteractableMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("PickUpMesh"));
-	InteractableMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndProbe);
+    InteractableMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+
 
 	ItemName = FString("Enter An itemName Here");
 	Value = 0;
@@ -30,18 +31,11 @@ void APickUp::Interact_Implementation()
 
 }
 
-//void APickUp::Use_Implementation()
-//{
-//	GLog->Log("you Should Not See This");
-//}
-
-
 
 void APickUp::OnPickUp()
 {
 	InteractableMesh->SetVisibility(false);
 	InteractableMesh->SetSimulatePhysics(false);
-	SetActorEnableCollision(false);
 }
 
 

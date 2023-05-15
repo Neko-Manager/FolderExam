@@ -19,6 +19,7 @@ public:
 
 	APickUp();
 
+
 	//___________ Class control  ___________
 	UPROPERTY()
 		TArray<APickUp*> Inventory;
@@ -27,8 +28,6 @@ public:
 	virtual void BeginPlay() override;
 
 	virtual void Interact_Implementation() override;
-
-	/*virtual void Use_Implementation();*/
 
 	void OnPickUp();
 
@@ -43,7 +42,6 @@ public:
 	UPROPERTY(EditAnywhere, Category = "PickUp Properties")
 		int32 Value;
 
-	//Call When The Item Is picked Up; Clean Up After.
 
 
 
