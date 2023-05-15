@@ -86,6 +86,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inputsystem")
 		class UInputAction* IA_Crouch;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inputsystem")
+		class UInputAction* IA_PausePlay;
+
 	//Input actions fro inventory and interact
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inputsystem")
 		class UInputAction* IA_OpenInventory;
@@ -129,6 +132,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	    void ToggleInventory(const FInputActionValue& Value);
+
+	UFUNCTION(BlueprintCallable)
+		void TogglePause(const FInputActionValue& Value);
 
 	UFUNCTION(BlueprintCallable)
 		void DroppItemTrigger(const FInputActionValue& Value);
@@ -275,6 +281,17 @@ public:
 	//Item name for a given inventory slot
 	UFUNCTION(BlueprintPure, Category = "Inventory Functions")
 		FString GivenItemNameAtInventorySlot(int32 Slot);
+
+	//Notes
+	UFUNCTION(BlueprintCallable, Category= "Notes")
+		void ToggleNote_1(APickUp* Item);
+
+	UFUNCTION(BlueprintCallable, Category = "Notes")
+		void ToggleNote_2(APickUp* Item);
+
+	UFUNCTION(BlueprintCallable, Category = "Notes")
+		void ToggleNote_3(APickUp* Item);
+
 
 	//Use Item in a given inventory slot
 	/*UFUNCTION(BlueprintCallable, Category = "Inventory Functions")
