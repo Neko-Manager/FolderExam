@@ -4,6 +4,10 @@
 #include "AIController.h"
 #include "Player_Character.h"
 
+//Niagara Include
+#include "NiagaraFunctionLibrary.h"
+#include "NiagaraComponent.h"
+
 //Component Include
 #include "perception/PawnSensingComponent.h"
 #include "Components/SkeletalMeshComponent.h"
@@ -14,27 +18,29 @@
 //Other Include
 #include "Kismet/KismetSystemLibrary.h"
 #include "Kismet/GameplayStatics.h"
+#include "Animation/AnimMontage.h"
 
 AEnemyTwo::AEnemyTwo()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
-	PawnSensing = CreateDefaultSubobject<UPawnSensingComponent>(TEXT("PawnSensing"));
-	PawnSensing->SightRadius = 1000.f;
-	PawnSensing->SetPeripheralVisionAngle(360.f);
-
+	
 
 	// Radius of operations
 	ChaseRadius = 2000.f;
 	AttackRadius = 100.f;
-	DetectionRangeX = 1000;
-	DetectionRangeY = 1000;
-	DetectionRangeZ = 150;
+	DetectionRangeX = 1000.f;
+	DetectionRangeY = 1000.f;
+	DetectionRangeZ = 100.f;
+
+	//Initilizations
+	GetMesh()->OnComponentBeginOverlap.AddDynamic(this, &AEnemyTwo::OnOverlap);
 
 	DetectionSquare = CreateDefaultSubobject<UBoxComponent>(TEXT("Collider"));
 	DetectionSquare->SetupAttachment(GetRootComponent());
+	DetectionSquare->SetRelativeLocation(FVector(0.f, 0.f, DetectionRangeZ));
 	DetectionSquare->InitBoxExtent(FVector(DetectionRangeX, DetectionRangeY, DetectionRangeZ));
-	DetectionSquare->OnComponentBeginOverlap.AddDynamic(this, &AEnemyTwo::OnSquareDetect);
+	DetectionSquare->OnComponentBeginOverlap.AddDynamic(this, &AEnemyTwo::OnPlayerDetect);
 
 	// Speeds
 	ChaseSpeed = 300.f;
@@ -45,9 +51,8 @@ AEnemyTwo::AEnemyTwo()
 
 	// Other
 	Health = 20;
-
 	Burrowed = true;
-
+	HasDoneDamage = false;
 }
 
 void AEnemyTwo::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -65,12 +70,9 @@ void AEnemyTwo::BeginPlay()
 	EnemyController = Cast<AAIController>(GetController());
 
 	EnemyState = EEnemyState::EES_EnemyIdle;
+	EnemyAttackState = EEnemyAttackState::EES_EnemyUnoccupied;
 	GetCharacterMovement()->MaxWalkSpeed = ChaseSpeed;
 
-	if (PawnSensing)
-	{
-		PawnSensing->OnSeePawn.AddDynamic(this, &AEnemyTwo::PawnSeen);
-	}
 }
 
 void AEnemyTwo::Tick(float DeltaTime)
@@ -86,24 +88,6 @@ void AEnemyTwo::Tick(float DeltaTime)
 	{
 		Die();
 	}
-}
-
-void AEnemyTwo::PawnSeen(APawn* SeenPawn)
-{
-	////Stops checking for pawn seen if still chasing the player
-	
-	
-	//if (EnemyState == EEnemyState::EES_EnemyChaseing) return;
-
-	//if (SeenPawn->ActorHasTag(FName("PlayerCharacter")) && Burrowed == false)
-	//{
-	//	CombatTarget = SeenPawn;
-
-	//	//Sets State to chasing the player Character
-	//	EnemyState = EEnemyState::EES_EnemyChaseing;
-	//	MoveToTarget(CombatTarget);
-	//	GEngine->AddOnScreenDebugMessage(1, 1.f, FColor::Red, FString::Printf(TEXT("PawnSeen, Chase player")));
-	//}
 }
 
 bool AEnemyTwo::InTargetRange(AActor* Target, float Radius)
@@ -125,32 +109,26 @@ void AEnemyTwo::CheckCombatTarget()
 		EnemyState = EEnemyState::EES_EnemyIdle;
 		StayAtPosition(GetActorLocation());
 
-		GetMesh()->SetVisibility(false);
-		Burrowed = true;
+		PlayBurrow(false,true);
 
-		//PLAY BURROW ANIM MONTAGE
-
-		GEngine->AddOnScreenDebugMessage(1, 1.f, FColor::Red, FString::Printf(TEXT("Loose intrest")));
+		//GEngine->AddOnScreenDebugMessage(1, 1.f, FColor::Red, FString::Printf(TEXT("Loose intrest")));
 	}
 	else if (!InTargetRange(CombatTarget, AttackRadius) && EnemyState != EEnemyState::EES_EnemyChaseing)
 	{
 		// Outside attack range chase character
 		EnemyState = EEnemyState::EES_EnemyChaseing;
 		MoveToTarget(CombatTarget);
+		AttackEnd();
 
-
-		GEngine->AddOnScreenDebugMessage(1, 1.f, FColor::Red, FString::Printf(TEXT("Chasing player")));
+		//GEngine->AddOnScreenDebugMessage(1, 1.f, FColor::Red, FString::Printf(TEXT("Chasing player")));
 	}
 	else if (InTargetRange(CombatTarget, AttackRadius) && EnemyState != EEnemyState::EES_EnemyAttacking)
 	{
 		// inside attack range, attack character.
 		EnemyState = EEnemyState::EES_EnemyAttacking;
 
-		Die();
-
-		GEngine->AddOnScreenDebugMessage(1, 1.f, FColor::Red, FString::Printf(TEXT("Attack player")));
-
-		//This is where attack montage is put.
+		Attack();
+		GEngine->AddOnScreenDebugMessage(1, 1.f, FColor::Red, FString::Printf(TEXT("Attack")));
 	}
 }
 
@@ -194,24 +172,57 @@ void AEnemyTwo::StayAtPosition(FVector Location)
 
 }
 
-void AEnemyTwo::OnSquareDetect(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-	UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+void AEnemyTwo::PlayBurrow(bool isVisible,bool isBurrowed)
 {
-	APlayer_Character* Player = Cast<APlayer_Character>(OtherActor);
+	GetMesh()->SetVisibility(isVisible);
+	Burrowed = isBurrowed;
 
-	if (Player && Player->ActorHasTag(FName("PlayerCharacter")) && Burrowed == true)
-	{
-		EnemyState = EEnemyState::EES_EnemyChaseing;
-		GetMesh()->SetVisibility(true);
-		Burrowed = false;
-		CombatTarget = OtherActor;
-		MoveToTarget(CombatTarget);
+	if (VFXBurrow) {
+		UNiagaraComponent* NiagaraComp = UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, VFXBurrow, (GetActorLocation() + (GetActorForwardVector() * 2 + FVector(0.f, 0.f, -20.f))),
+			GetActorRotation(), FVector(2.f), true,
+			true, ENCPoolMethod::None, true);
 
-		// PLAY UNBURROW ANIM MONTAGE
 
-		GEngine->AddOnScreenDebugMessage(0, 1.f, FColor::Yellow, FString::Printf(TEXT("Sees player")));
+		//PLAY BURROW ANIM MONTAGE
+
 	}
+}
 
+void AEnemyTwo::PlayAttackMontage()
+{
+	//PLays the animation montage relating to connected Animation montage blue print
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if(AnimInstance == nullptr)
+		GEngine->AddOnScreenDebugMessage(1, 1.f, FColor::Red, FString::Printf(TEXT("No AnimInstance")));
+
+	if(AttackMontage == nullptr)
+		GEngine->AddOnScreenDebugMessage(1, 1.f, FColor::Red, FString::Printf(TEXT("No AttackMontage")));
+
+	if (AnimInstance && AttackMontage)
+	{
+		GEngine->AddOnScreenDebugMessage(1, 1.f, FColor::Red, FString::Printf(TEXT("Montage Play")));
+		AnimInstance->Montage_Play(AttackMontage);
+		FName SectionName = FName("Attack1");
+		AnimInstance->Montage_JumpToSection(SectionName, AttackMontage);
+	}
+}
+
+void AEnemyTwo::Attack()
+{
+	//Plays attack montage according to the state controller
+	if (EnemyAttackState == EEnemyAttackState::EES_EnemyUnoccupied)
+	{
+		PlayAttackMontage();
+		EnemyAttackState = EEnemyAttackState::EES_EnemyAttacking;
+	}
+}
+
+void AEnemyTwo::AttackEnd()
+{
+	//Changes state when Attack over, called in Anim blueprint
+	EnemyState = EEnemyState::EES_EnemyChaseing;
+	EnemyAttackState = EEnemyAttackState::EES_EnemyUnoccupied;
+	HasDoneDamage = false;
 }
 
 void AEnemyTwo::Die()
@@ -226,6 +237,40 @@ void AEnemyTwo::Die()
 	GEngine->AddOnScreenDebugMessage(1, 1.f, FColor::Red, FString::Printf(TEXT("Died")));
 }
 
+void AEnemyTwo::OnPlayerDetect(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+	UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	APlayer_Character* Player = Cast<APlayer_Character>(OtherActor);
+
+	if (Player && Player->ActorHasTag(FName("PlayerCharacter")) && Burrowed == true)
+	{
+		EnemyState = EEnemyState::EES_EnemyChaseing;
+		PlayBurrow(true, false);
+		CombatTarget = OtherActor;
+		MoveToTarget(CombatTarget);
+
+		//GEngine->AddOnScreenDebugMessage(0, 1.f, FColor::Yellow, FString::Printf(TEXT("Detects player")));
+	}
+
+}
+
+void AEnemyTwo::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	//Detects overlap between player and enemy during attack animation for single damage done cast to player class. 
+
+	APlayer_Character* Player = Cast<APlayer_Character>(OtherActor);
+
+	if (Player && Player->ActorHasTag(FName("PlayerCharacter")) && EnemyAttackState == EEnemyAttackState::EES_EnemyAttacking)
+	{
+		if (HasDoneDamage == false)
+		{
+			Player->Health -= 10;
+			HasDoneDamage = true;
+			GEngine->AddOnScreenDebugMessage(0, 1.f, FColor::Yellow, FString::Printf(TEXT("PlayerTakesDamge")));
+		}
+	}
+
+}
 
 
 

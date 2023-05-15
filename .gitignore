@@ -79,3 +79,5 @@ Plugins/*/Intermediate/*
 
 # Cache files for the editor to use
 DerivedDataCache/*
+
+ExamGame/Content/Levels/MainMap_Island/ISLAND_2.umap

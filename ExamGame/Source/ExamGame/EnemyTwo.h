@@ -14,6 +14,7 @@ private:
 
 	// Sets the default state to Idle, from the get AIState beneath.
 	EEnemyState EnemyState = EEnemyState::EES_EnemyPatrolling;
+	EEnemyAttackState EnemyAttackState = EEnemyAttackState::EES_EnemyUnoccupied;
 
 	// Gets the AI state from the state controller
 	FORCEINLINE EEnemyState GetAIState() const { return EnemyState; }
@@ -25,10 +26,7 @@ public:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
 
-	// ------------- Components ------------
-
-	UPROPERTY(VisibleAnywhere)
-		class UPawnSensingComponent* PawnSensing;
+	// ------------- Components -----------
 
 	UPROPERTY(VisibleAnywhere)
 		class UCapsuleComponent* Colision;
@@ -50,6 +48,13 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI Navigation")
 		class UBoxComponent* DetectionSquare;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI Navigation")
+		class UNiagaraSystem* VFXBurrow;
+
+	// Animation Montages
+	UPROPERTY(EditDefaultsOnly, Category = "AI")
+		class UAnimMontage* AttackMontage;
+
 	// ------------ Variables -----------------
 
 	// Radius of operations
@@ -60,13 +65,13 @@ public:
 		double AttackRadius;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI Navigation")
-		int DetectionRangeX;
+		double DetectionRangeX;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI Navigation")
-		int DetectionRangeY;
+		double DetectionRangeY;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI Navigation")
-		int DetectionRangeZ;
+		double DetectionRangeZ;
 
 	// Speeds
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI Navigation")
@@ -87,6 +92,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI Navigation")
 		bool Burrowed;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI Navigation")
+		bool HasDoneDamage;
+
 	// ------------ Other ---------------------
 
 protected:
@@ -96,10 +104,7 @@ protected:
 	UFUNCTION()
 	void PawnSeen(APawn* SeenPawn);
 
-	void IsInRange();
-
 	bool InTargetRange(AActor* Target, float Radius);
-
 
 	void CheckCombatTarget();
 
@@ -107,10 +112,24 @@ protected:
 
 	void StayAtPosition(FVector Location);
 
+	void PlayBurrow(bool isVisible, bool isBurrowed);
+
+	void PlayAttackMontage();
+
+	void Attack();
+
+	UFUNCTION(BlueprintCallable)
+	void AttackEnd();
+
+	void Die();
+
 	UFUNCTION()
-		void OnSquareDetect(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+		void OnPlayerDetect(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 			UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex,
 			bool bFromSweep, const FHitResult& SweepResult);
 
-	void Die();
+	UFUNCTION()
+		void OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+			UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex,
+			bool bFromSweep, const FHitResult& SweepResult);
 };
