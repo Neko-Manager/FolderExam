@@ -28,11 +28,6 @@ public:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
 
-	// ------------- Components -----------
-
-	UPROPERTY(VisibleAnywhere)
-		class UCapsuleComponent* Colision;
-
 	// ------------- class Refs ------------
 
 	UPROPERTY()
@@ -51,11 +46,14 @@ public:
 		class UBoxComponent* DetectionSquare;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI")
+		class UBoxComponent* AtttackColliderSquare;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI")
 		class UNiagaraSystem* VFXBurrow;
 
 	// Animation Montages
 	UPROPERTY(EditDefaultsOnly, Category = "AI")
-		class UAnimMontage* EnemyTwoAttackMontage;
+		class UAnimMontage* AttackMontage;
 
 	// ------------ Variables -----------------
 
@@ -96,6 +94,12 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI")
 		bool HasDoneDamage;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI")
+		bool MontageHasPlayed;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI")
+		bool AttackHits;
 
 	// ------------ Other ---------------------
 

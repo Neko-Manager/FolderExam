@@ -25,19 +25,18 @@ AEnemyTwo::AEnemyTwo()
 
 	// Radius of operations
 	ChaseRadius = 2000.f;
-	AttackRadius = 100.f;
+	AttackRadius = 150.f;
 	DetectionRangeX = 1000.f;
 	DetectionRangeY = 1000.f;
 	DetectionRangeZ = 100.f;
 
-	//Initilizations
-	GetMesh()->OnComponentBeginOverlap.AddDynamic(this, &AEnemyTwo::OnOverlap);
+	AtttackColliderSquare = CreateDefaultSubobject<UBoxComponent>(TEXT("AttackColider"));
+	AtttackColliderSquare->SetupAttachment(GetMesh(),"Tail_06th");
 
 	DetectionSquare = CreateDefaultSubobject<UBoxComponent>(TEXT("Collider"));
 	DetectionSquare->SetupAttachment(GetRootComponent());
 	DetectionSquare->SetRelativeLocation(FVector(0.f, 0.f, DetectionRangeZ));
 	DetectionSquare->InitBoxExtent(FVector(DetectionRangeX, DetectionRangeY, DetectionRangeZ));
-	DetectionSquare->OnComponentBeginOverlap.AddDynamic(this, &AEnemyTwo::OnPlayerDetect);
 
 	// Speeds
 	ChaseSpeed = 300.f;
@@ -50,6 +49,9 @@ AEnemyTwo::AEnemyTwo()
 	Health = 20;
 	Burrowed = true;
 	HasDoneDamage = false;
+	MontageHasPlayed = false;
+	AttackHits = false;
+	
 }
 
 void AEnemyTwo::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -70,6 +72,9 @@ void AEnemyTwo::BeginPlay()
 	EnemyAttackState = EEnemyAttackState::EES_EnemyUnoccupied;
 	GetCharacterMovement()->MaxWalkSpeed = ChaseSpeed;
 
+	//Initilizations
+	AtttackColliderSquare->OnComponentBeginOverlap.AddDynamic(this, &AEnemyTwo::OnOverlap);
+	DetectionSquare->OnComponentBeginOverlap.AddDynamic(this, &AEnemyTwo::OnPlayerDetect);
 }
 
 void AEnemyTwo::Tick(float DeltaTime)
@@ -136,7 +141,7 @@ void AEnemyTwo::MoveToTarget(AActor* Target)
 	MoveRequest.SetGoalActor(Target);
 
 	//How far away it stops from goal location
-	MoveRequest.SetAcceptanceRadius(20.f);
+	MoveRequest.SetAcceptanceRadius(40.f);
 
 	//Set focus
 	EnemyController->SetFocus(Target);
@@ -180,30 +185,33 @@ void AEnemyTwo::PlayBurrow(bool isVisible,bool isBurrowed)
 void AEnemyTwo::PlayAttackMontage()
 {
 	//PLays the animation montage relating to connected Animation montage blue print
-	UAnimInstance* AnimInstancee = GetMesh()->GetAnimInstance();
 
-	if(AnimInstancee == nullptr)
+		// Gets the Animation instance for montage animations
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+
+	if(AnimInstance == nullptr)
 		GEngine->AddOnScreenDebugMessage(1, 1.f, FColor::Red, FString::Printf(TEXT("No AnimInstance")));
 
-	if(EnemyTwoAttackMontage == nullptr)
+	if(AttackMontage == nullptr)
 		GEngine->AddOnScreenDebugMessage(1, 1.f, FColor::Red, FString::Printf(TEXT("No AttackMontage")));
 
-	if (AnimInstancee && EnemyTwoAttackMontage)
+	if (AnimInstance && AttackMontage)
 	{
-		GEngine->AddOnScreenDebugMessage(1, 1.f, FColor::Red, FString::Printf(TEXT("Montage Play")));
-		AnimInstancee->Montage_Play(EnemyTwoAttackMontage);
-		//FName SectionName = FName("Attack1");
-		AnimInstancee->Montage_JumpToSection("Attack1", EnemyTwoAttackMontage);
+		//GEngine->AddOnScreenDebugMessage(1, 1.f, FColor::Red, FString::Printf(TEXT("Montage Play")));
+		AnimInstance->Montage_Play(AttackMontage);
+		FName SectionName = FName("Attack1");
+		AnimInstance->Montage_JumpToSection(SectionName, AttackMontage);
 	}
 }
 
 void AEnemyTwo::Attack()
 {
 
-	GEngine->AddOnScreenDebugMessage(1, 1.f, FColor::Red, FString::Printf(TEXT("Attack called")));
-	PlayAttackMontage();
+	//GEngine->AddOnScreenDebugMessage(1, 1.f, FColor::Red, FString::Printf(TEXT("Attack called")));
 	EnemyAttackState = EEnemyAttackState::EES_EnemyAttacking;
-	
+	PlayAttackMontage();
+	HasDoneDamage = false;
+
 }
 
 void AEnemyTwo::AttackEnd()
@@ -211,7 +219,8 @@ void AEnemyTwo::AttackEnd()
 	//Changes state when Attack over, called in Anim blueprint
 	EnemyState = EEnemyState::EES_EnemyChaseing;
 	EnemyAttackState = EEnemyAttackState::EES_EnemyUnoccupied;
-	HasDoneDamage = false;
+	
+
 }
 
 void AEnemyTwo::Die()
@@ -231,35 +240,39 @@ void AEnemyTwo::OnPlayerDetect(UPrimitiveComponent* OverlappedComponent, AActor*
 {
 	APlayer_Character* Player = Cast<APlayer_Character>(OtherActor);
 
-	if (Player && Player->ActorHasTag(FName("PlayerCharacter")) && Burrowed == true)
+	if (Player && Player->ActorHasTag(FName("PlayerCharacter")) && Burrowed == true && EnemyAttackState == EEnemyAttackState::EES_EnemyUnoccupied)
 	{
 		EnemyState = EEnemyState::EES_EnemyChaseing;
 		EnemyAttackState = EEnemyAttackState::EES_EnemyUnoccupied;
 		PlayBurrow(true, false);
 		CombatTarget = OtherActor;
 		MoveToTarget(CombatTarget);
-
-		GEngine->AddOnScreenDebugMessage(0, 1.f, FColor::Yellow, FString::Printf(TEXT("Detects player")));
+		//GEngine->AddOnScreenDebugMessage(0, 1.f, FColor::Yellow, FString::Printf(TEXT("Detects player")));
 	}
-
 }
 
 void AEnemyTwo::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	//Detects overlap between player and enemy during attack animation for single damage done cast to player class. 
 
-	APlayer_Character* Player = Cast<APlayer_Character>(OtherActor);
+	//GEngine->AddOnScreenDebugMessage(0, 1.f, FColor::Yellow, FString::Printf(TEXT("Collision")));
 
-	if (Player && Player->ActorHasTag(FName("PlayerCharacter")) && EnemyAttackState == EEnemyAttackState::EES_EnemyAttacking)
+	APlayer_Character* Player1 = Cast<APlayer_Character>(OtherActor);
+	
+	//if(Player1==nullptr)
+		//GEngine->AddOnScreenDebugMessage(0, 1.f, FColor::Yellow, FString::Printf(TEXT("Cant get player cast")));
+
+	if (Player1 && Player1->ActorHasTag(FName("PlayerCharacter")) && EnemyAttackState == EEnemyAttackState::EES_EnemyAttacking)
 	{
+		//GEngine->AddOnScreenDebugMessage(0, 1.f, FColor::Yellow, FString::Printf(TEXT("Got player cast")));
 		if (HasDoneDamage == false)
 		{
-			Player->Health -= 10;
+			Player1->Health -= 20;
+			Player1->Live_Hunger -= 10;
 			HasDoneDamage = true;
-			GEngine->AddOnScreenDebugMessage(0, 1.f, FColor::Yellow, FString::Printf(TEXT("PlayerTakesDamge")));
+			//GEngine->AddOnScreenDebugMessage(0, 1.f, FColor::Yellow, FString::Printf(TEXT("PlayerTakesDamge")));
 		}
 	}
-
 }
 
 

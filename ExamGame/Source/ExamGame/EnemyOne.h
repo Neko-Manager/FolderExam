@@ -95,7 +95,7 @@ public:
 
 	// Animation Montages
 	UPROPERTY(EditDefaultsOnly, Category = "AI")
-	class UAnimMontage* AttackMontage;
+	 class UAnimMontage* AttackMontage;
 
 	// Other
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI")
