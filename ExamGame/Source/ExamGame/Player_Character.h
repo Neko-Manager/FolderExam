@@ -200,12 +200,19 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void DamageControl();
 
-	//Axe Control
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat Control")
+		bool Attacking;
+
+
+	//Weapon Booleans Control
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat Control Axe")
 		bool AxeIsActive;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat Control Axe")
-		bool Attacking;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat Control Stick")
+		bool StickIsActive;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat Control Knife")
+		bool KnifeIsActive;
 
 
 
