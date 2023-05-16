@@ -49,12 +49,6 @@ void AInventoryGamemode::BeginPlay()
 			 ApplyHUD(PauseGameHUDClass, true, true);
 				break;
 		 }
-		 case EHUDState::HS_EndTitleScreen:
-		 {
-
-			 ApplyHUD(EndTitleScreenHUDClass, true, true);
-			 break;
-		 }
 		 case EHUDState::HS_Note_1:
 		 {
 

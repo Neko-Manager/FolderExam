@@ -193,7 +193,6 @@ void APlayer_Character::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 		//Item related inputs
 		EnhancedInputComponent->BindAction(IA_Interact, ETriggerEvent::Triggered, this, &APlayer_Character::Interact);
 		EnhancedInputComponent->BindAction(IA_OpenInventory, ETriggerEvent::Triggered, this, &APlayer_Character::ToggleInventory);
-		EnhancedInputComponent->BindAction(IA_PausePlay, ETriggerEvent::Triggered, this, &APlayer_Character::TogglePause);
 		EnhancedInputComponent->BindAction(IA_DropItem, ETriggerEvent::Triggered, this, &APlayer_Character::DroppItemTrigger);
 		EnhancedInputComponent->BindAction(IA_Eating, ETriggerEvent::Triggered, this, &APlayer_Character::EatingTrigger);
 
@@ -353,39 +352,38 @@ void APlayer_Character::StarvingChecker(float Hunger)
 
 void APlayer_Character::EatingTrigger(const FInputActionValue& Value)
 {
-	AInventoryGamemode* Gamemode = Cast<AInventoryGamemode>(GetWorld()->GetAuthGameMode());
-	//const int32 Index = Inventory.Find();
+	
 	int32 Index[] = { 0,1,2,3,4 };
 
-	if (Gamemode->GetHUDState() == Gamemode->HS_Ingame && Value.IsNonZero() && Inventory[Index[0]] && DisabledThumbnails[Index[0]] == true)
+	if (Value.IsNonZero() && Inventory[Index[0]])
 	{
 		Eating = true;
 		EatingChecker(Index[0]);
 		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Item 0 eaten")));
 		return;
 	}
-	if (Gamemode->GetHUDState() == Gamemode->HS_Ingame && Value.IsNonZero() && Inventory[Index[1]] && DisabledThumbnails[Index[1]] == true)
+	if (Value.IsNonZero() && Inventory[Index[1]])
 	{
 		Eating = true;
 		EatingChecker(Index[1]);
 		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Item 1 eaten")));
 		return;
 	}
-	if (Gamemode->GetHUDState() == Gamemode->HS_Ingame && Value.IsNonZero() && Inventory[Index[2]] && DisabledThumbnails[Index[2]] == true)
+	if (Value.IsNonZero() && Inventory[Index[2]])
 	{
 		Eating = true;
 		EatingChecker(Index[2]);
 		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Item 2 eaten")));
 		return;
 	}
-	if (Gamemode->GetHUDState() == Gamemode->HS_Ingame && Value.IsNonZero() && Inventory[Index[3]] && DisabledThumbnails[Index[3]] == true)
+	if (Value.IsNonZero() && Inventory[Index[3]])
 	{
 		Eating = true;
 		EatingChecker(Index[3]);
 		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Item 3 eaten")));
 		return;
 	}
-	if (Gamemode->GetHUDState() == Gamemode->HS_Ingame && Value.IsNonZero() && Inventory[Index[4]] && DisabledThumbnails[Index[4]] == true)
+	if (Value.IsNonZero() && Inventory[Index[4]])
 	{
 		Eating = true;
 		EatingChecker(Index[4]);
@@ -400,7 +398,7 @@ void APlayer_Character::EatingChecker(int32 Index)
 	FDetachmentTransformRules TransformRules(EDetachmentRule::KeepRelative, true);
 
 	//Checking if eating boolean is true
-	if(Has_Equiped == true && DisabledThumbnails[Index] == true && Health <= 100.f)
+	if(Has_Equiped == true && Health <= 100.f)
 	{
 		if (Inventory[Index]->ItemName == "Mango" && Eating == true)
 		{
@@ -414,6 +412,7 @@ void APlayer_Character::EatingChecker(int32 Index)
 			Eating = false;
 			Starving = false;
 			Inventory[Index] = nullptr;
+			return;
 			
 		}
 		if (Inventory[Index]->ItemName == "Coconut" && Eating == true)
@@ -428,7 +427,7 @@ void APlayer_Character::EatingChecker(int32 Index)
 			Eating = false;
 			Starving = false;
 			Inventory[Index] = nullptr;
-
+			return;
 		}
 		if (Inventory[Index]->ItemName == "Bandages" && Eating == true)
 		{
@@ -441,7 +440,7 @@ void APlayer_Character::EatingChecker(int32 Index)
 			Eating = false;
 			Starving = false;
 			Inventory[Index] = nullptr;
-
+			return;
 		}
 
 	}
@@ -496,36 +495,34 @@ void APlayer_Character::ExhaustChecker(float Stamina)
 void APlayer_Character::DroppItemTrigger(const FInputActionValue& Value)
 {
 
-	AInventoryGamemode* Gamemode = Cast<AInventoryGamemode>(GetWorld()->GetAuthGameMode());
-	//const int32 Index = Inventory.Find();
 	int32 Index[] = { 0,1,2,3,4 };
 	
 
-	if(Gamemode->GetHUDState() == Gamemode->HS_Ingame && Value.IsNonZero() && Inventory[Index[0]] && DisabledThumbnails[Index[0]] == true)
+	if(Value.IsNonZero() && Inventory[Index[0]] && DisabledThumbnails[Index[0]] == true)
 	{
 		DroppItem(Index[0]);
 		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Item 0 dropped")));
 		return;
 	}
-	if (Gamemode->GetHUDState() == Gamemode->HS_Ingame && Value.IsNonZero() && Inventory[Index[1]] && DisabledThumbnails[Index[1]] == true)
+	if (Value.IsNonZero() && Inventory[Index[1]] && DisabledThumbnails[Index[1]] == true)
 	{
 		DroppItem(Index[1]);
 		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Item 1 dropped")));
 		return;
 	}
-	if (Gamemode->GetHUDState() == Gamemode->HS_Ingame && Value.IsNonZero() && Inventory[Index[2]] && DisabledThumbnails[Index[2]] == true)
+	if (Value.IsNonZero() && Inventory[Index[2]] && DisabledThumbnails[Index[2]] == true)
 	{
 		DroppItem(Index[2]);
 		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Item 2 dropped")));
 		return;
 	}
-	if (Gamemode->GetHUDState() == Gamemode->HS_Ingame && Value.IsNonZero() && Inventory[Index[3]] && DisabledThumbnails[Index[3]] == true)
+	if (Value.IsNonZero() && Inventory[Index[3]] && DisabledThumbnails[Index[3]] == true)
 	{
 		DroppItem(Index[3]);
 		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Item 3 dropped")));
 		return;
 	}
-	if (Gamemode->GetHUDState() == Gamemode->HS_Ingame && Value.IsNonZero() && Inventory[Index[4]] && DisabledThumbnails[Index[4]] == true)
+	if (Value.IsNonZero() && Inventory[Index[4]] && DisabledThumbnails[Index[4]] == true)
 	{
 		DroppItem(Index[4]);
 		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Item 4 dropped")));
@@ -586,6 +583,7 @@ void APlayer_Character::EquipItem(int32 Index)
 
 			//Equiped state resets the button pressed in BP
 			Equiped = false;
+
 			GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Item equiped:")));
 			GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::FromInt(Index));
 
@@ -602,31 +600,28 @@ void APlayer_Character::SwapItem(int32 Index)
 
 
 	//Checkinf i fitem is equiped and that the disableThumbnail is active for the respective slot and that the name also is the same
-	if (Gamemode->GetHUDState() == Gamemode->HS_Inventory && ItemPickedEquiped == Inventory[Index]->ItemName && DisabledThumbnails[Index] == true )
+	if (Gamemode->GetHUDState() == Gamemode->HS_Inventory && Inventory[Index] != nullptr && Equiped == true)
 	{
-
-		FAttachmentTransformRules TransformRules(EAttachmentRule::SnapToTarget, true);
-
-		Inventory[Index]->AttachToComponent(GetMesh(), TransformRules, FName("RightHandSocket"));
-
-		//Notifyingy that the item is equipped
-		Has_Equiped = true;
-
-		//Disabling the thumbnail
-		DisabledThumbnails[Index] = true;
-
-		//The Item name is the name from the index of the respective item
-		ItemPickedEquiped = Inventory[Index]->ItemName;
-
-		//Making the item visible
-		Inventory[Index]->InteractableMesh->SetVisibility(true);
-		Inventory[Index]->SetActorEnableCollision(true);
-
-		//Equiped state resets the button pressed in BP
-		Equiped = false;
 		
-	}
+		
+		if (Inventory[Index]->ItemName == ItemPickedEquiped && Equiped == true && Has_Equiped == true)
+		{
+			DisabledThumbnails[Index] = false;
+			Inventory[Index]->InteractableMesh->SetVisibility(false);
+			Inventory[Index]->InteractableMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+			Has_Equiped = false;
 
+			if (Inventory[Index]->ItemName != ItemPickedEquiped && Equiped == true)
+			{
+					EquipItem(Index);
+			}
+			Equiped = false;
+
+		}
+
+	}
+	
+	
 }
 
 
@@ -774,6 +769,16 @@ UTexture2D* APlayer_Character::GetThumbnailAtInventorySlot(int32 Slot)
 	
 }
 
+UTexture2D* APlayer_Character::GetDisabledThumbnailAtInventorySlot(int32 Slot)
+{
+	if (Inventory[Slot] != NULL && Has_Equiped == true && DisabledThumbnails[Slot] == true)
+	{
+		return Inventory[Slot]->DisabledPickUpThumbnail;
+	}
+	else return nullptr;
+
+}
+
 FString APlayer_Character::GivenItemNameAtInventorySlot(int32 Slot)
 {
 	if (Inventory[Slot] != NULL)
@@ -800,20 +805,6 @@ void APlayer_Character::ToggleInventory(const FInputActionValue& Value)
 	}
 }
 
-void APlayer_Character::TogglePause(const FInputActionValue& Value)
-{
-	//Open Inventory
-	AInventoryGamemode* Gamemode = Cast<AInventoryGamemode>(GetWorld()->GetAuthGameMode());
-
-	if (Controller && Value.IsNonZero() && Gamemode->GetHUDState() == Gamemode->HS_Ingame)
-	{
-		Gamemode->ChangeHUDState(Gamemode->HS_PauseGame);
-	}
-	else
-	{
-		Gamemode->ChangeHUDState((Gamemode->HS_Ingame));
-	}
-}
 
 void APlayer_Character::ToggleNote_1(APickUp* Item)
 {
@@ -825,10 +816,6 @@ void APlayer_Character::ToggleNote_1(APickUp* Item)
 		Gamemode->ChangeHUDState(Gamemode->HS_Note_1);
 
 		
-	}
-	else if(Gamemode->GetHUDState() == Gamemode->HS_Note_1)
-	{
-		Gamemode->ChangeHUDState(Gamemode->HS_EndTitleScreen);
 	}
 	else
 	{
