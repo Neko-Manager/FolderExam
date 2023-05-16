@@ -14,6 +14,8 @@ private:
 
 	// Sets the default state to Idle, from the get AIState beneath.
 	EEnemyState EnemyState = EEnemyState::EES_EnemyPatrolling;
+
+	UPROPERTY(BlueprintReadWrite, meta = (AllowPrivateAccess = "true"))
 	EEnemyAttackState EnemyAttackState = EEnemyAttackState::EES_EnemyUnoccupied;
 
 	// Gets the AI state from the state controller
@@ -38,61 +40,61 @@ public:
 
 	// ------------ Actors -----------------
 
-	UPROPERTY(EditInstanceOnly, Category = "AI Navigation")
+	UPROPERTY(EditInstanceOnly, Category = "AI")
 		AActor* CombatTarget;
 
 	//Sets PysicsAsset as blueprint value
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI Navigation")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI")
 		TSubclassOf<AActor> BP_EnemyTwoPysics;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI Navigation")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI")
 		class UBoxComponent* DetectionSquare;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI Navigation")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI")
 		class UNiagaraSystem* VFXBurrow;
 
 	// Animation Montages
 	UPROPERTY(EditDefaultsOnly, Category = "AI")
-		class UAnimMontage* AttackMontage;
+		class UAnimMontage* EnemyTwoAttackMontage;
 
 	// ------------ Variables -----------------
 
 	// Radius of operations
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI Navigation")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI")
 		double ChaseRadius;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI Navigation")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI")
 		double AttackRadius;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI Navigation")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI")
 		double DetectionRangeX;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI Navigation")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI")
 		double DetectionRangeY;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI Navigation")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI")
 		double DetectionRangeZ;
 
 	// Speeds
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI Navigation")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI")
 		float ChaseSpeed;
 
 	// Timer Delays
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI Navigation")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI")
 		float AttackDelayMin;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI Navigation")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI")
 		float AttackDelayMax;
 
 	// Other
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI Navigation")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI")
 		int Health;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI Navigation")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI")
 		bool Burrowed;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI Navigation")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI")
 		bool HasDoneDamage;
 
 	// ------------ Other ---------------------
@@ -100,7 +102,6 @@ public:
 protected:
 
 	// ------------ Functions --------------------
-
 
 	bool InTargetRange(AActor* Target, float Radius);
 
