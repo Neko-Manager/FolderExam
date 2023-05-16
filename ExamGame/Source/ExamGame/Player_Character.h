@@ -39,8 +39,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class AEnemyOne* EnemyOne;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		class AAxe* Axe;
+	
 
 
 	// ------------------------ Do collision for items control ----------------------------
@@ -54,9 +53,7 @@ public:
 		class UBoxComponent* AxeCollisionMesh;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Equipment Control")
-		class UCapsuleComponent* TemporarelyCapsuleComponent;
-
-	
+		class UCapsuleComponent* StickCollisonMesh;
 
 
 	// ------------------------ Character control Input Actions ----------------------------
@@ -105,7 +102,7 @@ public:
 
 	//Input action for combat
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inputsystem")
-		class UInputAction* IA_AxeAttack;
+		class UInputAction* IA_Attack;
 
 	// ------------------------ Character members hud ----------------------------
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Character Control")
@@ -128,7 +125,7 @@ public:
 		void JumpTrigger(const FInputActionValue& Value);
 
 	UFUNCTION(BlueprintCallable)
-		void AxeAttackTrigger(const FInputActionValue& Value);
+		void AttackTrigger(const FInputActionValue& Value);
 
 	UFUNCTION(BlueprintCallable)
 	    void ToggleInventory(const FInputActionValue& Value);
@@ -199,24 +196,18 @@ public:
 
 	// ------------------------ Combat Control ----------------------------
 
-	//Axe
+	//General Combat Control
 	UFUNCTION(BlueprintCallable)
-		void Attack();
+		void DamageControl();
 
+	//Axe Control
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat Control Axe")
+		bool AxeIsActive;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat Control Axe")
 		bool Attacking;
 
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat Control Axe")
-		bool AxeActive;
-
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat Control Axe")
-		float Axe_Timer;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat Control Axe")
-		float Axe_ActiveFrames;
 
 	
 

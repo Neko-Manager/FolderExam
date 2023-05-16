@@ -5,6 +5,7 @@
 #include "EnemyOne.h"
 #include "Player_Character.h"
 #include "Kismet/GameplayStatics.h"
+#include "Components/BoxComponent.h"
 
 
 AAxe::AAxe()
@@ -14,34 +15,15 @@ AAxe::AAxe()
 
 	ItemName = FString("Axe");
 	Value = 100;
-	//AxeCollisionMesh = CreateDefaultSubobject<UBoxComponent>(TEXT("AxeCollisionMesh"));
-	//AxeCollisionMesh->SetupAttachment(InteractableMesh);
-	//AxeCollisionMesh->InitBoxExtent(FVector(10.f, 10.f, 10.f));
-	//AxeCollisionMesh->OnComponentBeginOverlap.AddDynamic(this, &AAxe::OnOverlap);
+
+
+
 }
 
 
-//
-//void AAxe::OnOverlap(UPrimitiveComponent* OverlappedComponent,
-//	AActor* OtherActor, UPrimitiveComponent* OtherComponent,
-//	int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
-//{
-//
-//	APlayer_Character* ThePlayer = Cast<APlayer_Character>(OtherActor);
-//
-//
-//	if (ThePlayer->Has_Equiped == true)
-//	{
-//		AEnemyOne* ThisEnemy = Cast<AEnemyOne>(OtherActor);
-//
-//		if (ThePlayer->AxeActive == true && ThisEnemy && ThePlayer->ItemPickedEquiped == ItemName)
-//		{
-//			ThisEnemy->Health -= 10.f;
-//			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("OnHitWorks"));
-//		}
-//		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("AxeCollison Works"));
-//	}
-//}
+
+
+
 
 
 

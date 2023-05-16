@@ -9,7 +9,6 @@
 #include "NiagaraComponent.h"
 
 //Component Include
-#include "perception/PawnSensingComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
