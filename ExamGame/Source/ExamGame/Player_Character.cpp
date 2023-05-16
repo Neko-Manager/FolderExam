@@ -61,8 +61,8 @@ APlayer_Character::APlayer_Character()
 	AxeCollisionMesh = CreateDefaultSubobject<UBoxComponent>(TEXT("AxeCollisionMesh"));
 
 	AxeCollisionMesh->SetupAttachment(GetMesh(), "RightHandSocket");
-	AxeCollisionMesh->InitBoxExtent(FVector(1.5f, 16.f, 0.7f));
-	AxeCollisionMesh->SetRelativeLocation(FVector(-6.f, -5.f, 0.f));
+	AxeCollisionMesh->InitBoxExtent(FVector(1.6f, 27.f, 0.7f));
+	AxeCollisionMesh->SetRelativeLocation(FVector(-16.f, -5.f, 0.f));
 	AxeCollisionMesh->SetRelativeRotation(FRotator(0.f,90.f,0.f));
 
 }
@@ -134,17 +134,18 @@ void APlayer_Character::BeginPlay()
 	Has_Equiped = false;
 	Attacking = false;
 
-	// ------------- Initializing collision --------------
-	//GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic(this, &APlayer_Character::OnOverlap);
-
-	// ------------- animation hit timers --------------
 
 
-	// ------------- animation hit timers --------------
+	// ------------- Animation hit timers --------------
+
+
+	// ------------- Collision Dynamics --------------
 	AxeCollisionMesh->OnComponentBeginOverlap.AddDynamic(this, &APlayer_Character::OnOverlap);
 
 	// ------------- Combat Booleans --------------
 	AxeIsActive = false;
+	StickIsActive = false;
+	KnifeIsActive = false;
 }
 
 
@@ -256,7 +257,7 @@ void APlayer_Character::StaminaRecharger(float Timer)
 
 void APlayer_Character::SprintTriggered(const FInputActionValue& Value)
 {
-	if (Controller && Value.IsNonZero() && GetCharacterMovement()->MaxWalkSpeed >= Walk_Speed)
+	if (Controller && Value.IsNonZero() && GetVelocity().Length() >= Walk_Speed)
 	{
 		//Setting boolean for sprint = true
 		Sprinting = true;
@@ -404,7 +405,7 @@ void APlayer_Character::EatingChecker(int32 Index)
 		if (Inventory[Index]->ItemName == "Mango" && Eating == true)
 		{
 			Live_Hunger += 10.f;
-			Health += 10.f;
+			Health += 20.f;
 			Inventory[Index]->DetachFromActor(TransformRules);
 			Inventory[Index]->SetActorEnableCollision(false);
 			Inventory[Index]->InteractableMesh->SetVisibility(false);
@@ -415,6 +416,34 @@ void APlayer_Character::EatingChecker(int32 Index)
 			Inventory[Index] = nullptr;
 			
 		}
+		if (Inventory[Index]->ItemName == "Coconut" && Eating == true)
+		{
+			Live_Hunger += 20.f;
+			Health += 10.f;
+			Inventory[Index]->DetachFromActor(TransformRules);
+			Inventory[Index]->SetActorEnableCollision(false);
+			Inventory[Index]->InteractableMesh->SetVisibility(false);
+			Has_Equiped = false;
+			DisabledThumbnails[Index] = false;
+			Eating = false;
+			Starving = false;
+			Inventory[Index] = nullptr;
+
+		}
+		if (Inventory[Index]->ItemName == "Bandages" && Eating == true)
+		{
+			Health += 40.f;
+			Inventory[Index]->DetachFromActor(TransformRules);
+			Inventory[Index]->SetActorEnableCollision(false);
+			Inventory[Index]->InteractableMesh->SetVisibility(false);
+			Has_Equiped = false;
+			DisabledThumbnails[Index] = false;
+			Eating = false;
+			Starving = false;
+			Inventory[Index] = nullptr;
+
+		}
+
 	}
 }
 
@@ -634,16 +663,32 @@ void APlayer_Character::DamageControl()
 	AInventoryGamemode* Gamemode = Cast<AInventoryGamemode>(GetWorld()->GetAuthGameMode());
 
 	
-	if (Gamemode->GetHUDState() == Gamemode->HS_Ingame && Attacking == true && ItemPickedEquiped == "Axe")
+	if (Gamemode->GetHUDState() == Gamemode->HS_Ingame)
 	{
+		if(Attacking == true && ItemPickedEquiped == "Axe")
+		{
+			AxeIsActive = true;
+			Live_Stamina -= 10.f;
+			GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Attacking = true")));
+		}
+		if (Attacking == true && ItemPickedEquiped == "Stick")
+		{
+			AxeIsActive = true;
+			Live_Stamina -= 5.f;
+			GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Attacking = true")));
+		}
+		if (Attacking == true && ItemPickedEquiped == "Knife")
+		{
+			AxeIsActive = true;
+			Live_Stamina -= 8.f;
+			GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Attacking = true")));
+		}
 
-		AxeIsActive = true;
-		Live_Stamina -= 10.f;
-		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Attacking = true")));
 	}
 	else
 	{
 		AxeIsActive = false;
+		StickIsActive = false;
 	}
 }
 
@@ -652,20 +697,34 @@ void APlayer_Character::DamageControl()
 void APlayer_Character::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	AEnemyOne* ThisEnemy = Cast<AEnemyOne>(OtherActor);
-	if(Has_Equiped == true && ItemPickedEquiped == "Axe")
+	if(Has_Equiped == true)
 	{
-		if(AxeIsActive == true && ThisEnemy)
+		if(AxeIsActive == true && ItemPickedEquiped == "Axe" && ThisEnemy)
 		{
-			ThisEnemy->Health -= 5;
+			ThisEnemy->Health -= 3;
 			AxeIsActive = false;
 			GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Attacking = false")));
 		
 		}
+		if (AxeIsActive == true && ItemPickedEquiped == "Stick" && ThisEnemy)
+		{
+			ThisEnemy->Health -= 1;
+			StickIsActive = false;
+			GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Attacking = false")));
+
+		}
+		if (AxeIsActive == true && ItemPickedEquiped == "Knife" && ThisEnemy)
+		{
+			ThisEnemy->Health -= 2;
+			StickIsActive = false;
+			GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Attacking = false")));
+
+		}
 		else
 		{
 			AxeIsActive = false;
+			StickIsActive = false;
 		}
-		
 	}
 
 }
@@ -764,6 +823,12 @@ void APlayer_Character::ToggleNote_1(APickUp* Item)
 	if (Gamemode->GetHUDState() == Gamemode->HS_Ingame)
 	{
 		Gamemode->ChangeHUDState(Gamemode->HS_Note_1);
+
+		
+	}
+	else if(Gamemode->GetHUDState() == Gamemode->HS_Note_1)
+	{
+		Gamemode->ChangeHUDState(Gamemode->HS_EndTitleScreen);
 	}
 	else
 	{

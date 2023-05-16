@@ -25,6 +25,7 @@ public:
 			HS_Ingame,
 			HS_Inventory,
 			HS_PauseGame,
+			HS_EndTitleScreen,
 			HS_Note_1,
 			HS_Note_2,
 			HS_Note_3,
@@ -62,6 +63,10 @@ public:
 	//The HUD when in Pause
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "HUDWidget", Meta = (BlueprintProtected = "true"))
 		TSubclassOf<class UUserWidget> PauseGameHUDClass;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "HUDWidget", Meta = (BlueprintProtected = "true"))
+		TSubclassOf<class UUserWidget> EndTitleScreenHUDClass;
+
 	//The HUD when in Note 1
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "HUDWidget", Meta = (BlueprintProtected = "true"))
 		TSubclassOf<class UUserWidget> Note_1_HUDClass;
