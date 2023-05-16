@@ -8,6 +8,7 @@ APickUp::APickUp()
 {
 	InteractableMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("PickUpMesh"));
     InteractableMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+	InteractableMesh->SetSimulatePhysics(true);
 	
 
 
@@ -37,7 +38,7 @@ void APickUp::OnPickUp()
 {
 	InteractableMesh->SetVisibility(false);
 	InteractableMesh->SetSimulatePhysics(false);
+	InteractableMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
-
 
 
