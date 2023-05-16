@@ -101,8 +101,6 @@ protected:
 
 	// ------------ Functions --------------------
 
-	UFUNCTION()
-	void PawnSeen(APawn* SeenPawn);
 
 	bool InTargetRange(AActor* Target, float Radius);
 
