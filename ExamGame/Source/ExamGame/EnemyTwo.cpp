@@ -23,8 +23,6 @@ AEnemyTwo::AEnemyTwo()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
-	
-
 	// Radius of operations
 	ChaseRadius = 2000.f;
 	AttackRadius = 100.f;
@@ -78,11 +76,10 @@ void AEnemyTwo::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (EnemyState == EEnemyState::EES_EnemyChaseing)
+	if (EnemyState != EEnemyState::EES_EnemyIdle)
 	{
 		CheckCombatTarget();
 	}
-	
 	if (Health <= 0)
 	{
 		Die();
@@ -101,33 +98,29 @@ bool AEnemyTwo::InTargetRange(AActor* Target, float Radius)
 
 void AEnemyTwo::CheckCombatTarget()
 {
-	if (!InTargetRange(CombatTarget, ChaseRadius))
+	if (!InTargetRange(CombatTarget, ChaseRadius) && EnemyAttackState == EEnemyAttackState::EES_EnemyUnoccupied)
 	{
 		// When outside of chase radius Stay where it is
 		CombatTarget = nullptr;
 		EnemyState = EEnemyState::EES_EnemyIdle;
 		StayAtPosition(GetActorLocation());
-
 		PlayBurrow(false,true);
 
 		//GEngine->AddOnScreenDebugMessage(1, 1.f, FColor::Red, FString::Printf(TEXT("Loose intrest")));
 	}
-	else if (!InTargetRange(CombatTarget, AttackRadius) && EnemyState != EEnemyState::EES_EnemyChaseing)
+	if (!InTargetRange(CombatTarget, AttackRadius) && EnemyState == EEnemyState::EES_EnemyChaseing && EnemyAttackState == EEnemyAttackState::EES_EnemyUnoccupied)
 	{
-		// Outside attack range chase character
-		EnemyState = EEnemyState::EES_EnemyChaseing;
+		// Outside attack range, chase character
 		MoveToTarget(CombatTarget);
-		AttackEnd();
 
 		//GEngine->AddOnScreenDebugMessage(1, 1.f, FColor::Red, FString::Printf(TEXT("Chasing player")));
 	}
-	else if (InTargetRange(CombatTarget, AttackRadius) && EnemyState != EEnemyState::EES_EnemyAttacking)
+	if (InTargetRange(CombatTarget, AttackRadius) && EnemyAttackState == EEnemyAttackState::EES_EnemyUnoccupied)
 	{
-		// inside attack range, attack character.
-		EnemyState = EEnemyState::EES_EnemyAttacking;
-
+		// Inside attack range, attack character.
 		Attack();
-		GEngine->AddOnScreenDebugMessage(1, 1.f, FColor::Red, FString::Printf(TEXT("Attack")));
+
+		//GEngine->AddOnScreenDebugMessage(1, 1.f, FColor::Red, FString::Printf(TEXT("Attack")));
 	}
 }
 
@@ -143,7 +136,7 @@ void AEnemyTwo::MoveToTarget(AActor* Target)
 	MoveRequest.SetGoalActor(Target);
 
 	//How far away it stops from goal location
-	MoveRequest.SetAcceptanceRadius(15.f);
+	MoveRequest.SetAcceptanceRadius(20.f);
 
 	//Set focus
 	EnemyController->SetFocus(Target);
@@ -177,12 +170,9 @@ void AEnemyTwo::PlayBurrow(bool isVisible,bool isBurrowed)
 	Burrowed = isBurrowed;
 
 	if (VFXBurrow) {
-		UNiagaraComponent* NiagaraComp = UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, VFXBurrow, (GetActorLocation() + (GetActorForwardVector() * 2 + FVector(0.f, 0.f, -20.f))),
+		UNiagaraComponent* NiagaraComp = UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, VFXBurrow, (GetActorLocation() + (GetActorForwardVector() * 2 + FVector(0.f, 0.f, -50.f))),
 			GetActorRotation(), FVector(2.f), true,
 			true, ENCPoolMethod::None, true);
-
-
-		//PLAY BURROW ANIM MONTAGE
 
 	}
 }
@@ -190,30 +180,30 @@ void AEnemyTwo::PlayBurrow(bool isVisible,bool isBurrowed)
 void AEnemyTwo::PlayAttackMontage()
 {
 	//PLays the animation montage relating to connected Animation montage blue print
-	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
-	if(AnimInstance == nullptr)
+	UAnimInstance* AnimInstancee = GetMesh()->GetAnimInstance();
+
+	if(AnimInstancee == nullptr)
 		GEngine->AddOnScreenDebugMessage(1, 1.f, FColor::Red, FString::Printf(TEXT("No AnimInstance")));
 
-	if(AttackMontage == nullptr)
+	if(EnemyTwoAttackMontage == nullptr)
 		GEngine->AddOnScreenDebugMessage(1, 1.f, FColor::Red, FString::Printf(TEXT("No AttackMontage")));
 
-	if (AnimInstance && AttackMontage)
+	if (AnimInstancee && EnemyTwoAttackMontage)
 	{
 		GEngine->AddOnScreenDebugMessage(1, 1.f, FColor::Red, FString::Printf(TEXT("Montage Play")));
-		AnimInstance->Montage_Play(AttackMontage);
-		FName SectionName = FName("Attack1");
-		AnimInstance->Montage_JumpToSection(SectionName, AttackMontage);
+		AnimInstancee->Montage_Play(EnemyTwoAttackMontage);
+		//FName SectionName = FName("Attack1");
+		AnimInstancee->Montage_JumpToSection("Attack1", EnemyTwoAttackMontage);
 	}
 }
 
 void AEnemyTwo::Attack()
 {
-	//Plays attack montage according to the state controller
-	if (EnemyAttackState == EEnemyAttackState::EES_EnemyUnoccupied)
-	{
-		PlayAttackMontage();
-		EnemyAttackState = EEnemyAttackState::EES_EnemyAttacking;
-	}
+
+	GEngine->AddOnScreenDebugMessage(1, 1.f, FColor::Red, FString::Printf(TEXT("Attack called")));
+	PlayAttackMontage();
+	EnemyAttackState = EEnemyAttackState::EES_EnemyAttacking;
+	
 }
 
 void AEnemyTwo::AttackEnd()
@@ -244,11 +234,12 @@ void AEnemyTwo::OnPlayerDetect(UPrimitiveComponent* OverlappedComponent, AActor*
 	if (Player && Player->ActorHasTag(FName("PlayerCharacter")) && Burrowed == true)
 	{
 		EnemyState = EEnemyState::EES_EnemyChaseing;
+		EnemyAttackState = EEnemyAttackState::EES_EnemyUnoccupied;
 		PlayBurrow(true, false);
 		CombatTarget = OtherActor;
 		MoveToTarget(CombatTarget);
 
-		//GEngine->AddOnScreenDebugMessage(0, 1.f, FColor::Yellow, FString::Printf(TEXT("Detects player")));
+		GEngine->AddOnScreenDebugMessage(0, 1.f, FColor::Yellow, FString::Printf(TEXT("Detects player")));
 	}
 
 }
