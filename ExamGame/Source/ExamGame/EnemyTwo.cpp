@@ -13,11 +13,18 @@
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Components/BoxComponent.h"
+#include "Components/AudioComponent.h"
+#include "Sound/SoundCue.h"
 
 //Other Include
 #include "Kismet/KismetSystemLibrary.h"
 #include "Kismet/GameplayStatics.h"
 #include "Animation/AnimMontage.h"
+
+//Forward Declare
+USoundCue* BurrowAudioCue;
+UAudioComponent* BurrowAudioComponent;
+
 
 AEnemyTwo::AEnemyTwo()
 {
@@ -51,7 +58,39 @@ AEnemyTwo::AEnemyTwo()
 	HasDoneDamage = false;
 	MontageHasPlayed = false;
 	AttackHits = false;
-	
+
+	//---------------- Audio ----------------- 
+
+//Loads soundque object
+	static ConstructorHelpers::FObjectFinder<USoundCue> BurrowCueObject(TEXT("/Script/Engine.SoundCue'/Game/Audio/EnemyTwo/SC_Digging.SC_Digging'"));
+	static ConstructorHelpers::FObjectFinder<USoundCue> AttackSoundCueObject(TEXT("/Script/Engine.SoundCue'/Game/Audio/EnemyTwo/SC_Attack.SC_Attack'"));
+	static ConstructorHelpers::FObjectFinder<USoundCue> TakeDamageSoundCueObject(TEXT("/Script/Engine.SoundCue'/Game/Audio/EnemyTwo/SC_TakeDamage.SC_TakeDamage'"));
+	static ConstructorHelpers::FObjectFinder<USoundCue> DeathSoundCueObject(TEXT("/Script/Engine.SoundCue'/Game/Audio/EnemyTwo/SC_DeathSound.SC_DeathSound'"));
+
+	//Checks if loading worked	
+	if (BurrowCueObject.Succeeded()) {
+		DiggingSoundCue = BurrowCueObject.Object;
+		BurrowAudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("BurrowAudioComponent"));
+		BurrowAudioComponent->SetupAttachment(RootComponent);
+	}
+
+	if (AttackSoundCueObject.Succeeded()) {
+		AttackingSoundCue = AttackSoundCueObject.Object;
+		AttackAudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("AttackAudioComponent"));
+		AttackAudioComponent->SetupAttachment(RootComponent);
+	}
+
+	if (TakeDamageSoundCueObject.Succeeded()) {
+		TakeingDamageSoundCue = TakeDamageSoundCueObject.Object;
+		TakeDamageAudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("TakeDamageAudioComponent"));
+		TakeDamageAudioComponent->SetupAttachment(RootComponent);
+	}
+
+	if (DeathSoundCueObject.Succeeded()) {
+		DeathDamageSoundCue = DeathSoundCueObject.Object;
+		DeathAudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("DeathAudioComponent"));
+		DeathAudioComponent->SetupAttachment(RootComponent);
+	}
 }
 
 void AEnemyTwo::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -62,6 +101,20 @@ void AEnemyTwo::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 void AEnemyTwo::BeginPlay()
 {
 	Super::BeginPlay();
+
+	// ------------- Audio Setup --------------
+
+	if (BurrowAudioComponent && DiggingSoundCue)
+		BurrowAudioComponent->SetSound(DiggingSoundCue);
+
+	if (AttackAudioComponent && AttackingSoundCue)
+		AttackAudioComponent->SetSound(AttackingSoundCue);
+
+	if (TakeDamageAudioComponent && TakeingDamageSoundCue)
+		TakeDamageAudioComponent->SetSound(TakeingDamageSoundCue);
+
+	if (DeathAudioComponent && DeathDamageSoundCue)
+		DeathAudioComponent->SetSound(DeathDamageSoundCue);
 
 	GetMesh()->SetVisibility(false);
 
@@ -174,6 +227,9 @@ void AEnemyTwo::PlayBurrow(bool isVisible,bool isBurrowed)
 	GetMesh()->SetVisibility(isVisible);
 	Burrowed = isBurrowed;
 
+	if (BurrowAudioComponent && DiggingSoundCue)
+		BurrowAudioComponent->Play(0.f);
+
 	if (VFXBurrow) {
 		UNiagaraComponent* NiagaraComp = UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, VFXBurrow, (GetActorLocation() + (GetActorForwardVector() * 2 + FVector(0.f, 0.f, -50.f))),
 			GetActorRotation(), FVector(2.f), true,
@@ -212,6 +268,9 @@ void AEnemyTwo::Attack()
 	PlayAttackMontage();
 	HasDoneDamage = false;
 
+	if (AttackAudioComponent && AttackingSoundCue)
+		AttackAudioComponent->Play(0.f);
+
 }
 
 void AEnemyTwo::AttackEnd()
@@ -223,10 +282,19 @@ void AEnemyTwo::AttackEnd()
 
 }
 
+void AEnemyTwo::TakeDamageAudio()
+{
+	if (TakeDamageAudioComponent && TakeingDamageSoundCue)
+		TakeDamageAudioComponent->Play(0.f);
+}
+
 void AEnemyTwo::Die()
 {
 	//Spawns The pysics asset when it has died
 	GetWorld()->SpawnActor<AActor>(BP_EnemyTwoPysics, GetActorTransform());
+
+	if (DeathAudioComponent && DeathDamageSoundCue)
+		DeathAudioComponent->Play(0.f);
 
 	//Removes Original mesh
 	SetActorHiddenInGame(true);

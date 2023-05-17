@@ -3,6 +3,8 @@
 #include "StateControll.h"
 #include "EnemyTwo.generated.h"
 
+class USoundCue;
+
 UCLASS()
 class EXAMGAME_API AEnemyTwo : public ACharacter
 {
@@ -55,6 +57,29 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category = "AI")
 		class UAnimMontage* AttackMontage;
 
+	// ------------ Audio components -----------------
+
+	UAudioComponent* BurrowAudioComponent;
+
+	UAudioComponent* AttackAudioComponent;
+
+	UAudioComponent* TakeDamageAudioComponent;
+
+	UAudioComponent* DeathAudioComponent;
+
+	//Audio Components
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Space Ship Sound")
+		USoundCue* DiggingSoundCue;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Space Ship Sound")
+		USoundCue* AttackingSoundCue;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Space Ship Sound")
+		USoundCue* TakeingDamageSoundCue;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Space Ship Sound")
+		USoundCue* DeathDamageSoundCue;
+
 	// ------------ Variables -----------------
 
 	// Radius of operations
@@ -102,6 +127,8 @@ public:
 		bool AttackHits;
 
 	// ------------ Other ---------------------
+
+	void TakeDamageAudio();
 
 protected:
 
