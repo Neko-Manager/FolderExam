@@ -37,6 +37,9 @@ public:
 		UTexture2D* PickUpThumbnail;
 
 	UPROPERTY(EditAnywhere, Category = "PickUp Properties")
+		UTexture2D* DisabledPickUpThumbnail;
+
+	UPROPERTY(EditAnywhere, Category = "PickUp Properties")
 		FString ItemName;
 
 	UPROPERTY(EditAnywhere, Category = "PickUp Properties")

@@ -83,8 +83,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inputsystem")
 		class UInputAction* IA_Crouch;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inputsystem")
-		class UInputAction* IA_PausePlay;
 
 	//Input actions fro inventory and interact
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Inputsystem")
@@ -130,8 +128,6 @@ public:
 	UFUNCTION(BlueprintCallable)
 	    void ToggleInventory(const FInputActionValue& Value);
 
-	UFUNCTION(BlueprintCallable)
-		void TogglePause(const FInputActionValue& Value);
 
 	UFUNCTION(BlueprintCallable)
 		void DroppItemTrigger(const FInputActionValue& Value);
@@ -275,6 +271,9 @@ public:
 	//Get the thumbnail for a given inventory slot
 	UFUNCTION(BlueprintPure, Category = "Inventory Functions")
 		UTexture2D* GetThumbnailAtInventorySlot(int32 Slot);
+
+	UFUNCTION(BlueprintPure, Category = "Inventory Functions")
+		UTexture2D* GetDisabledThumbnailAtInventorySlot(int32 Slot);
 
 	//Item name for a given inventory slot
 	UFUNCTION(BlueprintPure, Category = "Inventory Functions")
