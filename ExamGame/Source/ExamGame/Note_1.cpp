@@ -7,7 +7,7 @@
 
 
 
-
+// Values for the note
 ANote_1::ANote_1()
 {
 	PrimaryActorTick.bCanEverTick = true;
@@ -19,12 +19,14 @@ ANote_1::ANote_1()
 	HasNote = false;
 }
 
+// Help text spesificly for the note and disable physics 
 void ANote_1::BeginPlay()
 {
 	InteractableHelpText = FString::Printf(TEXT(": Press E to Read %s"), *ItemName);
 	DisableComponentsSimulatePhysics();
 }
 
+// Call pick up to get pick up info and sets the a bool to true to giving the engine the info that the Note is picked up
 void ANote_1::Interact_Implementation()
 {
 	
@@ -32,6 +34,7 @@ void ANote_1::Interact_Implementation()
 		HasNote = true;
 }
 
+//pick up info, what hapens when the player interacts with this Note
 void ANote_1::OnPickUp()
 {
 	APlayer_Character* Character = Cast<APlayer_Character>(UGameplayStatics::GetPlayerCharacter(this, 0));

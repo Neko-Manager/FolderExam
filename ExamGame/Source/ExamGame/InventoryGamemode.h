@@ -20,6 +20,7 @@ class EXAMGAME_API AInventoryGamemode : public AGameModeBase
 public:
 		AInventoryGamemode();
 
+	//In Game States/State Machine 
 		enum EHUDState : uint8
 		{
 			HS_Ingame,
@@ -64,8 +65,6 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "HUDWidget", Meta = (BlueprintProtected = "true"))
 		TSubclassOf<class UUserWidget> WinGameHUDClass;
 
-
-
 	//The HUD when in Note 1
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "HUDWidget", Meta = (BlueprintProtected = "true"))
 		TSubclassOf<class UUserWidget> Note_1_HUDClass;
@@ -78,6 +77,7 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "HUDWidget", Meta = (BlueprintProtected = "true"))
 		TSubclassOf<class UUserWidget> Note_3_HUDClass;
 
+	//The HUD when the player dies
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "HUDWidget", Meta = (BlueprintProtected = "true"))
 		TSubclassOf<class UUserWidget> DeathHUDClass;
 

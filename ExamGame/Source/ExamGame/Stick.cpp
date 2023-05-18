@@ -5,6 +5,7 @@
 #include "Kismet/GameplayStatics.h"
 
 
+//Stick Values, name and amount
 
 AStick::AStick()
 {
