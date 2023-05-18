@@ -56,7 +56,7 @@ AEnemyTwo::AEnemyTwo()
 
 	//---------------- Audio ----------------- 
 
-//Loads soundque object
+	//Loads soundque object
 	static ConstructorHelpers::FObjectFinder<USoundCue> BurrowCueObject(TEXT("/Script/Engine.SoundCue'/Game/Audio/EnemyTwo/SC_Digging.SC_Digging'"));
 	static ConstructorHelpers::FObjectFinder<USoundCue> AttackSoundCueObject(TEXT("/Script/Engine.SoundCue'/Game/Audio/EnemyTwo/SC_Attack.SC_Attack'"));
 	static ConstructorHelpers::FObjectFinder<USoundCue> TakeDamageSoundCueObject(TEXT("/Script/Engine.SoundCue'/Game/Audio/EnemyTwo/SC_TakeDamage.SC_TakeDamage'"));
