@@ -138,7 +138,7 @@ public:
 	// Timer Handle
 	FTimerHandle AttackTimer;
 
-
+	UFUNCTION()
 	void TakeDamage();
 
 protected:

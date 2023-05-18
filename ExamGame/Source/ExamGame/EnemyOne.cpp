@@ -16,10 +16,6 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "Animation/AnimMontage.h"
 
-//Forward Declare
-USoundCue* BurrowAudioCue;
-UAudioComponent* BurrowAudioComponent;
-
 AEnemyOne::AEnemyOne()
 {
 	PrimaryActorTick.bCanEverTick = true;

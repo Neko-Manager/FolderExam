@@ -10,7 +10,7 @@ APickUp::APickUp()
     InteractableMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	InteractableMesh->SetSimulatePhysics(true);
 	
-
+	
 
 	ItemName = FString("Enter An itemName Here");
 	Value = 0;
@@ -19,6 +19,7 @@ APickUp::APickUp()
 void APickUp::BeginPlay()
 {
 	InteractableHelpText = FString::Printf(TEXT("%s: Press E to pick up"), *ItemName);
+
 }
 
 void APickUp::Interact_Implementation()

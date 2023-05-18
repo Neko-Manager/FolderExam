@@ -374,6 +374,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category = DisabledThumbnails)
 		TArray<bool> DisabledThumbnails = { false, false, false, false, false };
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "LocalIndexs")
+		TArray<int32> LocalIndex = { 0,1,2,3,4 };
+
+
 	void Die();
 	
 

@@ -17,7 +17,6 @@ class EXAMGAME_API ANote_1 : public APickUp
 
 	ANote_1();
 
-	
 
 	int32 AmountOfNote;
 
@@ -26,4 +25,8 @@ class EXAMGAME_API ANote_1 : public APickUp
 	virtual void Interact_Implementation() override;
 
 	void OnPickUp();
+
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI")
+		bool HasNote;
 };

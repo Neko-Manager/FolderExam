@@ -15,17 +15,21 @@ ANote_1::ANote_1()
 	AmountOfNote = 0;
 	ItemName = FString("Note_1");
 	Value = 100;
+
+	HasNote = false;
 }
 
 void ANote_1::BeginPlay()
 {
 	InteractableHelpText = FString::Printf(TEXT(": Press E to Read %s"), *ItemName);
+	DisableComponentsSimulatePhysics();
 }
 
 void ANote_1::Interact_Implementation()
 {
 	
 		OnPickUp();
+		HasNote = true;
 }
 
 void ANote_1::OnPickUp()

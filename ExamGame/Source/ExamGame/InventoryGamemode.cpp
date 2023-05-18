@@ -43,12 +43,6 @@ void AInventoryGamemode::BeginPlay()
 				break;
 
 		 }
-		 case EHUDState::HS_PauseGame:
-		 {
-
-			 ApplyHUD(PauseGameHUDClass, true, true);
-				break;
-		 }
 		 case EHUDState::HS_Note_1:
 		 {
 
@@ -65,6 +59,12 @@ void AInventoryGamemode::BeginPlay()
 		 {
 
 			 ApplyHUD(Note_3_HUDClass, false, false);
+			 break;
+		 }
+		 case EHUDState::HS_WinGame:
+		 {
+
+			 ApplyHUD(WinGameHUDClass, true, true);
 			 break;
 		 }
 		 case EHUDState::HS_Death:
@@ -116,13 +116,12 @@ void AInventoryGamemode::BeginPlay()
 
 		 if (CurrentWidget != nullptr)
 		 {
-			 CurrentWidget->AddToViewport();
-			 return true;
+			CurrentWidget->AddToViewport();
+			return true;
 		 }
-		 else return false;
 		 
-		
-			
+		 else return false;
+
 		
 	 }
 	 else return false;

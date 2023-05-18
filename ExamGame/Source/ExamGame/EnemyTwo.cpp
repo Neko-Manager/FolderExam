@@ -21,11 +21,6 @@
 #include "Kismet/GameplayStatics.h"
 #include "Animation/AnimMontage.h"
 
-//Forward Declare
-USoundCue* BurrowAudioCue;
-UAudioComponent* BurrowAudioComponent;
-
-
 AEnemyTwo::AEnemyTwo()
 {
 	PrimaryActorTick.bCanEverTick = true;

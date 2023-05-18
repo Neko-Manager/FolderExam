@@ -2,7 +2,8 @@
 #include "Player_Character.h"
 #include "Axe.h"
 #include "PickUp.h"
-
+#include "EnemyOne.h"
+#include "EnemyTwo.h"
 
 //Components
 #include "Components/StaticMeshComponent.h"
@@ -23,8 +24,6 @@
 #include "Sound/SoundCue.h"
 
 //Inputs
-#include "EnemyOne.h"
-#include "EnemyTwo.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubSystems.h"
 #include "InventoryGamemode.h"
@@ -965,9 +964,15 @@ void APlayer_Character::ToggleNote_1(APickUp* Item)
 			PickupNoteAudioComponent->Play(0.f);
 		
 	}
+	else if(Gamemode->GetHUDState() == Gamemode->HS_Note_1){
+
+		Gamemode->ChangeHUDState(Gamemode->HS_WinGame);
+
+	}
 	else
 	{
 		Gamemode->ChangeHUDState((Gamemode->HS_Ingame));
+		
 	}
 }
 
