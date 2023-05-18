@@ -237,8 +237,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "hunger Control")
 		float Live_Hunger;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hunger Control")
-		bool Eating;
+	/*UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hunger Control")
+		bool Eating;*/
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Hunger Control")
 		bool Starving;
@@ -246,7 +246,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void StarvingChecker(float HungerTick);
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable,  Category = "Eating Control")
 		void EatingChecker(int32 Index);
 
 
@@ -331,15 +331,15 @@ private:
 
 public:
 	//Player Inventory, represented as a TArray of pickup object.
-	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category=ItemInArray)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category = ItemInArray)
 		TArray<APickUp*> Inventory;
 
 	//Array to empty slots when item has been selected
-	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category=DisabledThumbnails)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category = DisabledThumbnails)
 		TArray<bool> DisabledThumbnails = { false, false, false, false, false };
 
-
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = LocalIndexes)
+	TArray<int32> LocalIndex = {0,1,2,3,4};
 	
-
 
 };
