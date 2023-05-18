@@ -5,6 +5,8 @@
 #include "StateControll.h"
 #include "EnemyOne.generated.h"
 
+class USoundCue;
+
 UCLASS()
 class EXAMGAME_API AEnemyOne : public ACharacter
 {
@@ -110,6 +112,24 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI")
 		FVector StandingPosition;
 
+	// ------------ Audio components -----------------
+
+	UAudioComponent* AttackAudioComponent;
+
+	UAudioComponent* TakeDamageAudioComponent;
+
+	UAudioComponent* DeathAudioComponent;
+
+	//Audio Components
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Audio")
+		USoundCue* AttackingSoundCue;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Audio")
+		USoundCue* TakeingDamageSoundCue;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Audio")
+		USoundCue* DeathDamageSoundCue;
+
 	// ------------ Timer Handlers ---------------------
 
 	// Timer Handle
@@ -117,6 +137,9 @@ public:
 
 	// Timer Handle
 	FTimerHandle AttackTimer;
+
+
+	void TakeDamage();
 
 protected:
 
@@ -144,6 +167,7 @@ protected:
 	void MoveToAttackRange(AActor* Target);
 
 	void PlayAttackMontage();
+
 
 	UFUNCTION(BlueprintCallable)
 	void AttackEnd();

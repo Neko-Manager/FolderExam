@@ -67,6 +67,12 @@ void AInventoryGamemode::BeginPlay()
 			 ApplyHUD(Note_3_HUDClass, false, false);
 			 break;
 		 }
+		 case EHUDState::HS_Death:
+		 {
+
+			 ApplyHUD(DeathHUDClass, true, true);
+			 break;
+		 }
 		 default:
 		 {
 

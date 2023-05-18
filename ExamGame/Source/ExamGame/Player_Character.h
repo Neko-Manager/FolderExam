@@ -36,11 +36,40 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		UMeshComponent* PlayerMesh;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		class AEnemyOne* EnemyOne;
+	// ------------ Audio components -----------------
 
-	
+	void TakeDamageAudio();
 
+	class UAudioComponent* AttackAudioComponent;
+
+	UAudioComponent* TakeDamageAudioComponent;
+
+	UAudioComponent* JumpAudioComponent;
+
+	UAudioComponent* PickupAudioComponent;
+
+	UAudioComponent* DeathAudioComponent;
+
+	UAudioComponent* PickupNoteAudioComponent;
+
+	//Audio Components
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Audio")
+		class USoundCue* AttackingSoundCue;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Audio")
+		USoundCue* TakeDamageSoundCue;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Audio")
+		USoundCue* JumpSoundCue;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Audio")
+		USoundCue* PickupSoundCue;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Audio")
+		USoundCue* DeathSoundCue;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Audio")
+		USoundCue* PickupNoteSoundCue;
 
 	// ------------------------ Do collision for items control ----------------------------
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Equipment Control")
@@ -128,12 +157,19 @@ public:
 	UFUNCTION(BlueprintCallable)
 	    void ToggleInventory(const FInputActionValue& Value);
 
-
 	UFUNCTION(BlueprintCallable)
 		void DroppItemTrigger(const FInputActionValue& Value);
 
 	UFUNCTION(BlueprintCallable)
 		void EatingTrigger(const FInputActionValue& Value);
+
+	// Death Control
+
+	UFUNCTION(BlueprintCallable)
+		void ToggleDeathHUD();
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Death Controll")
+		bool Dead;
 
 
 	//Movement Booleans
@@ -338,7 +374,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite,Category=DisabledThumbnails)
 		TArray<bool> DisabledThumbnails = { false, false, false, false, false };
 
-
+	void Die();
 	
 
 

@@ -9,10 +9,16 @@
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Components/AudioComponent.h"
+#include "Sound/SoundCue.h"
 
 //Other Include
 #include "Kismet/KismetSystemLibrary.h"
 #include "Animation/AnimMontage.h"
+
+//Forward Declare
+USoundCue* BurrowAudioCue;
+UAudioComponent* BurrowAudioComponent;
 
 AEnemyOne::AEnemyOne()
 {
@@ -48,6 +54,32 @@ AEnemyOne::AEnemyOne()
 	ReadyToAttack = false;
 	HasDoneDamage = false;
 	StandingPosition = FVector(0.f, 0.f, 0.f);
+
+	//---------------- Audio ----------------- 
+
+//Loads soundque object
+	static ConstructorHelpers::FObjectFinder<USoundCue> AttackSoundCueObject(TEXT("/Script/Engine.SoundCue'/Game/Audio/EnemyOne/SC_TAttack_EnemyOne.SC_TAttack_EnemyOne'"));
+	static ConstructorHelpers::FObjectFinder<USoundCue> TakeDamageSoundCueObject(TEXT("/Script/Engine.SoundCue'/Game/Audio/EnemyOne/SC_TakeDAmage_EnemyOne.SC_TakeDAmage_EnemyOne'"));
+	static ConstructorHelpers::FObjectFinder<USoundCue> DeathSoundCueObject(TEXT("/Script/Engine.SoundCue'/Game/Audio/EnemyOne/SC_Death_EnemyOne.SC_Death_EnemyOne'"));
+
+	//Checks if loading worked	
+	if (AttackSoundCueObject.Succeeded()) {
+		AttackingSoundCue = AttackSoundCueObject.Object;
+		AttackAudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("AttackAudioComponent"));
+		AttackAudioComponent->SetupAttachment(RootComponent);
+	}
+
+	if (TakeDamageSoundCueObject.Succeeded()) {
+		TakeingDamageSoundCue = TakeDamageSoundCueObject.Object;
+		TakeDamageAudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("TakeDamageAudioComponent"));
+		TakeDamageAudioComponent->SetupAttachment(RootComponent);
+	}
+
+	if (DeathSoundCueObject.Succeeded()) {
+		DeathDamageSoundCue = DeathSoundCueObject.Object;
+		DeathAudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("DeathAudioComponent"));
+		DeathAudioComponent->SetupAttachment(RootComponent);
+	}
 }
 
 void AEnemyOne::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -58,6 +90,16 @@ void AEnemyOne::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 void AEnemyOne::BeginPlay()
 {
 	Super::BeginPlay();
+
+	// ------------- Audio Setup --------------
+	if (AttackAudioComponent && AttackingSoundCue)
+		AttackAudioComponent->SetSound(AttackingSoundCue);
+
+	if (TakeDamageAudioComponent && TakeingDamageSoundCue)
+		TakeDamageAudioComponent->SetSound(TakeingDamageSoundCue);
+
+	if (DeathAudioComponent && DeathDamageSoundCue)
+		DeathAudioComponent->SetSound(DeathDamageSoundCue);
 
 	// Gets the AI Controller
 	EnemyController = Cast<AAIController>(GetController());
@@ -105,6 +147,12 @@ void AEnemyOne::Tick(float DeltaTime)
 	if (Health <= 0)
 		Die();
 
+}
+
+void AEnemyOne::TakeDamage()
+{
+	if (TakeDamageAudioComponent && TakeingDamageSoundCue)
+		TakeDamageAudioComponent->Play(0.f);
 }
 
 void AEnemyOne::PawnSeen(APawn* SeenPawn)
@@ -310,7 +358,12 @@ void AEnemyOne::Attack()
 	{
 		PlayAttackMontage();
 		EnemyAttackState = EEnemyAttackState::EES_EnemyAttacking;
+
+		if (AttackAudioComponent && AttackingSoundCue)
+			AttackAudioComponent->Play(0.f);
 	}
+
+
 }
 
 void AEnemyOne::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
@@ -325,6 +378,8 @@ void AEnemyOne::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Othe
 		if (HasDoneDamage == false)
 		{
 			Player->Health -= 10;
+			if(Player->Dead==false)
+				Player->TakeDamageAudio();
 			HasDoneDamage = true;
 			//GEngine->AddOnScreenDebugMessage(0, 1.f, FColor::Yellow, FString::Printf(TEXT("PlayerTakesDamge")));
 		}
@@ -340,6 +395,9 @@ void AEnemyOne::Die()
 	SetActorHiddenInGame(true);
 	SetActorEnableCollision(false);
 	this->Destroy();
+
+	if (DeathAudioComponent && DeathDamageSoundCue)
+		DeathAudioComponent->Play(0.f);
 
 	//GEngine->AddOnScreenDebugMessage(1, 1.f, FColor::Red, FString::Printf(TEXT("Died")));
 }

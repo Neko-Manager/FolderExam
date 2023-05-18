@@ -25,6 +25,7 @@ public:
 			HS_Ingame,
 			HS_Inventory,
 			HS_PauseGame,
+			HS_Death,
 			HS_Note_1,
 			HS_Note_2,
 			HS_Note_3,
@@ -77,6 +78,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "HUDWidget", Meta = (BlueprintProtected = "true"))
 		TSubclassOf<class UUserWidget> Note_3_HUDClass;
 
+	//The HUD when in Note 3
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "HUDWidget", Meta = (BlueprintProtected = "true"))
+		TSubclassOf<class UUserWidget> DeathHUDClass;
 
 	UPROPERTY()
 		class UUserWidget* CurrentWidget;
