@@ -34,4 +34,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Animation")
 		class APlayer_Character* Player;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Animation")
+		bool Isfalling;
+
+
+
 };

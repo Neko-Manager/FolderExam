@@ -3,6 +3,7 @@
 
 #include "Player_AnimInstance.h"
 #include "Player_Character.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 void UPlayer_AnimInstance::NativeInitializeAnimation()
 {
@@ -31,5 +32,12 @@ void UPlayer_AnimInstance::UpdateAnimationProperties()
 		FVector Speed = Pawn->GetVelocity();
 		Speed.Z = 0.f;
 		MovementSpeed = Speed.Size();
+
+		if(Player->GetCharacterMovement()->IsFalling())
+		{
+			//GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, FString::Printf(TEXT("Falling")));
+			Isfalling = true;
+		}
+
 	}
 }
