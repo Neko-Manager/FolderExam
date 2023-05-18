@@ -38,6 +38,10 @@ void UPlayer_AnimInstance::UpdateAnimationProperties()
 			//GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, FString::Printf(TEXT("Falling")));
 			Isfalling = true;
 		}
-
+		else
+		{
+			//GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Green, FString::Printf(TEXT("NotFalling")));
+			Isfalling = false;
+		}
 	}
 }
