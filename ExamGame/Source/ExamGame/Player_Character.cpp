@@ -181,7 +181,7 @@ void APlayer_Character::BeginPlay()
 	Max_Hunger = 100.f;
 
 	//Condition time limiters
-	Counter = 5.f;
+	Counter = 3.f;
 
 	// ------------- Default floats and integers --------------
 	//Booleans for sprinting and movement
@@ -196,11 +196,6 @@ void APlayer_Character::BeginPlay()
 	Equiped = false;
 	Has_Equiped = false;
 	Attacking = false;
-
-
-
-	// ------------- Animation Control --------------
-
 
 	// ------------- Collision Dynamics --------------
 	AttackCollisionMesh->OnComponentBeginOverlap.AddDynamic(this, &APlayer_Character::OnOverlap);
@@ -411,6 +406,7 @@ void APlayer_Character::CrouchCustom()
 // ------------- Hunger Control --------------
 void APlayer_Character::HungerDecay(float Timer)
 {
+	//Function for hunger which progress towards max to zero
 	if(Sprinting == false && Exhaust == false && Live_Hunger >= NULL && Starving == false)
 	{
 		Live_Hunger += Timer/3.f;
@@ -424,6 +420,7 @@ void APlayer_Character::StarvingChecker(float Hunger)
 	{
 		Starving = true;
 
+		//Reducing max stamina and speed
 		if(Starving == true)
 		{
 			Max_Stamina = 50.f;
@@ -432,6 +429,7 @@ void APlayer_Character::StarvingChecker(float Hunger)
 	}
 	else
 	{
+		//Resetting
 		Starving = false;
 		Max_Stamina = 100.f;
 		Walk_Speed = 600.f;
@@ -441,37 +439,38 @@ void APlayer_Character::StarvingChecker(float Hunger)
 
 void APlayer_Character::EatingTrigger(const FInputActionValue& Value)
 {
-
+	//Checking each index for the eat-function
 	if (Value.IsNonZero() && Inventory[LocalIndex[0]] && DisabledThumbnails[LocalIndex[0]] == true)
 	{
 		EatingChecker(LocalIndex[0]);
-		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Item 0 check for eat")));
+		/*GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Item 0 check for eat")));*/
 	}
 	if (Value.IsNonZero() && Inventory[LocalIndex[1]] && DisabledThumbnails[LocalIndex[1]] == true)
 	{
 		EatingChecker(LocalIndex[1]);
-		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Item 1 check for eat")));
+		/*GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Item 1 check for eat")));*/
 	}
 	if (Value.IsNonZero() && Inventory[LocalIndex[2]] && DisabledThumbnails[LocalIndex[2]] == true)
 	{
 		EatingChecker(LocalIndex[2]);
-		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Item 2 check for eat")));
+		/*GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Item 2 check for eat")));*/
 	}
 	if (Value.IsNonZero() && Inventory[LocalIndex[3]] && DisabledThumbnails[LocalIndex[3]] == true)
 	{
 		EatingChecker(LocalIndex[3]);
-		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Item 3 check for eat")));
+		/*GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Item 3 check for eat")));*/
 	}
 	if (Value.IsNonZero() && Inventory[LocalIndex[4]] && DisabledThumbnails[LocalIndex[4]] == true)
 	{
 		EatingChecker(LocalIndex[4]);
-		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Item 4 check for eat")));
+		/*GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Item 4 check for eat")));*/
 	}
 
 }
 
 void APlayer_Character::ToggleDeathHUD()
 {
+	//Function to control HUD when player dies
 	AInventoryGamemode* Gamemode = Cast<AInventoryGamemode>(GetWorld()->GetAuthGameMode());
 
 	if (Gamemode->GetHUDState() == Gamemode->HS_Ingame)
@@ -525,7 +524,7 @@ void APlayer_Character::EatingChecker(int32 Index)
 			Has_Equiped = false;
 			DisabledThumbnails[Index] = false;
 			Inventory[Index] = nullptr;
-			GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Mango eaten")));
+			/*GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Mango eaten")));*/
 		}
 
 		if (ItemPickedEquiped == "Coconut")
@@ -560,7 +559,7 @@ void APlayer_Character::EatingChecker(int32 Index)
 			Has_Equiped = false;
 			DisabledThumbnails[Index] = false;
 			Inventory[Index] = nullptr;
-			GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Coconut eaten")));
+			/*GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Coconut eaten")));*/
 		}
 
 		if (ItemPickedEquiped == "Bandages")
@@ -579,7 +578,7 @@ void APlayer_Character::EatingChecker(int32 Index)
 			Has_Equiped = false;
 			DisabledThumbnails[Index] = false;
 			Inventory[Index] = nullptr;
-			GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Bandages used")));
+			/*GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Bandages used")));*/
 		}
 
 		
@@ -616,6 +615,7 @@ void APlayer_Character::ExhaustChecker(float Stamina)
 
 		Exhaust_Timer += TimeTick;
 
+		//Timer for the function
 		if (Exhaust_Timer <= Counter)
 		{
 			Exhaust = true;
@@ -639,30 +639,31 @@ void APlayer_Character::ExhaustChecker(float Stamina)
 // ------------- Attaching Item Control --------------
 void APlayer_Character::DroppItemTrigger(const FInputActionValue& Value)
 {
+	//Checking each index for the Dropp-function
 	if(Value.IsNonZero() && Inventory[LocalIndex[0]] && DisabledThumbnails[LocalIndex[0]] == true)
 	{
 		DroppItem(LocalIndex[0]);
-		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Item 0 dropped")));
+		/*GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Item 0 dropped")));*/
 	}
 	if (Value.IsNonZero() && Inventory[LocalIndex[1]] && DisabledThumbnails[LocalIndex[1]] == true)
 	{
 		DroppItem(LocalIndex[1]);
-		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Item 1 dropped")));
+		/*GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Item 1 dropped")));*/
 	}
 	if (Value.IsNonZero() && Inventory[LocalIndex[2]] && DisabledThumbnails[LocalIndex[2]] == true)
 	{
 		DroppItem(LocalIndex[2]);
-		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Item 2 dropped")));
+		/*GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Item 2 dropped")));*/
 	}
 	if (Value.IsNonZero() && Inventory[LocalIndex[3]] && DisabledThumbnails[LocalIndex[3]] == true)
 	{
 		DroppItem(LocalIndex[3]);
-		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Item 3 dropped")));
+		/*GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Item 3 dropped")));*/
 	}
 	if (Value.IsNonZero() && Inventory[LocalIndex[4]] && DisabledThumbnails[LocalIndex[4]] == true)
 	{
 		DroppItem(LocalIndex[4]);
-		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Item 4 dropped")));
+		//GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Item 4 dropped")));
 	}
 }
 
@@ -731,10 +732,9 @@ void APlayer_Character::SwapItem(int32 Index)
 
 
 	//Checkinf i fitem is equiped and that the disableThumbnail is active for the respective slot and that the name also is the same
-	if (Gamemode->GetHUDState() == Gamemode->HS_Inventory && Inventory[Index] != nullptr && Equiped == true)
+	if (Gamemode->GetHUDState() == Gamemode->HS_Inventory/*&& Inventory[Index] != nullptr && Equiped == true*/)
 	{
-		
-		
+		//Checking if item is the same as item held
 		if (Inventory[Index]->ItemName == ItemPickedEquiped && Equiped == true && Has_Equiped == true)
 		{
 			DisabledThumbnails[Index] = false;
@@ -742,12 +742,28 @@ void APlayer_Character::SwapItem(int32 Index)
 			Inventory[Index]->InteractableMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 			Has_Equiped = false;
 
+			//Equipping item back
 			if (Inventory[Index]->ItemName != ItemPickedEquiped && Equiped == true)
 			{
 					EquipItem(Index);
 			}
 			Equiped = false;
 		}
+
+		/*if (Inventory[Index]->ItemName != ItemPickedEquiped && Equiped == true && Has_Equiped == true)
+		{
+			Has_Equiped = false;
+
+			if(Inventory[Index]->ItemName != ItemPickedEquiped && DisabledThumbnails[Index] == true)
+			{
+				DisabledThumbnails[Index] = false;
+				Inventory[Index]->InteractableMesh->SetVisibility(false);
+				Inventory[Index]->InteractableMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+				Has_Equiped = false;
+			}
+			EquipItem(Index);
+			
+		}*/
 	}
 }
 
@@ -758,11 +774,14 @@ void APlayer_Character::AttackTrigger(const FInputActionValue& Value)
 {
 	AInventoryGamemode* Gamemode = Cast<AInventoryGamemode>(GetWorld()->GetAuthGameMode());
 
+	//Requirements for the attack bool to be true
 	if(Gamemode->GetHUDState() == Gamemode->HS_Ingame && Value.IsNonZero() && Live_Stamina >= NULL && Has_Equiped == true && Exhaust == false)
 	{
 		Attacking = true;
-		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Yellow, FString::Printf(TEXT("Attacking = true")));
+		/*GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Yellow, FString::Printf(TEXT("Attacking = true")));*/
 
+
+		//PLaying attack montage
 		if(MontagePlaying == false)
 		{
 			PlayAttackMontage();
@@ -771,17 +790,15 @@ void APlayer_Character::AttackTrigger(const FInputActionValue& Value)
 				AttackAudioComponent->Play(0.f);
 		}
 		
-
+		//Activating damage-function
 		if (Attacking == true)
 		{
-
-
 			DamageControl();
-			GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, FString::Printf(TEXT("AttackTrigger activated")));
+			/*GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, FString::Printf(TEXT("AttackTrigger activated")));*/
 		}
 		
 		Attacking = false;
-		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Yellow, FString::Printf(TEXT("Attacking = false")));
+		/*GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Yellow, FString::Printf(TEXT("Attacking = false")));*/
 	}
 	else
 	{
@@ -798,23 +815,24 @@ void APlayer_Character::DamageControl()
 	
 	if (Gamemode->GetHUDState() == Gamemode->HS_Ingame)
 	{
+		//Weapons with respective damage and stamina drain
 		if(Attacking == true && ItemPickedEquiped == "Axe")
 		{
 			AxeIsActive = true;
-			Live_Stamina -= 10.f;
-			GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Attacking = true")));
+			Live_Stamina -= 7.f;
+			/*GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Attacking = true")));*/
 		}
 		if (Attacking == true && ItemPickedEquiped == "Stick")
 		{
-			AxeIsActive = true;
-			Live_Stamina -= 5.f;
-			GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Attacking = true")));
+			StickIsActive = true;
+			Live_Stamina -= 3.f;
+			/*GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Attacking = true")));*/
 		}
 		if (Attacking == true && ItemPickedEquiped == "Knife")
 		{
-			AxeIsActive = true;
-			Live_Stamina -= 8.f;
-			GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Attacking = true")));
+			KnifeIsActive= true;
+			Live_Stamina -= 5.f;
+			/*GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Attacking = true")));*/
 		}
 
 	}
@@ -822,6 +840,7 @@ void APlayer_Character::DamageControl()
 	{
 		AxeIsActive = false;
 		StickIsActive = false;
+		KnifeIsActive = false;
 	}
 }
 
@@ -831,16 +850,16 @@ void APlayer_Character::OnOverlap(UPrimitiveComponent* OverlappedComponent, AAct
 {
 	AEnemyOne* EnemyOne = Cast<AEnemyOne>(OtherActor);
 	AEnemyTwo* EnemyTwo = Cast<AEnemyTwo>(OtherActor);
+
+	//Overlap and damage control for when enemy is hit
 	if(Has_Equiped == true)
 	{
 		if(AxeIsActive == true && ItemPickedEquiped == "Axe" && EnemyOne)
 		{
-			
 			EnemyOne->Health -= 3;
 			EnemyOne->TakeDamage();
 			AxeIsActive = false;
-			GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Attacking = false")));
-
+		/*	GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Attacking = false")));*/
 		}
 
 		if (AxeIsActive == true && ItemPickedEquiped == "Axe" && EnemyTwo)
@@ -848,37 +867,31 @@ void APlayer_Character::OnOverlap(UPrimitiveComponent* OverlappedComponent, AAct
 			EnemyTwo->Health -= 3;
 			EnemyTwo->TakeDamageAudio();
 			AxeIsActive = false;
-			GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Attacking = false")));
+			/*GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Attacking = false")));*/
 		}
 
 		if (StickIsActive == true && ItemPickedEquiped == "Stick" && EnemyOne)
 		{
-
 			EnemyOne->Health -= 3;
 			EnemyOne->TakeDamage();
 			AxeIsActive = false;
-			GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Attacking = false")));
-
+			/*GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Attacking = false")));*/
 		}
 
 		if (StickIsActive == true && ItemPickedEquiped == "Stick" && EnemyTwo)
 		{
-
 			EnemyTwo->Health -= 3;
 			EnemyTwo->TakeDamageAudio();
 			AxeIsActive = false;
-			GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Attacking = false")));
-
+			/*GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Attacking = false")));*/
 		}
 
 		if (AxeIsActive == true && ItemPickedEquiped == "Knife" && EnemyOne)
 		{
-			
 			EnemyOne->Health -= 2;
 			EnemyOne->TakeDamage();
 			StickIsActive = false;
-			GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Attacking = false")));
-
+			/*GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Attacking = false")));*/
 		}
 
 		if (AxeIsActive == true && ItemPickedEquiped == "Knife" && EnemyTwo)
@@ -886,7 +899,7 @@ void APlayer_Character::OnOverlap(UPrimitiveComponent* OverlappedComponent, AAct
 			EnemyTwo->Health -= 2;
 			EnemyTwo->TakeDamageAudio();
 			StickIsActive = false;
-			GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Attacking = false")));
+			/*GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Attacking = false")));*/
 		}
 		else
 		{
@@ -903,10 +916,12 @@ bool APlayer_Character::AddItemToInventory(APickUp* Item)
 {
 	if (Item !=  NULL)
 	{
+		//Searching for values and booleans in the item array
 		const int32 AvailableSlot1 = DisabledThumbnails.Find(true);
 		const int32 AvailableSlot2 = Inventory.Find(nullptr); // find first slot with a nullptr in it
 		int32 AvailableSlot = 0;
 
+		//Checking for when to use disabledthumbnail and which to spot to put the item into
 		if(AvailableSlot1 == AvailableSlot2 && AvailableSlot1 != INDEX_NONE && Equiped == true)
 		{
 			AvailableSlot = AvailableSlot1;
@@ -945,6 +960,7 @@ UTexture2D* APlayer_Character::GetThumbnailAtInventorySlot(int32 Slot)
 
 UTexture2D* APlayer_Character::GetDisabledThumbnailAtInventorySlot(int32 Slot)
 {
+	//Getting the respectiv disabledThumbnail to respective slot
 	if (Inventory[Slot] != NULL && Has_Equiped == true && DisabledThumbnails[Slot] == true)
 	{
 		return Inventory[Slot]->DisabledPickUpThumbnail;
