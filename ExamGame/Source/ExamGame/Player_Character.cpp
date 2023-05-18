@@ -126,7 +126,6 @@ void APlayer_Character::BeginPlay()
 	Crouching = false;
 
 	//Booleans for added effects
-	Eating = false;
 	Starving = false;
 
 	// ------------- Defaults for equip control --------------
@@ -136,7 +135,7 @@ void APlayer_Character::BeginPlay()
 
 
 
-	// ------------- Animation hit timers --------------
+	// ------------- Animation Control --------------
 
 
 	// ------------- Collision Dynamics --------------
@@ -171,6 +170,7 @@ void APlayer_Character::Tick(float DeltaTime)
 	HungerDecay(NegativeTimeTick);
 	StarvingChecker(Live_Hunger);
 	EquipItem(TimeTick);
+
 
 }
 
@@ -352,98 +352,135 @@ void APlayer_Character::StarvingChecker(float Hunger)
 
 void APlayer_Character::EatingTrigger(const FInputActionValue& Value)
 {
-	
-	int32 Index[] = { 0,1,2,3,4 };
 
-	if (Value.IsNonZero() && Inventory[Index[0]])
+	if (Value.IsNonZero() && Inventory[LocalIndex[0]] && DisabledThumbnails[LocalIndex[0]] == true)
 	{
-		Eating = true;
-		EatingChecker(Index[0]);
-		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Item 0 eaten")));
-		return;
+		EatingChecker(LocalIndex[0]);
+		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Item 0 check for eat")));
 	}
-	if (Value.IsNonZero() && Inventory[Index[1]])
+	if (Value.IsNonZero() && Inventory[LocalIndex[1]] && DisabledThumbnails[LocalIndex[1]] == true)
 	{
-		Eating = true;
-		EatingChecker(Index[1]);
-		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Item 1 eaten")));
-		return;
+		EatingChecker(LocalIndex[1]);
+		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Item 1 check for eat")));
 	}
-	if (Value.IsNonZero() && Inventory[Index[2]])
+	if (Value.IsNonZero() && Inventory[LocalIndex[2]] && DisabledThumbnails[LocalIndex[2]] == true)
 	{
-		Eating = true;
-		EatingChecker(Index[2]);
-		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Item 2 eaten")));
-		return;
+		EatingChecker(LocalIndex[2]);
+		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Item 2 check for eat")));
 	}
-	if (Value.IsNonZero() && Inventory[Index[3]])
+	if (Value.IsNonZero() && Inventory[LocalIndex[3]] && DisabledThumbnails[LocalIndex[3]] == true)
 	{
-		Eating = true;
-		EatingChecker(Index[3]);
-		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Item 3 eaten")));
-		return;
+		EatingChecker(LocalIndex[3]);
+		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Item 3 check for eat")));
 	}
-	if (Value.IsNonZero() && Inventory[Index[4]])
+	if (Value.IsNonZero() && Inventory[LocalIndex[4]] && DisabledThumbnails[LocalIndex[4]] == true)
 	{
-		Eating = true;
-		EatingChecker(Index[4]);
-		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Item 4 eaten")));
-		return;
+		EatingChecker(LocalIndex[4]);
+		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Item 4 check for eat")));
 	}
+
 }
 
 void APlayer_Character::EatingChecker(int32 Index)
 {
 
-	FDetachmentTransformRules TransformRules(EDetachmentRule::KeepRelative, true);
-
 	//Checking if eating boolean is true
-	if(Has_Equiped == true && Health <= 100.f)
+	if(Has_Equiped == true && Health <= 100.f && Live_Hunger <= Max_Hunger)
 	{
-		if (Inventory[Index]->ItemName == "Mango" && Eating == true)
+		FDetachmentTransformRules TransformRules(EDetachmentRule::KeepRelative, true);
+
+		if (ItemPickedEquiped == "Mango")
 		{
-			Live_Hunger += 10.f;
-			Health += 20.f;
-			Inventory[Index]->DetachFromActor(TransformRules);
+			//Hunger less and Health less
+			if (Live_Hunger + 10.f <= Max_Hunger && Health + 20.f <= 100.f)
+			{
+				Live_Hunger += 10.f;
+				Health += 20.f;
+			}
+			//Hunger greater and Health Less
+			if (Live_Hunger + 10.f >= Max_Hunger && Health + 20.f <= 100.f)
+			{
+				Live_Hunger = Max_Hunger;
+				Health += 20.f;
+			}
+			//Hunger less and Health greater
+			if (Live_Hunger + 10.f <= Max_Hunger && Health + 20.f >= 100.f)
+			{
+				Live_Hunger += 10.f;
+				Health = 100.f;
+			}
+			//Both Greater
+			if (Live_Hunger + 10.f >= Max_Hunger && Health + 20.f >= 100.f)
+			{
+				Live_Hunger = Max_Hunger;
+				Health = 100.f;
+			}
 			Inventory[Index]->SetActorEnableCollision(false);
+			Inventory[Index]->DetachFromActor(TransformRules);
 			Inventory[Index]->InteractableMesh->SetVisibility(false);
 			Has_Equiped = false;
 			DisabledThumbnails[Index] = false;
-			Eating = false;
-			Starving = false;
 			Inventory[Index] = nullptr;
-			return;
-			
-		}
-		if (Inventory[Index]->ItemName == "Coconut" && Eating == true)
-		{
-			Live_Hunger += 20.f;
-			Health += 10.f;
-			Inventory[Index]->DetachFromActor(TransformRules);
-			Inventory[Index]->SetActorEnableCollision(false);
-			Inventory[Index]->InteractableMesh->SetVisibility(false);
-			Has_Equiped = false;
-			DisabledThumbnails[Index] = false;
-			Eating = false;
-			Starving = false;
-			Inventory[Index] = nullptr;
-			return;
-		}
-		if (Inventory[Index]->ItemName == "Bandages" && Eating == true)
-		{
-			Health += 40.f;
-			Inventory[Index]->DetachFromActor(TransformRules);
-			Inventory[Index]->SetActorEnableCollision(false);
-			Inventory[Index]->InteractableMesh->SetVisibility(false);
-			Has_Equiped = false;
-			DisabledThumbnails[Index] = false;
-			Eating = false;
-			Starving = false;
-			Inventory[Index] = nullptr;
-			return;
+			GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Mango eaten")));
 		}
 
+		if (ItemPickedEquiped == "Coconut")
+		{
+			//Hunger less and Health less
+			if(Live_Hunger + 20.f <= Max_Hunger && Health + 10.f <= 100.f)
+			{
+				Live_Hunger += 20.f;
+				Health += 10.f;
+			}
+			//Hunger greater and Health Less
+			if (Live_Hunger + 20.f >= Max_Hunger && Health + 10.f <= 100.f)
+			{
+				Live_Hunger = Max_Hunger;
+				Health += 10.f;
+			}
+			//Hunger less and Health greater
+			if (Live_Hunger + 20.f <= Max_Hunger && Health + 10.f >= 100.f)
+			{
+				Live_Hunger += 20.f;
+				Health = 100.f;
+			}
+			//Both Greater
+			if (Live_Hunger + 20.f >= Max_Hunger && Health + 10.f >= 100.f)
+			{
+				Live_Hunger = Max_Hunger;
+				Health = 100.f;
+			}
+			Inventory[Index]->SetActorEnableCollision(false);
+			Inventory[Index]->DetachFromActor(TransformRules);
+			Inventory[Index]->InteractableMesh->SetVisibility(false);
+			Has_Equiped = false;
+			DisabledThumbnails[Index] = false;
+			Inventory[Index] = nullptr;
+			GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Coconut eaten")));
+		}
+
+		if (ItemPickedEquiped == "Bandages")
+		{
+			if(Health + 40.f <= 100.f)
+			{
+				Health += 40.f;
+			}
+			if(Health + 40.f >= 100.f)
+			{
+				Health = 100.f;
+			}
+			Inventory[Index]->SetActorEnableCollision(false);
+			Inventory[Index]->DetachFromActor(TransformRules);
+			Inventory[Index]->InteractableMesh->SetVisibility(false);
+			Has_Equiped = false;
+			DisabledThumbnails[Index] = false;
+			Inventory[Index] = nullptr;
+			GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Bandages used")));
+		}
+
+		
 	}
+
 }
 
 
@@ -494,42 +531,31 @@ void APlayer_Character::ExhaustChecker(float Stamina)
 // ------------- Attaching Item Control --------------
 void APlayer_Character::DroppItemTrigger(const FInputActionValue& Value)
 {
-
-	int32 Index[] = { 0,1,2,3,4 };
-	
-
-	if(Value.IsNonZero() && Inventory[Index[0]] && DisabledThumbnails[Index[0]] == true)
+	if(Value.IsNonZero() && Inventory[LocalIndex[0]] && DisabledThumbnails[LocalIndex[0]] == true)
 	{
-		DroppItem(Index[0]);
+		DroppItem(LocalIndex[0]);
 		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Item 0 dropped")));
-		return;
 	}
-	if (Value.IsNonZero() && Inventory[Index[1]] && DisabledThumbnails[Index[1]] == true)
+	if (Value.IsNonZero() && Inventory[LocalIndex[1]] && DisabledThumbnails[LocalIndex[1]] == true)
 	{
-		DroppItem(Index[1]);
+		DroppItem(LocalIndex[1]);
 		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Item 1 dropped")));
-		return;
 	}
-	if (Value.IsNonZero() && Inventory[Index[2]] && DisabledThumbnails[Index[2]] == true)
+	if (Value.IsNonZero() && Inventory[LocalIndex[2]] && DisabledThumbnails[LocalIndex[2]] == true)
 	{
-		DroppItem(Index[2]);
+		DroppItem(LocalIndex[2]);
 		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Item 2 dropped")));
-		return;
 	}
-	if (Value.IsNonZero() && Inventory[Index[3]] && DisabledThumbnails[Index[3]] == true)
+	if (Value.IsNonZero() && Inventory[LocalIndex[3]] && DisabledThumbnails[LocalIndex[3]] == true)
 	{
-		DroppItem(Index[3]);
+		DroppItem(LocalIndex[3]);
 		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Item 3 dropped")));
-		return;
 	}
-	if (Value.IsNonZero() && Inventory[Index[4]] && DisabledThumbnails[Index[4]] == true)
+	if (Value.IsNonZero() && Inventory[LocalIndex[4]] && DisabledThumbnails[LocalIndex[4]] == true)
 	{
-		DroppItem(Index[4]);
+		DroppItem(LocalIndex[4]);
 		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Item 4 dropped")));
-		return;
 	}
-
-	
 }
 
 void APlayer_Character::DroppItem(int32 Index)
@@ -537,18 +563,19 @@ void APlayer_Character::DroppItem(int32 Index)
 	FDetachmentTransformRules TransformRules(EDetachmentRule::KeepRelative, true);
 
 	//Checkinf i fitem is equiped and that the disableThumbnail is active for the respective slot and that the name also is the same
-	if (Has_Equiped == true && ItemPickedEquiped == Inventory[Index]->ItemName && DisabledThumbnails[Index] == true)
+	if (Has_Equiped == true && ItemPickedEquiped == Inventory[Index]->ItemName)
 	{
 		//Setting physics attributes to true when dropping for a realistic effect. Also removes the disabledThumbnail for the respective index and sets it to nullptr. This will make it open for a new item to be picket up
+		Inventory[Index]->DetachFromActor(TransformRules);
 		Inventory[Index]->InteractableMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 		Inventory[Index]->InteractableMesh->SetSimulatePhysics(true);
 		Inventory[Index]->SetActorLocation(FVector(GetActorLocation()));
-		Inventory[Index]->DetachFromActor(TransformRules);
 		
 		DisabledThumbnails[Index] = false;
 		Has_Equiped = false;
 		Inventory[Index] = nullptr;
-		
+
+	
 	}
 }
 
@@ -556,9 +583,7 @@ void APlayer_Character::EquipItem(int32 Index)
 {
 	AInventoryGamemode* Gamemode = Cast<AInventoryGamemode>(GetWorld()->GetAuthGameMode());
 
-
-
-	if (Gamemode->GetHUDState() == Gamemode->HS_Inventory) 
+	if (Gamemode->GetHUDState() == Gamemode->HS_Inventory)
 	{
 		if(Inventory[Index] != nullptr && Equiped == true && DisabledThumbnails[Index] != true && Has_Equiped == false)
 		{
@@ -735,7 +760,7 @@ bool APlayer_Character::AddItemToInventory(APickUp* Item)
 		const int32 AvailableSlot2 = Inventory.Find(nullptr); // find first slot with a nullptr in it
 		int32 AvailableSlot = 0;
 
-		if(AvailableSlot1 >= AvailableSlot2 && AvailableSlot1 != -1 && Equiped == true)
+		if(AvailableSlot1 == AvailableSlot2 && AvailableSlot1 != INDEX_NONE && Equiped == true)
 		{
 			AvailableSlot = AvailableSlot1;
 			DisabledThumbnails[AvailableSlot] = false;
