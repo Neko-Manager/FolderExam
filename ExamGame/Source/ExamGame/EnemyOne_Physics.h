@@ -23,7 +23,7 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	//Sets PysicsAsset as blueprint value
+	//Sets PysicsAsset as blueprint value for impulse
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI")
 		TSubclassOf<AActor> BP_EnemyOne;
 

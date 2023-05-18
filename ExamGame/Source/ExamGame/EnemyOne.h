@@ -138,6 +138,7 @@ public:
 	// Timer Handle
 	FTimerHandle AttackTimer;
 
+	// Called from other class so must be public
 	UFUNCTION()
 	void TakeDamage();
 
@@ -168,7 +169,7 @@ protected:
 
 	void PlayAttackMontage();
 
-
+	// Called in Anim Blueprint
 	UFUNCTION(BlueprintCallable)
 	void AttackEnd();
 

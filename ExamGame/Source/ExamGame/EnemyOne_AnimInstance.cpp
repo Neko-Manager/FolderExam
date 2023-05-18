@@ -3,8 +3,10 @@
 #include "EnemyOne_AnimInstance.h"
 #include "EnemyOne.h"
 
+
 void UEnemyOne_AnimInstance::NativeInitializeAnimation()
 {
+	//Gets pawn and enemy refrence
 	if (Pawn == nullptr)
 	{
 		Pawn = TryGetPawnOwner();
@@ -17,6 +19,7 @@ void UEnemyOne_AnimInstance::NativeInitializeAnimation()
 
 void UEnemyOne_AnimInstance::UpdateAnimationProperties()
 {
+	//Double check casting
 	if (Pawn == nullptr) {
 		Pawn = TryGetPawnOwner();
 		if (Pawn && EnemyOne == nullptr) {
@@ -24,6 +27,7 @@ void UEnemyOne_AnimInstance::UpdateAnimationProperties()
 		}
 	}
 
+	// Calculalte movementspeed for blend animation
 	if (Pawn) {
 		FVector Speed = Pawn->GetVelocity();
 		Speed.Z = 0.f;

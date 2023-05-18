@@ -102,14 +102,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI")
 		float ChaseSpeed;
 
-	// Timer Delays
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI")
-		float AttackDelayMin;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI")
-		float AttackDelayMax;
-
 	// Other
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI")
 		int Health;

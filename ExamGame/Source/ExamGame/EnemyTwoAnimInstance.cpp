@@ -5,6 +5,7 @@
 
 void UEnemyTwoAnimInstance::NativeInitializeAnimation()
 {
+	//Gets pawn and enemy refrence
 	if (Pawn == nullptr)
 	{
 		Pawn = TryGetPawnOwner();
@@ -17,6 +18,7 @@ void UEnemyTwoAnimInstance::NativeInitializeAnimation()
 
 void UEnemyTwoAnimInstance::UpdateAnimationProperties()
 {
+	//Gets pawn and enemy refrence again
 	if (Pawn == nullptr) {
 		Pawn = TryGetPawnOwner();
 		if (Pawn && EnemyTwo == nullptr) {
@@ -24,6 +26,7 @@ void UEnemyTwoAnimInstance::UpdateAnimationProperties()
 		}
 	}
 
+	//Calculates movementspeed for animation blueprint
 	if (Pawn) {
 		FVector Speed = Pawn->GetVelocity();
 		Speed.Z = 0.f;

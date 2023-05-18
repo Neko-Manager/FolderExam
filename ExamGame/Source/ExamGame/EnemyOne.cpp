@@ -41,7 +41,6 @@ AEnemyOne::AEnemyOne()
 	// Timer Delays
 	PatrolDelayMax = 8.f;
 	PatrolDelayMin = 2.f;
-
 	AttackDelayMax = 4.f;
 	AttackDelayMin = 1.f;
 
@@ -80,6 +79,7 @@ AEnemyOne::AEnemyOne()
 
 void AEnemyOne::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
+	//Unused but must stay for character class
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 }
 
@@ -121,7 +121,6 @@ void AEnemyOne::Tick(float DeltaTime)
 		//Gets the targets relative position for attack location
 		if (CombatTarget != nullptr)
 			GetRelativePos(CombatTarget);
-
 		//Checks combat range and updates state accordingly
 		CheckCombatTarget();
 	}
@@ -147,6 +146,7 @@ void AEnemyOne::Tick(float DeltaTime)
 
 void AEnemyOne::TakeDamage()
 {
+	//Plays sound when it takes damage, is called from other classes
 	if (TakeDamageAudioComponent && TakeingDamageSoundCue)
 		TakeDamageAudioComponent->Play(0.f);
 }

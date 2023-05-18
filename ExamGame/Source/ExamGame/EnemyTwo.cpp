@@ -32,20 +32,18 @@ AEnemyTwo::AEnemyTwo()
 	DetectionRangeY = 1000.f;
 	DetectionRangeZ = 100.f;
 
+	// Collision box for tail for attack
 	AtttackColliderSquare = CreateDefaultSubobject<UBoxComponent>(TEXT("AttackColider"));
 	AtttackColliderSquare->SetupAttachment(GetMesh(),"Tail_06th");
 
+	// Detection range for player detection
 	DetectionSquare = CreateDefaultSubobject<UBoxComponent>(TEXT("Collider"));
 	DetectionSquare->SetupAttachment(GetRootComponent());
 	DetectionSquare->SetRelativeLocation(FVector(0.f, 0.f, DetectionRangeZ));
 	DetectionSquare->InitBoxExtent(FVector(DetectionRangeX, DetectionRangeY, DetectionRangeZ));
 
-	// Speeds
+	// Speed
 	ChaseSpeed = 300.f;
-
-	// Timer Delay
-	AttackDelayMax = 4.f;
-	AttackDelayMin = 1.f;
 
 	// Other
 	Health = 20;
@@ -90,6 +88,7 @@ AEnemyTwo::AEnemyTwo()
 
 void AEnemyTwo::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
+	// Must be present for character class
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 }
 
@@ -111,11 +110,13 @@ void AEnemyTwo::BeginPlay()
 	if (DeathAudioComponent && DeathDamageSoundCue)
 		DeathAudioComponent->SetSound(DeathDamageSoundCue);
 
+	// Inivisble for burrow start
 	GetMesh()->SetVisibility(false);
 
 	// Gets the AI Controller
 	EnemyController = Cast<AAIController>(GetController());
 
+	// Sets state
 	EnemyState = EEnemyState::EES_EnemyIdle;
 	EnemyAttackState = EEnemyAttackState::EES_EnemyUnoccupied;
 	GetCharacterMovement()->MaxWalkSpeed = ChaseSpeed;
@@ -129,6 +130,7 @@ void AEnemyTwo::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	// Checks for all combat targets
 	if (EnemyState != EEnemyState::EES_EnemyIdle)
 	{
 		CheckCombatTarget();
@@ -219,6 +221,8 @@ void AEnemyTwo::StayAtPosition(FVector Location)
 
 void AEnemyTwo::PlayBurrow(bool isVisible,bool isBurrowed)
 {
+	//Plays burrow VFX at location and sets visibility
+
 	GetMesh()->SetVisibility(isVisible);
 	Burrowed = isBurrowed;
 
@@ -273,25 +277,24 @@ void AEnemyTwo::AttackEnd()
 	//Changes state when Attack over, called in Anim blueprint
 	EnemyState = EEnemyState::EES_EnemyChaseing;
 	EnemyAttackState = EEnemyAttackState::EES_EnemyUnoccupied;
-	
-
 }
 
 void AEnemyTwo::TakeDamageAudio()
 {
+	// Take Damage audio, called from other classes
 	if (TakeDamageAudioComponent && TakeingDamageSoundCue)
 		TakeDamageAudioComponent->Play(0.f);
 }
 
 void AEnemyTwo::Die()
 {
-	//Spawns The pysics asset when it has died
+	// Spawns The pysics asset when it has died
 	GetWorld()->SpawnActor<AActor>(BP_EnemyTwoPysics,GetActorTransform());
 
 	if (DeathAudioComponent && DeathDamageSoundCue)
 		DeathAudioComponent->Play(0.f);
 
-	//Removes Original mesh
+	// Removes Original mesh
 	SetActorHiddenInGame(true);
 	SetActorEnableCollision(false);
 	this->Destroy();
@@ -303,6 +306,7 @@ void AEnemyTwo::OnPlayerDetect(UPrimitiveComponent* OverlappedComponent, AActor*
 {
 	APlayer_Character* Player = Cast<APlayer_Character>(OtherActor);
 
+	// Detects if player is close in order to emerge from burrow location
 	if (Player && Player->ActorHasTag(FName("PlayerCharacter")) && Burrowed == true && EnemyAttackState == EEnemyAttackState::EES_EnemyUnoccupied)
 	{
 		EnemyState = EEnemyState::EES_EnemyChaseing;
