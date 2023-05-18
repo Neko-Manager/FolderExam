@@ -22,6 +22,7 @@
 #include "Interactable.h"
 #include "Components/AudioComponent.h"
 #include "Sound/SoundCue.h"
+#include "Animation/AnimMontage.h"
 
 //Inputs
 #include "EnhancedInputComponent.h"
@@ -31,9 +32,6 @@
 #include "Engine/StaticMeshSocket.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
-
-USoundCue* BurrowAudioCue;
-UAudioComponent* BurrowAudioComponent;
 
 // Sets default values
 APlayer_Character::APlayer_Character()
@@ -46,8 +44,10 @@ APlayer_Character::APlayer_Character()
 
 	//Initializing the spring arm.
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
-	SpringArm->SetupAttachment(GetMesh(),"HeadSocket");
-	SpringArm->SetRelativeLocation(FVector(4.f, 6.f, 20.f));
+	SpringArm->SetupAttachment(GetMesh(),FName("HeadSocketTest"));
+	SpringArm->SetRelativeLocation(FVector(0.f, -0.1f, 0.1f));
+	SpringArm->SetRelativeRotation(FRotator(360.f, 180.f, 180.f));
+	SpringArm->SetRelativeScale3D(FVector(0.01f, 0.01f, 0.01f));
 	SpringArm->TargetArmLength = 0.f;
 	SpringArm->bUsePawnControlRotation = true;
 
@@ -59,12 +59,12 @@ APlayer_Character::APlayer_Character()
 	AutoPossessPlayer = EAutoReceiveInput::Player0;
 
 	// ------------- CollisionMesh Control --------------
-	AxeCollisionMesh = CreateDefaultSubobject<UBoxComponent>(TEXT("AxeCollisionMesh"));
+	AttackCollisionMesh = CreateDefaultSubobject<UBoxComponent>(TEXT("AxeCollisionMesh"));
 
-	AxeCollisionMesh->SetupAttachment(GetMesh(), "RightHandSocket");
-	AxeCollisionMesh->InitBoxExtent(FVector(1.6f, 27.f, 0.7f));
-	AxeCollisionMesh->SetRelativeLocation(FVector(-1, 16.f, 0.f));
-	AxeCollisionMesh->SetRelativeRotation(FRotator(0.f,0.f,0.f));
+	AttackCollisionMesh->SetupAttachment(GetMesh(), "RightHandSocket");
+	AttackCollisionMesh->InitBoxExtent(FVector(1.6f, 27.f, 0.7f));
+	AttackCollisionMesh->SetRelativeLocation(FVector(-1, 16.f, 0.f));
+	AttackCollisionMesh->SetRelativeRotation(FRotator(0.f,0.f,0.f));
 
 	//---------------- Audio ----------------- 
 
@@ -114,6 +114,7 @@ APlayer_Character::APlayer_Character()
 
 	// Death init
 	Dead = false;
+	MontagePlaying = false;
 }
 
 
@@ -202,7 +203,7 @@ void APlayer_Character::BeginPlay()
 
 
 	// ------------- Collision Dynamics --------------
-	AxeCollisionMesh->OnComponentBeginOverlap.AddDynamic(this, &APlayer_Character::OnOverlap);
+	AttackCollisionMesh->OnComponentBeginOverlap.AddDynamic(this, &APlayer_Character::OnOverlap);
 
 	// ------------- Combat Booleans --------------
 	AxeIsActive = false;
@@ -272,6 +273,26 @@ void APlayer_Character::TakeDamageAudio()
 {
 	if (TakeDamageAudioComponent && TakeDamageSoundCue)
 		TakeDamageAudioComponent->Play(0.f);
+}
+
+void APlayer_Character::PlayAttackMontage()
+{
+	//PLays the animation montage relating to connected Animation montage blue print
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if (AnimInstance && AttackMontage)
+	{
+		//GEngine->AddOnScreenDebugMessage(1, 1.f, FColor::Red, FString::Printf(TEXT("Montage Play")));
+		AnimInstance->Montage_Play(AttackMontage);
+		FName SectionName = FName("Attack1");
+		AnimInstance->Montage_JumpToSection(SectionName, AttackMontage);
+	}
+
+}
+
+void APlayer_Character::AttackEnd()
+{
+	//Called in Anim BP
+	MontagePlaying = false;
 }
 
 void APlayer_Character::GroundedMovement(const FInputActionValue& Value)
@@ -726,12 +747,8 @@ void APlayer_Character::SwapItem(int32 Index)
 					EquipItem(Index);
 			}
 			Equiped = false;
-
 		}
-
 	}
-	
-	
 }
 
 
@@ -746,8 +763,19 @@ void APlayer_Character::AttackTrigger(const FInputActionValue& Value)
 		Attacking = true;
 		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Yellow, FString::Printf(TEXT("Attacking = true")));
 
+		if(MontagePlaying == false)
+		{
+			PlayAttackMontage();
+			MontagePlaying = true;
+			if (AttackAudioComponent && AttackingSoundCue)
+				AttackAudioComponent->Play(0.f);
+		}
+		
+
 		if (Attacking == true)
 		{
+
+
 			DamageControl();
 			GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Red, FString::Printf(TEXT("AttackTrigger activated")));
 		}

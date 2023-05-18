@@ -71,6 +71,11 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Audio")
 		USoundCue* PickupNoteSoundCue;
 
+
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Action")
+	bool MontagePlaying;
+
 	// ------------------------ Do collision for items control ----------------------------
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Equipment Control")
 		bool Has_Equiped;
@@ -79,10 +84,8 @@ public:
 		FString ItemPickedEquiped;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Equipment Control")
-		class UBoxComponent* AxeCollisionMesh;
+		class UBoxComponent* AttackCollisionMesh;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Equipment Control")
-		class UCapsuleComponent* StickCollisonMesh;
 
 
 	// ------------------------ Character control Input Actions ----------------------------
@@ -246,11 +249,16 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat Control Knife")
 		bool KnifeIsActive;
 
+	// Animation Montages
+	UPROPERTY(EditDefaultsOnly, Category = "Combat Control")
+		class UAnimMontage* AttackMontage;
 
+	UFUNCTION()
+		void PlayAttackMontage();
 
-	
+	UFUNCTION(BlueprintCallable)
+		void AttackEnd();
 
-	
 
 	// ------------------------ Attaching Control ----------------------------
 	UFUNCTION(BlueprintCallable)
