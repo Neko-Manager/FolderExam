@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+d// Fill out your copyright notice in the Description page of Project Settings.
 
 //#include "Inventory.h"
 #include "InventoryGamemode.h"
@@ -20,9 +20,11 @@ void AInventoryGamemode::BeginPlay()
 
 }
 
+
+//The next HUD that will appear after the HUD allready showing
  void AInventoryGamemode::ApplyHUDChange()
  {
-	 //Remove Previous HUD
+	 //Remove Previous HUD and what hud to apply
 	 if (CurrentWidget != nullptr)
 	 {
 		 CurrentWidget->RemoveFromParent();
@@ -88,17 +90,20 @@ void AInventoryGamemode::BeginPlay()
 
  }
 
+//Gets  the info for what HUD is Currently showing
  uint8 AInventoryGamemode::GetHUDState()
  {
 	 return HUDState;
  }
 
+ //Gets the new HUD and apply the new hud to according to what state the game is sett to
  void AInventoryGamemode::ChangeHUDState(uint8 NewState)
  {
 	 HUDState = NewState;
 	 ApplyHUDChange(); 
  }
 
+//applys the hud to the screen and enables and disables the mousecursor
  bool AInventoryGamemode::ApplyHUD(TSubclassOf<UUserWidget> WidgetToApply, bool bShowMouseCursor, bool bEnableClickEvents)
  {
 
