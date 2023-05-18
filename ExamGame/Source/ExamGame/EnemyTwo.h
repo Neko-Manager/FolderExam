@@ -68,16 +68,16 @@ public:
 	UAudioComponent* DeathAudioComponent;
 
 	//Audio Components
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Space Ship Sound")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Audio")
 		USoundCue* DiggingSoundCue;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Space Ship Sound")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Audio")
 		USoundCue* AttackingSoundCue;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Space Ship Sound")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Audio")
 		USoundCue* TakeingDamageSoundCue;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Space Ship Sound")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Audio")
 		USoundCue* DeathDamageSoundCue;
 
 	// ------------ Variables -----------------

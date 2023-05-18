@@ -19,11 +19,12 @@
 #include "Sound/SoundCue.h"
 #include "PickUp.h"
 #include "Interactable.h"
-
-
+#include "Components/AudioComponent.h"
+#include "Sound/SoundCue.h"
 
 //Inputs
 #include "EnemyOne.h"
+#include "EnemyTwo.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubSystems.h"
 #include "InventoryGamemode.h"
@@ -32,7 +33,8 @@
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
-
+USoundCue* BurrowAudioCue;
+UAudioComponent* BurrowAudioComponent;
 
 // Sets default values
 APlayer_Character::APlayer_Character()
@@ -65,6 +67,54 @@ APlayer_Character::APlayer_Character()
 	AxeCollisionMesh->SetRelativeLocation(FVector(-1, 16.f, 0.f));
 	AxeCollisionMesh->SetRelativeRotation(FRotator(0.f,0.f,0.f));
 
+	//---------------- Audio ----------------- 
+
+//Loads soundque object
+	static ConstructorHelpers::FObjectFinder<USoundCue> AttackSoundCueObject(TEXT("/Script/Engine.SoundCue'/Game/Audio/Player/SC_Player_Attack.SC_Player_Attack'"));
+	static ConstructorHelpers::FObjectFinder<USoundCue> TakeDamageSoundCueObject(TEXT("/Script/Engine.SoundCue'/Game/Audio/Player/SC_TakeDamage_Player.SC_TakeDamage_Player'"));
+	static ConstructorHelpers::FObjectFinder<USoundCue> JumpSoundCueObject(TEXT("/Script/Engine.SoundCue'/Game/Audio/Player/SC_Jump_Player.SC_Jump_Player'"));
+	static ConstructorHelpers::FObjectFinder<USoundCue> PickupSoundCueObject(TEXT("/Script/Engine.SoundCue'/Game/Audio/Player/SC_pickup_Player.SC_pickup_Player'"));
+	static ConstructorHelpers::FObjectFinder<USoundCue> DeathSoundCueObject(TEXT("/Script/Engine.SoundCue'/Game/Audio/Player/SC_Die.SC_Die'"));
+	static ConstructorHelpers::FObjectFinder<USoundCue> PickupNoteSoundCueObject(TEXT("/Script/Engine.SoundCue'/Game/Audio/Player/SC_PaperPickup.SC_PaperPickup'"));
+
+	//Checks if loading worked	
+	if (AttackSoundCueObject.Succeeded()) {
+		AttackingSoundCue = AttackSoundCueObject.Object;
+		AttackAudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("AttackAudioComponent"));
+		AttackAudioComponent->SetupAttachment(RootComponent);
+	}
+
+	if (TakeDamageSoundCueObject.Succeeded()) {
+		TakeDamageSoundCue = TakeDamageSoundCueObject.Object;
+		TakeDamageAudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("TakeDamageAudioComponent"));
+		TakeDamageAudioComponent->SetupAttachment(RootComponent);
+	}
+
+	if (JumpSoundCueObject.Succeeded()) {
+		JumpSoundCue = JumpSoundCueObject.Object;
+		JumpAudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("JumpSoundComponent"));
+		JumpAudioComponent->SetupAttachment(RootComponent);
+	}
+
+	if (PickupSoundCueObject.Succeeded()) {
+		PickupSoundCue = PickupSoundCueObject.Object;
+		PickupAudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("PickupAudioComponent"));
+		PickupAudioComponent->SetupAttachment(RootComponent);
+	}
+	if (DeathSoundCueObject.Succeeded()) {
+		DeathSoundCue = DeathSoundCueObject.Object;
+		DeathAudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("DeathAudioComponent"));
+		DeathAudioComponent->SetupAttachment(RootComponent);
+	}
+
+	if (PickupNoteSoundCueObject.Succeeded()) {
+		PickupNoteSoundCue = AttackSoundCueObject.Object;
+		PickupNoteAudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("PickupNoteAudioComponent"));
+		PickupNoteAudioComponent->SetupAttachment(RootComponent);
+	}
+
+	// Death init
+	Dead = false;
 }
 
 
@@ -73,7 +123,21 @@ void APlayer_Character::BeginPlay()
 {
 	Super::BeginPlay();
 
-	
+	// ------------- Audio Setup --------------
+	if (AttackAudioComponent && AttackingSoundCue)
+		AttackAudioComponent->SetSound(AttackingSoundCue);
+
+	if (TakeDamageAudioComponent && TakeDamageSoundCue)
+		TakeDamageAudioComponent->SetSound(TakeDamageSoundCue);
+
+	if (JumpAudioComponent && JumpSoundCue)
+		JumpAudioComponent->SetSound(JumpSoundCue);
+
+	if (PickupAudioComponent && PickupSoundCue)
+		PickupAudioComponent->SetSound(PickupSoundCue);
+
+	if (DeathAudioComponent && DeathSoundCue)
+		DeathAudioComponent->SetSound(DeathSoundCue);
 
 	Inventory.SetNum(5);
 	CurrentInteractable = nullptr;
@@ -171,10 +235,13 @@ void APlayer_Character::Tick(float DeltaTime)
 	StarvingChecker(Live_Hunger);
 	EquipItem(TimeTick);
 
+	if(Health <= 0 && Dead == false)
+	{
+		Die();
+		Dead = true;
+	}
 
 }
-
-
 
 // ------------- Character control --------------
 void APlayer_Character::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -200,6 +267,12 @@ void APlayer_Character::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 		EnhancedInputComponent->BindAction(IA_Attack, ETriggerEvent::Triggered, this, &APlayer_Character::AttackTrigger);
 
 	}
+}
+
+void APlayer_Character::TakeDamageAudio()
+{
+	if (TakeDamageAudioComponent && TakeDamageSoundCue)
+		TakeDamageAudioComponent->Play(0.f);
 }
 
 void APlayer_Character::GroundedMovement(const FInputActionValue& Value)
@@ -240,8 +313,6 @@ void APlayer_Character::Look(const FInputActionValue& Value)
 		AddControllerPitchInput(-LookAxisInput.Y);
 	}
 }
-
-
 
 // ------------- Sprint control --------------
 void APlayer_Character::StaminaRecharger(float Timer)
@@ -294,8 +365,6 @@ void APlayer_Character::CrouchTriggered(const FInputActionValue& Value)
 		CrouchCustom();
 	}
 	Crouching = false;
-
-	
 }
 
 void APlayer_Character::CrouchCustom()
@@ -379,6 +448,21 @@ void APlayer_Character::EatingTrigger(const FInputActionValue& Value)
 		GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Item 4 check for eat")));
 	}
 
+}
+
+void APlayer_Character::ToggleDeathHUD()
+{
+	AInventoryGamemode* Gamemode = Cast<AInventoryGamemode>(GetWorld()->GetAuthGameMode());
+
+	if (Gamemode->GetHUDState() == Gamemode->HS_Ingame)
+	{
+		Gamemode->ChangeHUDState(Gamemode->HS_Death);
+
+	}
+	else
+	{
+		Gamemode->ChangeHUDState((Gamemode->HS_Ingame));
+	}
 }
 
 void APlayer_Character::EatingChecker(int32 Index)
@@ -493,6 +577,10 @@ void APlayer_Character::JumpTrigger(const FInputActionValue& Value)
 	{
 		//Jump Only activates if Jump function has run through and checked for boolean bclientWasFalling
 		Jump();
+
+		if (JumpAudioComponent && JumpSoundCue)
+			JumpAudioComponent->Play(0.f);
+
 		Live_Stamina -= 20.f;
 		bClientWasFalling = true;
 	}
@@ -613,9 +701,7 @@ void APlayer_Character::EquipItem(int32 Index)
 			GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::FromInt(Index));
 
 		}
-		
 	}
-
 }
 
 void APlayer_Character::SwapItem(int32 Index)
@@ -716,29 +802,64 @@ void APlayer_Character::DamageControl()
 // ------------- Collision --------------
 void APlayer_Character::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	AEnemyOne* ThisEnemy = Cast<AEnemyOne>(OtherActor);
+	AEnemyOne* EnemyOne = Cast<AEnemyOne>(OtherActor);
+	AEnemyTwo* EnemyTwo = Cast<AEnemyTwo>(OtherActor);
 	if(Has_Equiped == true)
 	{
-		if(AxeIsActive == true && ItemPickedEquiped == "Axe" && ThisEnemy)
+		if(AxeIsActive == true && ItemPickedEquiped == "Axe" && EnemyOne)
 		{
-			ThisEnemy->Health -= 3;
+			
+			EnemyOne->Health -= 3;
+			EnemyOne->TakeDamage();
 			AxeIsActive = false;
 			GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Attacking = false")));
-		
+
 		}
-		if (AxeIsActive == true && ItemPickedEquiped == "Stick" && ThisEnemy)
+
+		if (AxeIsActive == true && ItemPickedEquiped == "Axe" && EnemyTwo)
 		{
-			ThisEnemy->Health -= 1;
+			EnemyTwo->Health -= 3;
+			EnemyTwo->TakeDamageAudio();
+			AxeIsActive = false;
+			GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Attacking = false")));
+		}
+
+		if (StickIsActive == true && ItemPickedEquiped == "Stick" && EnemyOne)
+		{
+
+			EnemyOne->Health -= 3;
+			EnemyOne->TakeDamage();
+			AxeIsActive = false;
+			GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Attacking = false")));
+
+		}
+
+		if (StickIsActive == true && ItemPickedEquiped == "Stick" && EnemyTwo)
+		{
+
+			EnemyTwo->Health -= 3;
+			EnemyTwo->TakeDamageAudio();
+			AxeIsActive = false;
+			GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Attacking = false")));
+
+		}
+
+		if (AxeIsActive == true && ItemPickedEquiped == "Knife" && EnemyOne)
+		{
+			
+			EnemyOne->Health -= 2;
+			EnemyOne->TakeDamage();
 			StickIsActive = false;
 			GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Attacking = false")));
 
 		}
-		if (AxeIsActive == true && ItemPickedEquiped == "Knife" && ThisEnemy)
+
+		if (AxeIsActive == true && ItemPickedEquiped == "Knife" && EnemyTwo)
 		{
-			ThisEnemy->Health -= 2;
+			EnemyTwo->Health -= 2;
+			EnemyTwo->TakeDamageAudio();
 			StickIsActive = false;
 			GEngine->AddOnScreenDebugMessage(-1, 1.f, FColor::Emerald, FString::Printf(TEXT("Attacking = false")));
-
 		}
 		else
 		{
@@ -746,7 +867,6 @@ void APlayer_Character::OnOverlap(UPrimitiveComponent* OverlappedComponent, AAct
 			StickIsActive = false;
 		}
 	}
-
 }
 
 
@@ -773,6 +893,8 @@ bool APlayer_Character::AddItemToInventory(APickUp* Item)
 		if (AvailableSlot != INDEX_NONE)
 		{
 			Inventory[AvailableSlot] = Item;
+			if (PickupAudioComponent && PickupSoundCue)
+				PickupAudioComponent->Play(0.f);
 			return true;
 		}
 		else
@@ -839,7 +961,8 @@ void APlayer_Character::ToggleNote_1(APickUp* Item)
 	if (Gamemode->GetHUDState() == Gamemode->HS_Ingame)
 	{
 		Gamemode->ChangeHUDState(Gamemode->HS_Note_1);
-
+		if (PickupNoteAudioComponent && PickupNoteSoundCue)
+			PickupNoteAudioComponent->Play(0.f);
 		
 	}
 	else
@@ -855,6 +978,8 @@ void APlayer_Character::ToggleNote_2(APickUp* Item)
 	if (Gamemode->GetHUDState() == Gamemode->HS_Ingame)
 	{
 		Gamemode->ChangeHUDState(Gamemode->HS_Note_2);
+		if (PickupNoteAudioComponent && PickupNoteSoundCue)
+			PickupNoteAudioComponent->Play(0.f);
 	}
 	else
 	{
@@ -869,6 +994,8 @@ void APlayer_Character::ToggleNote_3(APickUp* Item)
 	if (Gamemode->GetHUDState() == Gamemode->HS_Ingame)
 	{
 		Gamemode->ChangeHUDState(Gamemode->HS_Note_3);
+		if (PickupNoteAudioComponent && PickupNoteSoundCue)
+			PickupNoteAudioComponent->Play(0.f);
 	}
 	else
 	{
@@ -877,13 +1004,12 @@ void APlayer_Character::ToggleNote_3(APickUp* Item)
 }
 
 
-
-
 void APlayer_Character::Interact()
 {
 	if (CurrentInteractable != nullptr)
 	{
 		CurrentInteractable->Interact_Implementation();
+
 	}
 	
 
@@ -930,6 +1056,16 @@ void APlayer_Character::CheckForInteractables()
 		CurrentInteractable = PotentialInteractable;
 		HelpText = PotentialInteractable->InteractableHelpText;
 	}
+}
+
+void APlayer_Character::Die()
+{
+
+	ToggleDeathHUD();
+
+	if (DeathAudioComponent && DeathSoundCue)
+		DeathAudioComponent->Play(0.f);
+
 }
 
 

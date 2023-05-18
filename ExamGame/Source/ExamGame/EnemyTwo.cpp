@@ -291,7 +291,7 @@ void AEnemyTwo::TakeDamageAudio()
 void AEnemyTwo::Die()
 {
 	//Spawns The pysics asset when it has died
-	GetWorld()->SpawnActor<AActor>(BP_EnemyTwoPysics, GetActorTransform());
+	GetWorld()->SpawnActor<AActor>(BP_EnemyTwoPysics,GetActorTransform());
 
 	if (DeathAudioComponent && DeathDamageSoundCue)
 		DeathAudioComponent->Play(0.f);
@@ -337,6 +337,8 @@ void AEnemyTwo::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Othe
 		{
 			Player1->Health -= 20;
 			Player1->Live_Hunger -= 10;
+			if (Player1->Dead == false)
+				Player1->TakeDamageAudio();
 			HasDoneDamage = true;
 			//GEngine->AddOnScreenDebugMessage(0, 1.f, FColor::Yellow, FString::Printf(TEXT("PlayerTakesDamge")));
 		}
