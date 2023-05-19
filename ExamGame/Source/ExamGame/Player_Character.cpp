@@ -32,6 +32,7 @@
 #include "Engine/StaticMeshSocket.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "UObject/ConstructorHelpers.h"
 
 // Sets default values
 APlayer_Character::APlayer_Character()
@@ -274,6 +275,7 @@ void APlayer_Character::PlayAttackMontage()
 {
 	//PLays the animation montage relating to connected Animation montage blue print
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+
 	if (AnimInstance && AttackMontage)
 	{
 		//GEngine->AddOnScreenDebugMessage(1, 1.f, FColor::Red, FString::Printf(TEXT("Montage Play")));
@@ -729,48 +731,16 @@ void APlayer_Character::SwapItem(int32 Index)
 {
 
 	AInventoryGamemode* Gamemode = Cast<AInventoryGamemode>(GetWorld()->GetAuthGameMode());
-
-
-	//Checkinf i fitem is equiped and that the disableThumbnail is active for the respective slot and that the name also is the same
-	if (Gamemode->GetHUDState() == Gamemode->HS_Inventory/*&& Inventory[Index] != nullptr && Equiped == true*/)
-	{
-		//Checking if item is the same as item held
-		//if (Has_Equiped == true && Inventory[Index]->ItemName != ItemPickedEquiped && Equiped == true || Has_Equiped == true && Inventory[Index]->ItemName == ItemPickedEquiped && Equiped == true)
-		//{
-
-		//	if (DisabledThumbnails[Index] == true && Inventory[Index]->ItemName == ItemPickedEquiped)
-		//	{
-		//		DisabledThumbnails[Index] = false;
-		//		Inventory[Index]->InteractableMesh->SetVisibility(false);
-		//		Inventory[Index]->InteractableMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		//		Has_Equiped = false;
-		//		Equiped = false;
-		//	}
-		//	if (DisabledThumbnails[Index] == false && Inventory[Index]->ItemName == ItemPickedEquiped)
-		//	{
-		//		Has_Equiped = true;
-		//		Equiped = false;
-		//	}
-
-
-		//	if (DisabledThumbnails[Index] == true && Inventory[Index]->ItemName != ItemPickedEquiped || DisabledThumbnails[Index] == false && Inventory[Index]->ItemName != ItemPickedEquiped)
-		//	{
-		//		Has_Equiped = false;
-		//		EquipItem(Index);
-		//		Equiped = false;
-		//	}
-		//	/*if (DisabledThumbnails[Index] == false && Inventory[Index]->ItemName != ItemPickedEquiped)
-		//	{
-		//		Has_Equiped = true;
-		//		Equiped = false;
-		//	}*/
-		//
-		//}
-
 	
 
-		if (Inventory[Index]->ItemName == ItemPickedEquiped && Equiped == true && Has_Equiped == true)
+	//Checkinf i fitem is equiped and that the disableThumbnail is active for the respective slot and that the name also is the same
+	if (Gamemode->GetHUDState() == Gamemode->HS_Inventory)
+	{
+		
+		//Checking for has_equip
+		if (Inventory[Index] != nullptr && Inventory[Index]->ItemName == ItemPickedEquiped && Equiped == true && Has_Equiped == true && DisabledThumbnails[Index] == true)
 		{
+			//Putting item back in inventory
 			DisabledThumbnails[Index] = false;
 			Inventory[Index]->InteractableMesh->SetVisibility(false);
 			Inventory[Index]->InteractableMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
@@ -781,9 +751,11 @@ void APlayer_Character::SwapItem(int32 Index)
 				EquipItem(Index);
 				Has_Equiped = false;
 			}
-			Equiped = false;
+			
 		}
+		Equiped = false;
 	}
+	
 }
 
 

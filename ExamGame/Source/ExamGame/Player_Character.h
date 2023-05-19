@@ -74,7 +74,7 @@ public:
 
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Action")
-	bool MontagePlaying;
+	    bool MontagePlaying;
 
 	// ------------------------ Do collision for items control ----------------------------
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Equipment Control")
@@ -251,7 +251,7 @@ public:
 
 	// Animation Montages
 	UPROPERTY(EditDefaultsOnly, Category = "Combat Control")
-		class UAnimMontage* AttackMontage;
+		UAnimMontage* AttackMontage;
 
 	UFUNCTION()
 		void PlayAttackMontage();
