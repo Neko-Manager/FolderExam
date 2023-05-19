@@ -28,7 +28,7 @@ public:
 		float MovementSpeed;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Animation")
-		class APawn* Pawn;
+		APawn* Pawn1;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Animation")
 		class AEnemyOne* EnemyOne;

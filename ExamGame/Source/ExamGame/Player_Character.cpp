@@ -63,8 +63,8 @@ APlayer_Character::APlayer_Character()
 
 	AttackCollisionMesh->SetupAttachment(GetMesh(), "RightHandSocket");
 	AttackCollisionMesh->InitBoxExtent(FVector(1.6f, 27.f, 0.7f));
-	AttackCollisionMesh->SetRelativeLocation(FVector(-1, 16.f, 0.f));
-	AttackCollisionMesh->SetRelativeRotation(FRotator(0.f,0.f,0.f));
+	AttackCollisionMesh->SetRelativeLocation(FVector(6.6f, 18.8f, 15.7f));
+	AttackCollisionMesh->SetRelativeRotation(FRotator(38.8f,-42.9f,-42.f));
 
 	//---------------- Audio ----------------- 
 
@@ -735,19 +735,33 @@ void APlayer_Character::SwapItem(int32 Index)
 	if (Gamemode->GetHUDState() == Gamemode->HS_Inventory/*&& Inventory[Index] != nullptr && Equiped == true*/)
 	{
 		//Checking if item is the same as item held
-		if (Inventory[Index]->ItemName == ItemPickedEquiped && Equiped == true && Has_Equiped == true)
+		if (Has_Equiped == true && Inventory[Index]->ItemName != ItemPickedEquiped && Equiped == true)
 		{
-			DisabledThumbnails[Index] = false;
-			Inventory[Index]->InteractableMesh->SetVisibility(false);
-			Inventory[Index]->InteractableMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-			Has_Equiped = false;
 
-			//Equipping item back
-			if (Inventory[Index]->ItemName != ItemPickedEquiped && Equiped == true)
+			if (DisabledThumbnails[Index] == false && Inventory[Index]->ItemName == ItemPickedEquiped)
 			{
-					EquipItem(Index);
+				Has_Equiped = true;
+			}
+
+			else if (DisabledThumbnails[Index] == false && Inventory[Index]->ItemName != ItemPickedEquiped)
+			{
+				
+				Has_Equiped = false;
+				EquipItem(Index);
 			}
 			Equiped = false;
+		}
+
+		else if (Has_Equiped == true && Inventory[Index]->ItemName != ItemPickedEquiped && Equiped == true)
+		{
+			if (DisabledThumbnails[Index] == true && Inventory[Index]->ItemName != ItemPickedEquiped)
+			{
+				DisabledThumbnails[Index] = false;
+				Inventory[Index]->InteractableMesh->SetVisibility(false);
+				Inventory[Index]->InteractableMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+				Has_Equiped = false;
+			}
+		
 		}
 
 		/*if (Inventory[Index]->ItemName != ItemPickedEquiped && Equiped == true && Has_Equiped == true)
