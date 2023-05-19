@@ -9,27 +9,27 @@ void UPlayer_AnimInstance::NativeInitializeAnimation()
 {
 	Super::NativeInitializeAnimation();
 
-	if (Pawn == nullptr) 
+	if (Pawn3 == nullptr) 
 	{
-		Pawn = TryGetPawnOwner();
-		if (Pawn && Player == nullptr) 
+		Pawn3 = TryGetPawnOwner();
+		if (Pawn3 && Player == nullptr) 
 		{
-			Player = Cast<APlayer_Character>(Pawn);
+			Player = Cast<APlayer_Character>(Pawn3);
 		}
 	}
 }
 
 void UPlayer_AnimInstance::UpdateAnimationProperties()
 {
-	if (Pawn == nullptr) {
-		Pawn = TryGetPawnOwner();
-		if (Pawn && Player == nullptr) {
-			Player = Cast<APlayer_Character>(Pawn);
+	if (Pawn3 == nullptr) {
+		Pawn3 = TryGetPawnOwner();
+		if (Pawn3 && Player == nullptr) {
+			Player = Cast<APlayer_Character>(Pawn3);
 		}
 	}
 
-	if (Pawn) {
-		FVector Speed = Pawn->GetVelocity();
+	if (Pawn3) {
+		FVector Speed = Pawn3->GetVelocity();
 		Speed.Z = 0.f;
 		MovementSpeed = Speed.Size();
 

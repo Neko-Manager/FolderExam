@@ -735,49 +735,54 @@ void APlayer_Character::SwapItem(int32 Index)
 	if (Gamemode->GetHUDState() == Gamemode->HS_Inventory/*&& Inventory[Index] != nullptr && Equiped == true*/)
 	{
 		//Checking if item is the same as item held
-		if (Has_Equiped == true && Inventory[Index]->ItemName != ItemPickedEquiped && Equiped == true)
+		//if (Has_Equiped == true && Inventory[Index]->ItemName != ItemPickedEquiped && Equiped == true || Has_Equiped == true && Inventory[Index]->ItemName == ItemPickedEquiped && Equiped == true)
+		//{
+
+		//	if (DisabledThumbnails[Index] == true && Inventory[Index]->ItemName == ItemPickedEquiped)
+		//	{
+		//		DisabledThumbnails[Index] = false;
+		//		Inventory[Index]->InteractableMesh->SetVisibility(false);
+		//		Inventory[Index]->InteractableMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		//		Has_Equiped = false;
+		//		Equiped = false;
+		//	}
+		//	if (DisabledThumbnails[Index] == false && Inventory[Index]->ItemName == ItemPickedEquiped)
+		//	{
+		//		Has_Equiped = true;
+		//		Equiped = false;
+		//	}
+
+
+		//	if (DisabledThumbnails[Index] == true && Inventory[Index]->ItemName != ItemPickedEquiped || DisabledThumbnails[Index] == false && Inventory[Index]->ItemName != ItemPickedEquiped)
+		//	{
+		//		Has_Equiped = false;
+		//		EquipItem(Index);
+		//		Equiped = false;
+		//	}
+		//	/*if (DisabledThumbnails[Index] == false && Inventory[Index]->ItemName != ItemPickedEquiped)
+		//	{
+		//		Has_Equiped = true;
+		//		Equiped = false;
+		//	}*/
+		//
+		//}
+
+	
+
+		if (Inventory[Index]->ItemName == ItemPickedEquiped && Equiped == true && Has_Equiped == true)
 		{
-
-			if (DisabledThumbnails[Index] == false && Inventory[Index]->ItemName == ItemPickedEquiped)
-			{
-				Has_Equiped = true;
-			}
-
-			else if (DisabledThumbnails[Index] == false && Inventory[Index]->ItemName != ItemPickedEquiped)
-			{
-				
-				Has_Equiped = false;
-				EquipItem(Index);
-			}
-			Equiped = false;
-		}
-
-		else if (Has_Equiped == true && Inventory[Index]->ItemName != ItemPickedEquiped && Equiped == true)
-		{
-			if (DisabledThumbnails[Index] == true && Inventory[Index]->ItemName != ItemPickedEquiped)
-			{
-				DisabledThumbnails[Index] = false;
-				Inventory[Index]->InteractableMesh->SetVisibility(false);
-				Inventory[Index]->InteractableMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-				Has_Equiped = false;
-			}
-		
-		}
-
-		/*if (Inventory[Index]->ItemName != ItemPickedEquiped && Equiped == true && Has_Equiped == true)
-		{
+			DisabledThumbnails[Index] = false;
+			Inventory[Index]->InteractableMesh->SetVisibility(false);
+			Inventory[Index]->InteractableMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 			Has_Equiped = false;
 
 			if(Inventory[Index]->ItemName != ItemPickedEquiped && DisabledThumbnails[Index] == true)
 			{
-				DisabledThumbnails[Index] = false;
-				Inventory[Index]->InteractableMesh->SetVisibility(false);
-				Inventory[Index]->InteractableMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+				EquipItem(Index);
 				Has_Equiped = false;
 			}
-			EquipItem(Index);
-			
-		}*/
+			Equiped = false;
+		}
 	}
 }
 

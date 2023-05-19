@@ -40,7 +40,7 @@ public:
 
 	void TakeDamageAudio();
 
-	class UAudioComponent* AttackAudioComponent;
+	UAudioComponent* AttackAudioComponent;
 
 	UAudioComponent* TakeDamageAudioComponent;
 
